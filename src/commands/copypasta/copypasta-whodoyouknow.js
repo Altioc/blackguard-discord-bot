@@ -2,7 +2,7 @@ module.exports = {
   subCommandData: (subcommand) => (
     subcommand
       .setName('whodoyouknow')
-      .setDescription('i think the entire idea of a boycott is a joke...')
+      .setDescription('i think the entire idea of a boycott is a joke and you children...')
   ),
   
   async execute(interaction) {
