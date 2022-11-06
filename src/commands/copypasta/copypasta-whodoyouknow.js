@@ -7,7 +7,7 @@ module.exports = {
   
   async execute(interaction) {
     interaction.reply(`
-test2
+i think the entire idea of a boycott is a joke and you children should be ashamed of your temper tantrum. please keep your negativity out of my mushroom game, ty. Who the hell do you people know.
     `);
   }
 }
