@@ -7,7 +7,7 @@ module.exports = {
   
   async execute(interaction) {
     interaction.reply(`
-test
+test2
     `);
   }
 }
