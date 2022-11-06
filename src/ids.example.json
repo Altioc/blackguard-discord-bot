@@ -1,0 +1,8 @@
+{
+  "superUsers": [
+    "discord user id for users that are able to interact with any commads"
+  ],
+  "requiredRoles": [
+    "discord role id for a role required to use any of the bot's commands"
+  ]
+}

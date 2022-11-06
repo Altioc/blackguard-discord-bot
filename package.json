@@ -1,0 +1,33 @@
+{
+  "name": "blkgrd-bot",
+  "version": "1.0.0",
+  "description": "The bot for the Blackguard Maplestory Discord server.",
+  "main": "./src/bot.js",
+  "scripts": {
+    "start": "node ./src/bot",
+    "deploy": "node ./src/deploy-commands"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Mnesma/blkgrd-bot.git"
+  },
+  "keywords": [
+    "discord",
+    "bot"
+  ],
+  "author": "Mnesma",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Mnesma/blkgrd-bot/issues"
+  },
+  "homepage": "https://github.com/Mnesma/blkgrd-bot#readme",
+  "dependencies": {
+    "@discordjs/builders": "^1.3.0",
+    "@discordjs/rest": "^1.3.0",
+    "discord-api-types": "^0.37.16",
+    "discord.js": "^14.6.0",
+    "pouchdb": "^7.3.0",
+    "pouchdb-find": "^7.3.0",
+    "pouchdb-upsert": "^2.2.0"
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "clientId": "bot's Discord client ID goes here",
+  "guildId": "Discord guild ID goes here",
+  "token": "bot's Discord token goes here"
+}
