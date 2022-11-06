@@ -5,4 +5,6 @@ The bot for the Blackguard Maplestory Discord server.
 
 `npm install`
 
+`npm run deploy`
+
 `npm start`

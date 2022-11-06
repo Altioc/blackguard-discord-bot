@@ -4,8 +4,8 @@
   "description": "The bot for the Blackguard Maplestory Discord server.",
   "main": "./src/bot.js",
   "scripts": {
-    "start": "node ./src/bot",
-    "deploy": "node ./src/deploy-commands"
+    "start": "node ./src/bot.js",
+    "deploy": "node ./src/deploy-commands.js"
   },
   "repository": {
     "type": "git",
