@@ -19,7 +19,7 @@ module.exports = {
     const count = Math.max(Math.min(countOption, 5), 1);
     const singleResponse = 'please refrain from making comments that could make others uncomfortable';
 
-    const response = Array(count).fill(singleResponse).join(' ');
+    const response = Array(count).fill(singleResponse).join('\n');
 
     interaction.reply(response);
   }
