@@ -2,7 +2,7 @@ module.exports = {
   subCommandData: (subcommand) => (
     subcommand
       .setName('occasionalattack')
-      .setDescription('throwing in the occasional attack')
+      .setDescription('throwing in the occasional attack...')
       .addStringOption(option => (
         option
           .setName('class')

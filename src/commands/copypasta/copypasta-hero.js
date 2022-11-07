@@ -2,7 +2,7 @@ module.exports = {
   subCommandData: (subcommand) => (
     subcommand
       .setName('hero')
-      .setDescription('Why is Hero a hard class to play? ...')
+      .setDescription('Why is Hero a hard class to play?...')
   ),
   
   async execute(interaction) {

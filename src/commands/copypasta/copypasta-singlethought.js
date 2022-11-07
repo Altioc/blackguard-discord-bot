@@ -2,7 +2,7 @@ module.exports = {
   subCommandData: (subcommand) => (
     subcommand
       .setName('singlethought')
-      .setDescription('Did a single fucking thought go through ...')
+      .setDescription('Did a single fucking thought go through...')
   ),
   
   async execute(interaction) {

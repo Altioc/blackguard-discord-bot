@@ -2,7 +2,7 @@ module.exports = {
   subCommandData: (subcommand) => (
     subcommand
       .setName('runculvert')
-      .setDescription('Run culvert early before toben buffs epxire ...')
+      .setDescription('Run culvert early before toben buffs epxire...')
   ),
   
   async execute(interaction) {

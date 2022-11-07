@@ -2,7 +2,7 @@ module.exports = {
   subCommandData: (subcommand) => (
     subcommand
       .setName('blessyourheart')
-      .setDescription('Well bless your heart ...')
+      .setDescription('Well bless your heart...')
       .addStringOption(option => (
         option
           .setName('name')

@@ -2,7 +2,7 @@ module.exports = {
   subCommandData: (subcommand) => (
     subcommand
       .setName('misinformation')
-      .setDescription('Please stop using the forums to spread misinformation ...')
+      .setDescription('Please stop using the forums to spread misinformation...')
   ),
   
   async execute(interaction) {
