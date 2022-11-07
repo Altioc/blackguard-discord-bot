@@ -1,7 +1,7 @@
 module.exports = {
   subCommandData: (subcommand) => (
     subcommand
-      .setName('pleaseregrain')
+      .setName('pleaserefrain')
       .setDescription('please refrain from making...')
       .addNumberOption( option => (
         option
