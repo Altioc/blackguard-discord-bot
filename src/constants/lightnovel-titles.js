@@ -12,7 +12,7 @@ module.exports = [
         title: 'That Time when I Boomed my Items, Transferring their Power to a Regal Thief Through the Aether, and my Mental Boomed with Them'
     },
     {
-        title: 'I have Acquired the Secret Skill that Lets me Steal Other People\'s Failstacks but it Backcfired on Me and I\'m Now on the Run'
+        title: 'I have Acquired the Secret Skill that Lets me Steal Other People\'s Failstacks but it Backfired on Me and I\'m Now on the Run'
     },
     {
         title: 'Reborn As A Luckerdog, Now I\'m On A Quest To Be The First To Achieve The Legendary 25th Star'
