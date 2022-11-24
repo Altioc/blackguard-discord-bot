@@ -1,4 +1,4 @@
-const lightnovels = require('../../pasta/lightnovel-titles')
+const lightnovels = require('../../constants/lightnovel-titles')
 
 module.exports = {
   subCommandData: (subcommand) =>
