@@ -19,6 +19,7 @@ const copypastaPleaserefrain = require('./copypasta-pleaserefrain');
 const copypastaKidstalkingshit = require('./copypasta-kidstalkingshit');
 const copypastaJustbegood = require('./copypasta-justbegood');
 const copypastaLightnovel = require('./copypasta-lightnovel');
+const copypastaImJustDone = require('./copypasta-im-just-done');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -42,7 +43,8 @@ module.exports = {
     .addSubcommand(copypastaPleaserefrain.subCommandData)
     .addSubcommand(copypastaKidstalkingshit.subCommandData)
     .addSubcommand(copypastaJustbegood.subCommandData)
-    .addSubcommand(copypastaLightnovel.subCommandData),
+    .addSubcommand(copypastaLightnovel.subCommandData)
+    .addSubcommand(copypastaImJustDone.subCommandData),
         
   async execute(interaction) {
     const subCommand = interaction.options.getSubcommand();
@@ -122,6 +124,10 @@ module.exports = {
       }
       case 'lightnovel': {
         await copypastaLightnovel.execute(interaction);
+        break;
+      }
+      case 'imjustdone': {
+        await copypastaImJustDone.execute(interaction);
         break;
       }
       default: {
