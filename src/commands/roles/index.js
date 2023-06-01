@@ -6,7 +6,7 @@ const rolesDelete = require('./roles-delete');
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('roles')
+    .setName('bg-roles')
     .setDescription('Create/modify role selectors')
     .addSubcommand(rolesCreate.subCommandData)
     .addSubcommand(rolesUpdate.subCommandData)
