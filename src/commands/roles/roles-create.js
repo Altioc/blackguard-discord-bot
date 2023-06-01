@@ -8,7 +8,10 @@ const {
   ComponentType,
   ChannelType,
   StringSelectMenuBuilder,
-  StringSelectMenuOptionBuilder
+  StringSelectMenuOptionBuilder,
+  ModalBuilder,
+  TextInputBuilder,
+  TextInputStyle
 } = require('discord.js');
 const { messages } = require('../../constants');
 
@@ -46,10 +49,23 @@ module.exports = {
       .setMinValues(1)
 			.setMaxValues(25);
     
-    const channelSelectMenu = new ChannelSelectMenuBuilder()
-      .setCustomId('roleSelectChannelSelect')
-      .setPlaceholder('Select channel')
-      .setChannelTypes([ChannelType.GuildText]);
+    const openChannelSelectModalButton = new ButtonBuilder()
+      .setCustomId('roleSelectCreateButton_channelSelect')
+      .setStyle(ButtonStyle.Primary)
+      .setLabel('Set Channel ID');
+
+    const channelSelectModal = new ModalBuilder()
+      .setCustomId('channelSelectModal')
+      .setTitle('Channel Select');
+    
+    const channelIdInput = new TextInputBuilder()
+      .setCustomId('channelIdInput')
+      .setLabel('Channel ID')
+      .setStyle(TextInputStyle.Short)
+      .setRequired(true);
+
+    const channelIdRow = new ActionRowBuilder().addComponents(channelIdInput);
+    channelSelectModal.addComponents(channelIdRow);
     
     const submitButton = new ButtonBuilder()
       .setCustomId('roleSelectCreateButton_submit')
@@ -62,7 +78,7 @@ module.exports = {
       .setLabel('Cancel');
 
 		const roleSelectCreateRow = new ActionRowBuilder().addComponents(allRoleSelectMenu);
-    const channelSelectRow = new ActionRowBuilder().addComponents(channelSelectMenu);
+    const channelSelectRow = new ActionRowBuilder().addComponents(openChannelSelectModalButton);
     const buttonsRow = new ActionRowBuilder().addComponents(submitButton, cancelButton);
 
     const response = await interaction.reply({
@@ -84,20 +100,33 @@ module.exports = {
       rolesSelection = interaction.roles;
     });
 
-    const channelSelectCollector = response.createMessageComponentCollector({ 
-      componentType: ComponentType.ChannelSelect
-    });
-    let channelSelection;
-    channelSelectCollector.on('collect', (interaction) => {
-      interaction.deferUpdate();
-      channelSelection = interaction.channels.first();
-    });
+    let selectedChannelId;
 
     const buttonCollector = response.createMessageComponentCollector({ 
       componentType: ComponentType.Button
     });
     buttonCollector.on('collect', async (interaction) => {
       const { customId } = interaction;
+      
+      if (customId.endsWith('channelSelect')) {
+        await interaction.showModal(channelSelectModal);
+        const submitted = await interaction.awaitModalSubmit({
+          time: 300000
+        }).catch(error => {
+          console.error(error)
+          return null
+        })
+        
+        if (submitted) {
+          selectedChannelId = submitted.fields.getTextInputValue('channelIdInput');
+          submitted.deferUpdate();
+          return;
+        }
+
+        interaction.deferUpdate();
+        return;
+      }
+
       if (customId.endsWith('cancel')) {
         return await interaction.update({
           content: 'Role selection creation canceled.',
@@ -110,7 +139,7 @@ module.exports = {
           .setCustomId('test')
           .setPlaceholder(canSelectMultiple ? 'Select roles' : 'Select role')
           .setMinValues(0)
-          .setMaxValues(canSelectMultiple ? 25 : 1)
+          .setMaxValues(canSelectMultiple ? Math.min(rolesSelection.size, 25) : 1)
           .addOptions(
             ...rolesSelection.map((role) => {
               const option = new StringSelectMenuOptionBuilder()
@@ -124,16 +153,17 @@ module.exports = {
               return option;
             })
           );
-
+          
         const roleSelectMenuRow = new ActionRowBuilder().addComponents(roleSelectMenu);
-
-        await channelSelection.send({
+        const channel = await interaction.guild.channels.fetch(selectedChannelId);
+        
+        await channel.send({
           content: title,
           components: [roleSelectMenuRow]
         });
 
         return await interaction.update({
-          content: `${rolesSelection.size} ${channelSelection.name} Submitted`,
+          content: `${rolesSelection.size} ${channel.name} Submitted`,
           components: []
         });
       }
