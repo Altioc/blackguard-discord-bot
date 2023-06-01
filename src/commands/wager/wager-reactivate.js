@@ -1,4 +1,4 @@
-const { EmbedBuilder } = require('discord.js')
+const { EmbedBuilder, PermissionFlagsBits } = require('discord.js')
 const { messageTypeColors } = require('../../constants');
 const BookController = require('../../controllers/book-controller');
 
@@ -10,7 +10,7 @@ module.exports = {
   ),
 
   async execute(interaction) {
-    if (!interaction.memberPermissions.has('ADMINISTRATOR')) {
+    if (!interaction.memberPermissions.has(PermissionFlagsBits.Administrator)) {
       await interaction.editReply(messages.incorrectPermissions());
       return;
     }
