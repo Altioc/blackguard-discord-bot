@@ -13,7 +13,6 @@ module.exports = {
     .addSubcommand(rolesDelete.subCommandData),
 
   async execute(interaction) {
-    // await interaction.deferReply()
     const subCommand = interaction.options.getSubcommand()
 
     switch (subCommand) {

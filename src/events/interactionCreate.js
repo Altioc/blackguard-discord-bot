@@ -25,11 +25,9 @@ module.exports = {
 
     switch (getInteractionType(interaction)) {
       case interactionTypes.command: {
-        console.log('command executed');
         return commandInteraction.execute(interaction);
       }
       case interactionTypes.roleSelectMenu: {
-        console.log('role select menu executed');
         return roleSelectMenuInteraction.execute(interaction);
       }
       default: {
