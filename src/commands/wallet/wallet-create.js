@@ -1,4 +1,4 @@
-const { EmbedBuilder, } = require('discord.js')
+const { EmbedBuilder, PermissionFlagsBits, } = require('discord.js')
 const { messageTypeColors, responseCodes, messages } = require('../../constants');
 const EconomyController = require('../../controllers/economy-controller');
 
@@ -18,7 +18,7 @@ module.exports = {
     const { user, options } = interaction;
     const target = options.getUser('target') || user;
 
-    if (target.id !== user.id && !interaction.memberPermissions.has('ADMINISTRATOR')) {
+    if (target.id !== user.id && !interaction.memberPermissions.has(PermissionFlagsBits.Administrator)) {
       await interaction.editReply(messages.incorrectPermissions());
       return;
     }

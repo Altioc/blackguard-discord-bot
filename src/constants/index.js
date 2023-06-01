@@ -215,6 +215,11 @@ const messages = {
   })
 };
 
+const interactionTypes = {
+  command: 'command',
+  roleSelectMenu: 'roleSelectMenu'
+};
+
 module.exports = {
   baseCommandCooldown,
   messageTypeColors,
@@ -228,5 +233,6 @@ module.exports = {
   rootCommandIds,
   oneMinuteInMilliseconds,
   oneSecondInMilliseconds,
-  messages
+  messages,
+  interactionTypes
 };
