@@ -265,12 +265,11 @@ class EconomyController {
     this.jugCooldown[juggerId].endTime = Date.now() + this.jugCooldownLength;
     clearTimeout(this.jugCooldown[juggerId].timer);
     this.jugCooldown[juggerId].timer = setTimeout(() => {
-      this.jugCooldown.isActive = false;
+      this.jugCooldown[juggerId].isActive = false;
     }, this.jugCooldownLength);
   }
 
   jug(juggerId, juggedId, jugBetValue) {
-    // This was commented out but I don't remember why it was breaking
     if (this.jugCooldown[juggerId]?.isActive) {
       return response(responseCodes.onCooldown, this.jugCooldown[juggerId].endTime);
     }
