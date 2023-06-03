@@ -404,13 +404,16 @@ class EconomyController {
 
           return this.modifyCurrency(juggerId, jugValue)
             .then(() => {
-              return response(responseCodes.success, jugValue);
+              return response(responseCodes.success, {
+                finalJugAmount: jugValue,
+                cooldownEndTime: this.jugging.playerCooldowns[juggerId].endTime
+              });
             })
             .catch((error) => {
               console.log(error, 'EconomyController.npcJug() -> success modifyCurrency');
             });
         } else {
-          return response(responseCodes.failure);
+          return response(responseCodes.failure, this.jugging.playerCooldowns[juggerId].endTime);
         }
       });
   }
@@ -465,9 +468,10 @@ class EconomyController {
           const finalJugValue = juggedsWallet.value < idealJugValue ? juggedsWallet.value : idealJugValue;
 
           result = response(
-            responseCodes.success,
-            Math.max(finalJugValue, 1)
-          );
+            responseCodes.success, {
+            finalJugAmount: Math.max(finalJugValue, 1),
+            cooldownEndTime: this.jugging.playerCooldowns[juggerId].endTime
+          });
 
           return this.transferCurrency(juggedId, juggerId, result.value)
             .catch((error) => {
@@ -480,9 +484,10 @@ class EconomyController {
             const counterValue = random(pvp.baseCounterRewardFloor, pvp.baseCounterRewardCeiling);
 
             result = response(
-              responseCodes.economy.jug.counterSuccess,
-              Math.max(Math.floor(jugBetValue * counterValue), 1)
-            );
+              responseCodes.economy.jug.counterSuccess, {
+              finalJugAmount: Math.max(Math.floor(jugBetValue * counterValue), 1),
+              cooldownEndTime: this.jugging.playerCooldowns[juggerId].endTime
+            });
 
             return this.transferCurrency(juggerId, juggedId, result.value)
               .then(() => {
@@ -492,7 +497,7 @@ class EconomyController {
                 console.log(error, 'EconomyController.jug() -> countered transferCurrency');
               });
           } else {
-            result = response(responseCodes.failure);
+            result = response(responseCodes.failure, this.jugging.playerCooldowns[juggerId].endTime);
 
             return this.modifyCurrency(juggerId, -jugBetValue)
               .catch((error) => {
