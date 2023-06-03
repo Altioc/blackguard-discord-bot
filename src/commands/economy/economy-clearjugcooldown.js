@@ -57,7 +57,7 @@ module.exports = {
           }
           break;
         }
-        case responseCode.userDoesNotExist: {
+        case responseCodes.userDoesNotExist: {
           await interaction.editReply(
             messages.invalidTarget('User\'s ability to jug is not on cooldown.')
           );

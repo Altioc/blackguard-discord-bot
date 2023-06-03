@@ -16,6 +16,7 @@ module.exports = {
   ),
 
   async execute(interaction) {
+    await interaction.deferReply();
     const { user, options } = interaction;
     const target = options.getUser('target') || user;
 

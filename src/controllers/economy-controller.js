@@ -3,7 +3,8 @@ PouchDB.plugin(require('pouchdb-upsert'));
 const {
   blackguardDbDocNames,
   initialEconomyDoc,
-  responseCodes
+  responseCodes,
+  currentLocationType
 } = require('../constants');
 const Wallet = require('../models/Wallet');
 const random = require('../utils/random');
@@ -11,19 +12,33 @@ const response = require('../utils/response');
 
 class EconomyController {
   constructor() {
+    this.jugging = {
+      pvp: {
+        baseSuccessChance: null,
+        baseCounterChance: null,
+        baseRewardFloor: null,
+        baseRewardCeiling: null,
+        baseCounterRewardFloor: null,
+        baseCounterRewardCeiling: null
+      },
+      pve: {
+        baseSuccessChance: null,
+        baseRewardFloor: null,
+        baseRewardCeiling: null
+      },
+      cooldownLength: null,
+      playerCooldowns: {}
+    }
+    this.bank = {
+      interestRate: null,
+      storableValueRatio: null,
+      interestTickRate: null,
+      withdrawalTime: null,
+      activeWithdrawals: {}
+    };
     this.currencyEmoji = null;
     this.walletInitialCurrencyAmount = null;
-    this.pittySystemTickRate = null;
-    this.pittySystemStepAmount = null;
-    this.pittySystemFloor = null;
-    this.pittySystemInterval = null;
-    this.jugSuccessChance = null;
-    this.jugCounterChance = null;
-    this.jugRewardFloor = null;
-    this.jugRewardCeiling = null;
-    this.jugCooldownLength = null;
-    this.jugCooldown = {};
-
+    this.bankInterestInterval = null;
     this.db = new PouchDB('BlackguardBotDb');
     this.createEconomyDocIfDoesntExist()
       .then(() => {
@@ -50,42 +65,41 @@ class EconomyController {
   initConfig() {
     return this.db.get(blackguardDbDocNames.economyDoc)
       .then((doc) => {
+        this.jugging.pvp = {
+          ...doc.config.jug.pvp
+        };
+        this.jugging.pve = {
+          ...doc.config.jug.pve
+        };
+        this.bank = {
+          ...this.bank,
+          ...doc.config.bank
+        }
+        this.jugging.cooldownLength = doc.config.jug.cooldown;
         this.currencyEmoji = doc.config.currencyEmoji;
         this.walletInitialCurrencyAmount = doc.config.wallet.initialCurrencyAmount,
-        this.pittySystemTickRate = doc.config.pittySystem.tickRate;
-        this.pittySystemStepAmount = doc.config.pittySystem.stepAmount;
-        this.pittySystemFloor = doc.config.pittySystem.floor;
-        this.jugSuccessChance = doc.config.jug.successChance;
-        this.jugCounterChance = doc.config.jug.counterChance;
-        this.jugRewardFloor = doc.config.jug.rewardFloor;
-        this.jugRewardCeiling = doc.config.jug.rewardCeiling;
-        this.jugCooldownLength = doc.config.jug.cooldown;
-        this.startPittySystem();
+       
+        this.startInterestSystem();
       })
       .catch((error) => {
         console.log(error, 'EconomyController.initConfig()');
       });
   }
 
-  startPittySystem() {
-    clearInterval(this.pittySystemInterval);
-    this.pittySystemInterval = setInterval(() => {
+  startInterestSystem() {
+    clearInterval(this.bankInterestInterval);
+    this.bankInterestInterval = setInterval(() => {
       this.db.upsert(blackguardDbDocNames.economyDoc, (doc) => {
-        Object.entries(doc.wallets).forEach((entry) => {
-          const [userId, wallet] = entry;
-
-          if (wallet.value < this.pittySystemFloor) {
-            doc.wallets[userId].value += this.pittySystemStepAmount;
-            doc.wallets[userId].value = Math.min(doc.wallets[userId].value, this.pittySystemFloor);
-          }
+        Object.entries(doc.wallets).forEach(([ userId ]) => {
+          doc.wallets[userId].bank = Math.floor(doc.wallets[userId].bank * (1 + this.bank.interestRate));
         });
 
         return doc;
       })
         .catch((error) => {
-          console.log(error, 'EconomyController.startPittySystem()');
+          console.log(error, 'EconomyController.startInterestSystem()');
         });
-    }, this.pittySystemTickRate);
+    }, this.bank.interestTickRate);
   }
 
   createWallet(userId) {
@@ -161,7 +175,7 @@ class EconomyController {
       return Promise.resolve(response(responseCodes.economy.sameUser));
     }
 
-    return this.db.upsert(blackguardDbDocNames.economyDoc, (doc) => {
+   return this.db.upsert(blackguardDbDocNames.economyDoc, (doc) => {
       const fromUserWallet = doc.wallets[fromUserId];
       const toUserWallet = doc.wallets[toUserId];
 
@@ -178,7 +192,7 @@ class EconomyController {
 
       return doc;
     })
-      .then(() => {
+      .then(() =>  {
         return response(responseCode);
       })
       .catch((error) => {
@@ -186,7 +200,109 @@ class EconomyController {
       });
   }
 
-  modifyCurrency(targetUserId, amount) {
+  withdrawCurrency(targetUserId, amount) {
+    const existingWithdrawal = this.bank.activeWithdrawals[targetUserId];
+    
+    if (amount === null) {
+      if (existingWithdrawal?.isActive) {
+        return Promise.resolve(response(responseCodes.economy.bank.existingWithdrawal, existingWithdrawal));
+      } else {
+        return Promise.resolve(response(responseCodes.economy.bank.noExistingWithdrawal));
+      }
+    }
+
+    if (amount <= 0) {
+      return Promise.resolve(response(responseCodes.positiveValueNeeded));
+    }
+
+    return this.db.get(blackguardDbDocNames.economyDoc)
+      .then((doc) => {
+        const wallet = doc.wallets[targetUserId];
+
+        if (!wallet) {
+          return response(responseCodes.doesntExist);
+        } else if (wallet.bank - amount < 0) {
+          return response(responseCodes.economy.insufficientFunds);
+        } else if (existingWithdrawal?.isActive) {
+          const oldAmount = this.bank.activeWithdrawals[targetUserId].amount;
+          this.bank.activeWithdrawals[targetUserId].amount = amount;
+          return response(responseCodes.economy.bank.withdrawalAmountUpdated, oldAmount);
+        } else {
+          const withdrawalTime = Date.now() + this.bank.withdrawalTime;
+          this.bank.activeWithdrawals[targetUserId] = {
+            amount,
+            withdrawalTime,
+            isActive: true,
+            timer: setTimeout(() => {
+              const thisWithdrawalAttempt = this.bank.activeWithdrawals[targetUserId];
+              const amountToWithdrawal = thisWithdrawalAttempt.amount;
+              thisWithdrawalAttempt.isActive = false;
+              this.commitWithdrawal(targetUserId, amountToWithdrawal);
+            }, this.bank.withdrawalTime)
+          };
+
+          return response(responseCodes.success, withdrawalTime);
+        }
+      })
+      .catch((error) => {
+        console.log(error, 'EconomyController.withdrawCurrency()');
+      });
+  }
+
+  commitWithdrawal(targetUserId, amount) {
+    this.db.upsert(blackguardDbDocNames.economyDoc, (doc) => {
+        const wallet = doc.wallets[targetUserId];
+        const expectedBankValue = wallet.bank - amount;
+
+        if (expectedBankValue >= 0) {
+          doc.wallets[targetUserId].bank -= amount;
+          doc.wallets[targetUserId].value += amount;
+        }
+
+        return doc;
+      })
+      .catch((error) => {
+        console.log(error, 'EconomyController.commitWithdrawal()');
+      });
+  }
+
+  depositCurrency(targetUserId, amount) {
+    if (amount <= 0) {
+      return Promise.resolve(response(responseCodes.positiveValueNeeded));
+    }
+
+    let result = response(responseCodes.success);
+
+    return this.db.upsert(blackguardDbDocNames.economyDoc, (doc) => {
+      const wallet = doc.wallets[targetUserId];
+
+      if (!wallet) {
+        result = response(responseCodes.doesntExist);
+      } else {
+        const totalTargetValue = wallet.value + wallet.bank;
+        const highestAllowedDepositValue = Math.round(totalTargetValue * this.bank.storableValueRatio);
+
+        if (wallet.value - amount < 0) {
+          result = response(responseCodes.economy.insufficientFunds);
+        } else if (wallet.bank + amount > highestAllowedDepositValue) {
+          result = response(responseCodes.valueTooHigh, highestAllowedDepositValue);
+        } else {
+          doc.wallets[targetUserId].value -= +amount;
+          doc.wallets[targetUserId].bank += +amount;
+        }
+      }
+      
+      return doc;
+    })
+      .then(() =>  {
+        return result;
+      })
+      .catch((error) => {
+        console.log(error, 'EconomyController.depositCurrency()');
+      });
+  }
+
+  modifyCurrency(targetUserId, amount, location = currentLocationType.Wallet) {
     let newValue;
 
     return this.db.get(blackguardDbDocNames.economyDoc)
@@ -196,13 +312,13 @@ class EconomyController {
         }
 
         return this.db.upsert(blackguardDbDocNames.economyDoc, (doc) => {
-          doc.wallets[targetUserId].value += amount;
+          doc.wallets[targetUserId][location] += amount;
 
-          if (doc.wallets[targetUserId].value < 0) {
-            doc.wallets[targetUserId].value = 0;
+          if (doc.wallets[targetUserId][location] < 0) {
+            doc.wallets[targetUserId][location] = 0;
           }
 
-          newValue = doc.wallets[targetUserId].value;
+          newValue = doc.wallets[targetUserId][location];
           return doc;
         })
           .then(() => {
@@ -245,13 +361,13 @@ class EconomyController {
 
   clearJugCooldown(juggerId) {
     if (!juggerId) {
-      Object.values(this.jugCooldown).forEach(({ timer }) => {
+      Object.values(this.jugging.playerCooldowns).forEach(({ timer }) => {
         clearTimeout(timer);
       });
-      this.jugCooldown = {};
-    } else if (this.jugCooldown[juggerId]) {
-      this.jugCooldown[juggerId].isActive = false;
-      clearTimeout(this.jugCooldown[juggerId].timer);
+      this.jugging.playerCooldowns = {};
+    } else if (this.jugging.playerCooldowns[juggerId]) {
+      this.jugging.playerCooldowns[juggerId].isActive = false;
+      clearTimeout(this.jugging.playerCooldowns[juggerId].timer);
     } else {
       return response(responseCodes.userDoesNotExist);
     }
@@ -260,18 +376,56 @@ class EconomyController {
   }
 
   startJugCooldown(juggerId) {
-    this.jugCooldown[juggerId] = {};
-    this.jugCooldown[juggerId].isActive = true;
-    this.jugCooldown[juggerId].endTime = Date.now() + this.jugCooldownLength;
-    clearTimeout(this.jugCooldown[juggerId].timer);
-    this.jugCooldown[juggerId].timer = setTimeout(() => {
-      this.jugCooldown[juggerId].isActive = false;
-    }, this.jugCooldownLength);
+    this.jugging.playerCooldowns[juggerId] = {};
+    this.jugging.playerCooldowns[juggerId].isActive = true;
+    this.jugging.playerCooldowns[juggerId].endTime = Date.now() + this.jugging.cooldownLength;
+    clearTimeout(this.jugging.playerCooldowns[juggerId].timer);
+    this.jugging.playerCooldowns[juggerId].timer = setTimeout(() => {
+      this.jugging.playerCooldowns[juggerId].isActive = false;
+    }, this.jugging.cooldownLength);
   }
 
-  jug(juggerId, juggedId, jugBetValue) {
-    if (this.jugCooldown[juggerId]?.isActive) {
-      return response(responseCodes.onCooldown, this.jugCooldown[juggerId].endTime);
+  npcJug(juggerId) {
+    return this.db.get(blackguardDbDocNames.economyDoc)
+      .then((doc) => {
+        const juggersWallet = doc.wallets[juggerId];
+
+        if (!juggersWallet) {
+          result = response(responseCodes.economy.noFromUser);
+          return;
+        }
+
+        const juggingRoll = Math.random();
+
+        this.startJugCooldown(juggerId);
+        const { pve } = this.jugging;
+        if (juggingRoll <= pve.baseSuccessChance) {
+          const jugValue = Math.round(random(pve.baseRewardFloor, pve.baseRewardCeiling));
+
+          return this.modifyCurrency(juggerId, jugValue)
+            .then(() => {
+              return response(responseCodes.success, jugValue);
+            })
+            .catch((error) => {
+              console.log(error, 'EconomyController.npcJug() -> success modifyCurrency');
+            });
+        } else {
+          return response(responseCodes.failure);
+        }
+      });
+  }
+
+  jug(juggerId, juggedId, initialJugBetValue) {
+    if (this.jugging.playerCooldowns[juggerId]?.isActive) {
+      return response(responseCodes.onCooldown, this.jugging.playerCooldowns[juggerId].endTime);
+    }
+
+    if (juggedId === null) {
+      return this.npcJug(juggerId);
+    }
+
+    if (`${initialJugBetValue}`.toLowerCase() !== 'all' && (isNaN(+initialJugBetValue) || +initialJugBetValue <= 0)) {
+      return response(responseCodes.invalidInput);
     }
 
     let result = {};
@@ -295,7 +449,8 @@ class EconomyController {
           return;
         }
 
-        if (juggersWallet.value < +jugBetValue) {
+        const jugBetValue = initialJugBetValue.toLowerCase() === 'all' ? juggersWallet.value : +initialJugBetValue;
+        if (juggersWallet.value < jugBetValue) {
           result = response(responseCodes.economy.insufficientFunds);
           return;
         }
@@ -303,8 +458,9 @@ class EconomyController {
         const juggingRoll = Math.random();
 
         this.startJugCooldown(juggerId);
-        if (juggingRoll <= this.jugSuccessChance) {
-          const jugMultiplier = random(this.jugRewardFloor, this.jugRewardCeiling);
+        const { pvp } = this.jugging;
+        if (juggingRoll <= pvp.baseSuccessChance) {
+          const jugMultiplier = random(pvp.baseRewardFloor, pvp.baseRewardCeiling);
           const idealJugValue = Math.floor(jugBetValue * jugMultiplier);
           const finalJugValue = juggedsWallet.value < idealJugValue ? juggedsWallet.value : idealJugValue;
 
@@ -320,8 +476,8 @@ class EconomyController {
         } else {
           const counterRoll = Math.random();
 
-          if (counterRoll <= this.jugCounterChance) {
-            const counterValue = random(this.jugRewardFloor, this.jugRewardCeiling);
+          if (counterRoll <= pvp.baseCounterChance) {
+            const counterValue = random(pvp.baseCounterRewardFloor, pvp.baseCounterRewardCeiling);
 
             result = response(
               responseCodes.economy.jug.counterSuccess,

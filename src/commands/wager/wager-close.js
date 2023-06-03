@@ -13,7 +13,7 @@ module.exports = {
     const { user } = interaction;
     const { ownerId } = BookController.latestWager;
 
-    if (!interaction.memberPermissions.has(PermissionFlagsBits.Administrator) && !user.id !== ownerId) {
+    if (!interaction.memberPermissions.has(PermissionFlagsBits.Administrator) && user.id !== ownerId) {
       await interaction.editReply(messages.incorrectPermissions());
       return;
     }

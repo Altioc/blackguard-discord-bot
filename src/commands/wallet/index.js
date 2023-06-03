@@ -6,6 +6,8 @@ const walletDelete = require('./wallet-delete');
 const walletSend = require('./wallet-send');
 const walletRead = require('./wallet-read');
 const walletDeduct = require('./wallet-deduct');
+const walletDeposit = require('./wallet-deposit');
+const walletWithdrawal = require('./wallet-withdrawal');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -16,10 +18,11 @@ module.exports = {
     .addSubcommand(walletDelete.subCommandData)
     .addSubcommand(walletSend.subCommandData)
     .addSubcommand(walletRead.subCommandData)
-    .addSubcommand(walletDeduct.subCommandData),
+    .addSubcommand(walletDeduct.subCommandData)
+    .addSubcommand(walletDeposit.subCommandData)
+    .addSubcommand(walletWithdrawal.subCommandData),
 
   async execute(interaction) {
-    await interaction.deferReply()
     const subCommand = interaction.options.getSubcommand()
 
     switch (subCommand) {
@@ -45,6 +48,14 @@ module.exports = {
       }
       case 'deduct': {
         await walletDeduct.execute(interaction);
+        break;
+      }
+      case 'deposit': {
+        await walletDeposit.execute(interaction);
+        break;
+      }
+      case 'withdrawal': {
+        await walletWithdrawal.execute(interaction);
         break;
       }
       default: {

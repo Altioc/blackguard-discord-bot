@@ -62,12 +62,12 @@ module.exports = {
 
           let outcomeResponse;
           if (outcomeIsNeither) {
-            outcomeResponse = BookController.rollBackBets();
+            outcomeResponse = await BookController.rollBackBets();
           } else {
-            outcomeResponse = BookController.distributePayout(outcome);
+            outcomeResponse = await BookController.distributePayout(outcome);
           }
 
-          const { responseCode: outcomeResponseCode, value: results } = await outcomeResponse;
+          const { responseCode: outcomeResponseCode, value: results } = outcomeResponse;
 
           switch (outcomeResponseCode) {
             case responseCodes.success: {
@@ -92,6 +92,10 @@ module.exports = {
                 interaction.followUp(messages.unknownError());
               }
 
+              break;
+            }
+            case responseCodes.rollBackBets.noParticipants: {
+              await interaction.followUp(messages.wagerResults('There were no bets.'));
               break;
             }
             case responseCodes.book.distributePayout.noWinners: {
