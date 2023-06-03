@@ -56,7 +56,7 @@ function getSortedWallets(wallets, limit) {
   return Object.entries(wallets)
     .sort((
       { value: valueA, bank: bankA },
-      { value: valueB, bank: bankB }) => (valueA + bankA) - (balueB + bankB))
+      { value: valueB, bank: bankB }) => (valueA + bankA) - (valueB + bankB))
     .slice(0, limit);
 }
 
