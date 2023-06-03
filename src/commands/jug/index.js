@@ -37,6 +37,11 @@ module.exports = {
 
     try {
       const { responseCode, value: responseValue } = await EconomyController.jug(user.id, targetId, value);
+      let initialWagerDisplay = '';
+
+      if (value) {
+        initialWagerDisplay = `wagered ${EconomyController.currencyEmoji} ${value} and `;
+      }
 
       switch (responseCode) {
         case responseCodes.success: {
@@ -45,7 +50,7 @@ module.exports = {
               new EmbedBuilder()
                 .setTitle('Success')
                 .setColor(messageTypeColors.success)
-                .setDescription(`You have sucessfully jugged ${EconomyController.currencyEmoji} ${responseValue.finalJugAmount} from ${target?.displayName ?? 'monsters'}.`)
+                .setDescription(`You ${initialWagerDisplay}have sucessfully jugged ${EconomyController.currencyEmoji} ${responseValue.finalJugAmount} from ${target?.displayName ?? 'monsters'}.`)
                 .setFields([
                   { name: 'Cooldown', value: time(new Date(responseValue.cooldownEndTime), 'R') }
                 ])
@@ -70,7 +75,7 @@ module.exports = {
               new EmbedBuilder()
                 .setTitle('Counter')
                 .setColor(messageTypeColors.success)
-                .setDescription(`You tried to jug ${target.displayName} but instead you got jugged for ${EconomyController.currencyEmoji} ${responseValue.finalJugAmount}.`)
+                .setDescription(`You ${initialWagerDisplay}tried to jug ${target.displayName} but instead you got jugged for ${EconomyController.currencyEmoji} ${responseValue.finalJugAmount}.`)
                 .setFields([
                   { name: 'Cooldown', value: time(new Date(responseValue.cooldownEndTime), 'R') }
                 ])
@@ -84,7 +89,7 @@ module.exports = {
               new EmbedBuilder()
                 .setTitle('Failure')
                 .setColor(messageTypeColors.success)
-                .setDescription(`You failed to jug ${target?.displayName ?? 'monsters'}.`)
+                .setDescription(`You ${initialWagerDisplay}failed to jug ${target?.displayName ?? 'monsters'}.`)
                 .setFields([
                   { name: 'Cooldown', value: time(new Date(responseValue), 'R') }
                 ])

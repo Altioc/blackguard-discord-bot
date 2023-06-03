@@ -7,10 +7,10 @@ module.exports = {
     subcommand
       .setName('deposit')
       .setDescription('Deposits a specified amount of Bilaim to your bank.')
-      .addIntegerOption(option => (
+      .addStringOption(option => (
         option
           .setName('amount')
-          .setDescription('The amount of Bilaim to deposit.')
+          .setDescription('The amount of Bilaim to deposit or "max" for the max you\'re allowed to deposit.')
           .setRequired(true)
       ))
   ),
@@ -18,10 +18,10 @@ module.exports = {
   async execute(interaction) {
     await interaction.deferReply({ ephemeral: true });
     const { user, options } = interaction;
-    const amount = options.getInteger('amount');
+    const amount = options.getString('amount');
 
     try {
-      const { responseCode, value: highestPossibleValue } = await EconomyController.depositCurrency(user.id, amount);
+      const { responseCode, value: responseValue } = await EconomyController.depositCurrency(user.id, amount);
       const { storableValueRatio } = EconomyController.bank;
 
       switch (responseCode) {
@@ -31,7 +31,18 @@ module.exports = {
               new EmbedBuilder()
                 .setTitle('Bilaim Deposit')
                 .setColor(messageTypeColors.success)
-                .setDescription(`You have deposited ${EconomyController.currencyEmoji} ${amount}.`)
+                .setDescription(`You have deposited ${EconomyController.currencyEmoji} ${responseValue}.`)
+            ]
+          });
+          break;
+        }
+        case responseCode.invalidInput: {
+          await interaction.editReply({
+            embeds: [
+              new EmbedBuilder()
+                .setTitle('Invalid Deposit Amount')
+                .setColor(messageTypeColors.failure)
+                .setDescription(`The provided deposit amount: ${value} is not a postive integer or the word "max".`)
             ]
           });
           break;
@@ -61,7 +72,7 @@ module.exports = {
               new EmbedBuilder()
                 .setTitle('Deposit Amount Too High')
                 .setColor(messageTypeColors.failure)
-                .setDescription(`You cannot deposit more than ${EconomyController.currencyEmoji} ${highestPossibleValue}. The current bank deposit ratio is: ${storableValueRatio}`)
+                .setDescription(`You cannot deposit more than ${EconomyController.currencyEmoji} ${responseValue}. The current bank deposit ratio is: ${storableValueRatio}`)
             ]
           })
           break;

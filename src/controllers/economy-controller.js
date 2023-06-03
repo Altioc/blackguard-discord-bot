@@ -266,12 +266,16 @@ class EconomyController {
       });
   }
 
-  depositCurrency(targetUserId, amount) {
-    if (amount <= 0) {
+  depositCurrency(targetUserId, initialAmount) {
+    if (initialAmount <= 0) {
       return Promise.resolve(response(responseCodes.positiveValueNeeded));
     }
 
-    let result = response(responseCodes.success);
+    if (`${initialAmount}`.toLowerCase() !== 'max' && isNaN(+initialAmount)) {
+      return response(responseCodes.invalidInput);
+    }
+
+    let result;
 
     return this.db.upsert(blackguardDbDocNames.economyDoc, (doc) => {
       const wallet = doc.wallets[targetUserId];
@@ -282,13 +286,20 @@ class EconomyController {
         const totalTargetValue = wallet.value + wallet.bank;
         const highestAllowedDepositValue = Math.round(totalTargetValue * this.bank.storableValueRatio);
 
-        if (wallet.value - amount < 0) {
+        let amount = +initialAmount;
+
+        if (initialAmount.toLowerCase() === 'max') {
+          amount = Math.max(0, wallet.value - highestAllowedDepositValue);
+        }
+
+        if (wallet.value === 0 || wallet.value - amount < 0) {
           result = response(responseCodes.economy.insufficientFunds);
         } else if (wallet.bank + amount > highestAllowedDepositValue) {
           result = response(responseCodes.valueTooHigh, highestAllowedDepositValue);
         } else {
           doc.wallets[targetUserId].value -= +amount;
           doc.wallets[targetUserId].bank += +amount;
+          result = response(responseCodes.success, amount);
         }
       }
       
