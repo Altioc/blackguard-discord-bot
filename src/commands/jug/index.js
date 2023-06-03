@@ -15,25 +15,28 @@ module.exports = {
       option
         .setName('target')
         .setDescription('The user to attempt to jug.')
-        .setRequired(true)
     ))
-    .addIntegerOption(option => (
+    .addStringOption(option => (
       option
         .setName('value')
-        .setDescription('The amount to wager on the jug.')
-        .setRequired(true)
+        .setDescription('The amount to wager on the jug or "all" if you want to use all available funds as your jug wager.')
     )),
 
   async execute(interaction) {
     await interaction.deferReply()
 
     const { user, options, guild } = interaction;
-    const targetUserId = options.getUser('target').id;
-    const target = await guild.members.fetch(targetUserId);
-    const value = options.getInteger('value');
+    const targetUserId = options.getUser('target')?.id;
+    let target = null;
+    if (targetUserId) {
+      target = await guild.members.fetch(targetUserId);
+    }
+    const value = options.getString('value');
+
+    const targetId = target === null ? null : target.id;
 
     try {
-      const { responseCode, value: finalJugAmount } = await EconomyController.jug(user.id, target.id, value);
+      const { responseCode, value: finalJugAmount } = await EconomyController.jug(user.id, targetId, value);
 
       switch (responseCode) {
         case responseCodes.success: {
@@ -42,7 +45,18 @@ module.exports = {
               new EmbedBuilder()
                 .setTitle('Success')
                 .setColor(messageTypeColors.success)
-                .setDescription(`You have sucessfully jugged ${EconomyController.currencyEmoji} ${finalJugAmount} from ${target.displayName}.`)
+                .setDescription(`You have sucessfully jugged ${EconomyController.currencyEmoji} ${finalJugAmount} from ${target?.displayName ?? 'monsters'}.`)
+            ]
+          });
+          break;
+        }
+        case responseCodes.invalidInput: {
+          await interaction.editReply({
+            embeds: [
+              new EmbedBuilder()
+                .setTitle('Invalid Jug Value')
+                .setColor(messageTypeColors.failure)
+                .setDescription(`The provided jug value: ${value} is not a postive integer or the word "all".`)
             ]
           });
           break;

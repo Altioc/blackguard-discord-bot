@@ -22,6 +22,7 @@ module.exports = {
   ),
 
   async execute(interaction) {
+    await interaction.deferReply();
     const { user, options, guild } = interaction;
     const targetUserId = options.getUser('target').id;
     const target = await guild.members.fetch(targetUserId);
@@ -50,8 +51,7 @@ module.exports = {
                 .setTitle('Invalid Value')
                 .setColor(messageTypeColors.failure)
                 .setDescription('You can only send Bilaim in values greater than 0.')
-            ],
-            ephemeral: true
+            ]
           });
           break;
         }

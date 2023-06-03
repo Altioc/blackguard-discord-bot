@@ -206,9 +206,15 @@ class BookController {
   }
 
   rollBackBets() {
-    return EconomyController.bulkModifyCurrency(this.latestWager.bets.map((bet) => {
+    const wagerParticipants = this.latestWager.bets.map((bet) => {
       return { userId: bet.ownerId, value: bet.value };
-    }))
+    });
+
+    if (wagerParticipants.length === 0) {
+      return response(responseCodes.rollBackBets.noParticipants);
+    }
+
+    return EconomyController.bulkModifyCurrency(wagerParticipants)
       .then(({ responseCode }) => {
         return response(responseCode);
       })

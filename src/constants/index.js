@@ -1,11 +1,12 @@
 const { EmbedBuilder } = require('discord.js');
 
-const oneSecondInMilliseconds = 1000;
-const oneMinuteInMilliseconds = oneSecondInMilliseconds * 60;
-const oneHourInMilliseconds = oneMinuteInMilliseconds * 60;
-const halfADayInMilliseconds = oneHourInMilliseconds * 12;
+const second = 1000;
+const minute = second * 60;
+const hour = minute * 60;
+const halfDay = hour * 12;
+const fullDay = hour * 24;
 
-const baseCommandCooldown = oneSecondInMilliseconds;
+const baseCommandCooldown = second;
 
 const commandIds = {
   wallet: 'wallet',
@@ -50,25 +51,40 @@ const blackguardDbDocNames = {
   bookDoc: 'book'
 };
 
+const currentLocationType = {
+  Wallet: 'value',
+  Bank: 'bank'
+};
+
 const initialEconomyDoc = {
   _id: blackguardDbDocNames.economyDoc,
   wallets: {},
   config: {
     currencyEmoji: ':coin:',
+    bank: {
+      interestRate: 0.05,
+      storableValueRatio: 0.5,
+      interestTickRate: fullDay,
+      withdrawalTime: hour
+    },
     wallet: {
       initialCurrencyAmount: 100
     },
     jug: {
-      successChance: 0.5,
-      counterChance: 0.3,
-      rewardFloor: 0.1,
-      rewardCeiling: 0.3,
-      cooldown: oneMinuteInMilliseconds * 10
-    },
-    pittySystem: {
-      tickRate: 60000,
-      stepAmount: 25,
-      floor: 500
+      pvp: {
+        baseSuccessChance: 0.5,
+        baseCounterChance: 0.3,
+        baseRewardFloor: 0.1,
+        baseRewardCeiling: 0.3,
+        baseCounterRewardFloor: 0.1,
+        baseCounterRewardCeiling: 0.3,
+      },
+      pve: {
+        baseSuccessChance: 0.5,
+        baseRewardFloor: 1,
+        baseRewardCeiling: 10
+      },
+      cooldown: minute * 10,
     }
   }
 };
@@ -77,11 +93,13 @@ const responseCodes = {
   success: 'success',
   failure: 'failure',
   updated: 'updated',
+  invalidInput: 'invalidInput',
   alreadyExists: 'alreadyExists',
   doesntExist: 'doesntExist',
   userDoesNotExist: 'userDoesNotExist',
   positiveValueNeeded: 'positiveValueNeeded',
   onCooldown: 'onCooldown',
+  valueTooHigh: 'valueTooHigh',
   economy: {
     insufficientFunds: 'insufficientFunds',
     noFromUser: 'noFromUser',
@@ -89,6 +107,12 @@ const responseCodes = {
     sameUser: 'sameUser',
     jug: {
       counterSuccess: 'counterSuccess'
+    },
+    bank: {
+      storingTooMuchValue: 'storingTooMuchValue',
+      withdrawalAmountUpdated: 'withdrawalAmountUpdated',
+      noExistingWithdrawal: 'noExistingWithdrawal',
+      existingWithdrawal: 'existingWithdrawal'
     }
   },
   book: {
@@ -98,6 +122,9 @@ const responseCodes = {
     activeWagerAlreadyExists: 'activeWagerAlreadyExists',
     distributePayout: {
       noWinners: 'noWinners'
+    },
+    rollback: {
+      noParticipants: 'noParticipants'
     },
     setWagerOpenState: {
       wrongState: 'wrongState'
@@ -119,7 +146,7 @@ const initialBookDoc = {
   _id: blackguardDbDocNames.bookDoc,
   latestWager: null,
   config: {
-    wagerTimeoutMs: halfADayInMilliseconds
+    wagerTimeoutMs: halfDay
   }
 };
 
@@ -165,7 +192,7 @@ const messages = {
       new EmbedBuilder()
         .setTitle('Insufficient Funds')
         .setColor(messageTypeColors.failure)
-        .setDescription('You do not have enough Bilaims to make this payment.')
+        .setDescription('You do not have enough Bilaims to make this transaction.')
     ],
     ephemeral: true
   }),
@@ -231,8 +258,9 @@ module.exports = {
   wagerEndOptions,
   commandIds,
   rootCommandIds,
-  oneMinuteInMilliseconds,
-  oneSecondInMilliseconds,
   messages,
-  interactionTypes
+  interactionTypes,
+  minute,
+  second,
+  currentLocationType
 };

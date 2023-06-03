@@ -51,13 +51,7 @@ class DocController {
         if (blackguardDbDocNames[docNameKey] === blackguardDbDocNames.bookDoc) {
           return BookController.initConfig();
         } else if (blackguardDbDocNames[docNameKey] === blackguardDbDocNames.economyDoc) {
-          return EconomyController.initConfig()
-            .then(() => {
-              EconomyController.startPittySystem();
-            })
-            .catch((error) => {
-              console.log(error, 'ConfigController.setConfig() -> EconomyController.initConfig()');
-            });
+          return EconomyController.initConfig();
         }
       })
       .then(() => {
@@ -74,7 +68,7 @@ class DocController {
         case blackguardDbDocNames.economyDoc: {
           EconomyController.resetDoc()
             .then(() => {
-              EconomyController.initConfig()
+              return EconomyController.initConfig()
             })
             .then(resolve)
             .catch(reject);
@@ -83,7 +77,7 @@ class DocController {
         case blackguardDbDocNames.bookDoc: {
           BookController.resetDoc()
             .then(() => {
-              BookController.initConfig()
+              return BookController.initConfig()
             })
             .then(resolve)
             .catch(reject);

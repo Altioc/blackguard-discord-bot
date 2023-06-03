@@ -15,6 +15,7 @@ module.exports = {
   ),
 
   async execute(interaction) {
+    await interaction.deferReply({ ephemeral: true });
     const { user, options } = interaction;
     const target = options.getUser('target') || user;
 
@@ -28,7 +29,13 @@ module.exports = {
               new EmbedBuilder()
                 .setTitle('Wallet')
                 .setColor(messageTypeColors.success)
-                .setDescription(`${EconomyController.currencyEmoji} ${wallet.value}`)
+                .setFields([
+                  { name: 'Wallet', value: `${EconomyController.currencyEmoji} ${wallet.value}`, inline: true },
+                  { name: 'Bank', value: `${EconomyController.currencyEmoji} ${wallet.bank}`, inline: true },
+                  { name: ' ', value: ' ' },
+                  { name: ' ', value: ' ' },
+                  { name: 'Total', value:`${EconomyController.currencyEmoji} ${wallet.value + wallet.bank}` }
+                ])
             ]
           });
           break;
@@ -43,8 +50,7 @@ module.exports = {
                 .setTitle('Doesn\'t Exist')
                 .setColor(messageTypeColors.failure)
                 .setDescription(`${pronoun} do not have a Bilaim wallet.`)
-            ],
-            ephemeral: true
+            ]
           });
           break;
         }
