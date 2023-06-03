@@ -81,10 +81,10 @@ const initialEconomyDoc = {
       },
       pve: {
         baseSuccessChance: 0.5,
-        baseRewardFloor: 1,
-        baseRewardCeiling: 10
+        baseRewardFloor: 5,
+        baseRewardCeiling: 50
       },
-      cooldown: minute * 10,
+      cooldown: minute * 5,
     }
   }
 };

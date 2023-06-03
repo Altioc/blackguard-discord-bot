@@ -78,7 +78,7 @@ module.exports = {
               new EmbedBuilder()
                 .setTitle('Failure')
                 .setColor(messageTypeColors.success)
-                .setDescription(`You failed to jug ${target.displayName}.`)
+                .setDescription(`You failed to jug ${target?.displayName ?? 'monsters'}.`)
             ]
           });
           break;
