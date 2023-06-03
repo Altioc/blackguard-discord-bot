@@ -116,7 +116,7 @@ function buildLeaderboardText(users, wallets) {
       const bankValue = wallet.bank;
       const walletValueDisplay = `${walletValue}`.padEnd(userDataExtremes.walletValueLength, ' ');
       const totalBilaimCount = `${walletValue + bankValue}`.padEnd(userDataExtremes.combinedValueLength, ' ');
-      const splitValuesDisplay = `(${walletValueDisplay} / 🏛️${bankValue}) `.padEnd(userDataExtremes.splitValueLength + 11, '-');
+      const splitValuesDisplay = `(💵${walletValueDisplay} / 🏛️${bankValue}) `.padEnd(userDataExtremes.splitValueLength + 13, '-');
       const rank = index + 1;
       const rankOrdinalSuffix = getOrdinalSuffix(rank);
       const rankDisplay = `${rank}${rankOrdinalSuffix}`.padStart(4, ' ');
