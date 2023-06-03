@@ -92,30 +92,30 @@ function buildLeaderboardText(users, wallets) {
     const userDataExtremes = users.reduce((extremes, _, index) => {
       const wallet = wallets[index][1];
 
-      const walletValue = `${wallet.value}`;
-      if (walletValue.length > extremes.walletValueLength) {
-        extremes.walletValueLength = walletValue.length;
+      const splitValue = `${wallet.value}${wallet.bank}`;
+      if (splitValue.length > extremes.splitValueLength) {
+        extremes.splitValueLength = splitValue.length;
       }
 
-      const bankValue = `${wallet.bank}`;
-      if (bankValue.length > extremes.walletBankLength) {
-        extremes.walletBankLength = bankValue.length;
+      const combinedValue = `${wallet.value + wallet.bank}`;
+      if (combinedValue.length > extremes.combinedValueLength) {
+        extremes.combinedValueLength = combinedValue.length;
       }
 
       return extremes;
-    }, { walletValueLength: 0, walletBankLength: 0 });
+    }, { splitValueLength: 0, combinedValueLength: 0 });
 
     leaderboardText = users.map((user, index) => {
       const wallet = wallets[index][1];
       const walletValue = wallet.value;
       const bankValue = wallet.bank;
-      const totalBilaimCount = `${walletValue + bankValue}`.padEnd(userDataExtremes.walletValueLength, ' ');
-      const bankValueDisplay = `(${bankValue}) `.padEnd(userDataExtremes.walletBankLength + 5, '-');
+      const totalBilaimCount = `${walletValue + bankValue}`.padEnd(userDataExtremes.combinedValueLength, ' ');
+      const splitValuesDisplay = `(👛${walletValue} / 🏛️${bankValue}) `.padEnd(userDataExtremes.splitValueLength + 13, '-');
       const rank = index + 1;
       const rankOrdinalSuffix = getOrdinalSuffix(rank);
       const rankDisplay = `${rank}${rankOrdinalSuffix}`.padStart(4, ' ');
       const rankIndicator = leaderboardRankEmoji[index] || '⬛';
-      return `󠀠󠀠${rankIndicator}${rankDisplay}  ${totalBilaimCount} ${bankValueDisplay} ${user.displayName}`;
+      return `󠀠󠀠${rankIndicator} ${rankDisplay}  ${totalBilaimCount} ${splitValuesDisplay} ${user.displayName}`;
     }).join('\n');
   } else {
     leaderboardText = 'There is nobody to place on the leaderboard.'
