@@ -54,7 +54,9 @@ module.exports = {
 
 function getSortedWallets(wallets, limit) {
   return Object.entries(wallets)
-    .sort((walletA, walletB) => walletB[1].value - walletA[1].value)
+    .sort((
+      { value: valueA, bank: bankA },
+      { value: valueB, bank: bankB }) => (valueA + bankA) - (balueB + bankB))
     .slice(0, limit);
 }
 
