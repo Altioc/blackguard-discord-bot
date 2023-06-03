@@ -48,12 +48,19 @@ const messageTypeColors = {
 
 const blackguardDbDocNames = {
   economyDoc: 'economy',
-  bookDoc: 'book'
+  bookDoc: 'book',
+  rpgDoc: 'rpg'
 };
 
 const currentLocationType = {
   Wallet: 'value',
   Bank: 'bank'
+};
+
+const initialRPGDoc = {
+  _id: blackguardDbDocNames.rpgDoc,
+  characters: {},
+  config: {}
 };
 
 const initialEconomyDoc = {
@@ -262,5 +269,6 @@ module.exports = {
   interactionTypes,
   minute,
   second,
-  currentLocationType
+  currentLocationType,
+  initialRPGDoc
 };
