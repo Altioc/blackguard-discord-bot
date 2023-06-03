@@ -473,7 +473,7 @@ class EconomyController {
             cooldownEndTime: this.jugging.playerCooldowns[juggerId].endTime
           });
 
-          return this.transferCurrency(juggedId, juggerId, result.value)
+          return this.transferCurrency(juggedId, juggerId, result.value.finalJugAmount)
             .catch((error) => {
               console.log(error, 'EconomyController.jug() -> success transferCurrency');
             });
@@ -489,7 +489,7 @@ class EconomyController {
               cooldownEndTime: this.jugging.playerCooldowns[juggerId].endTime
             });
 
-            return this.transferCurrency(juggerId, juggedId, result.value)
+            return this.transferCurrency(juggerId, juggedId, result.value.finalJugAmount)
               .then(() => {
                 return this.modifyCurrency(juggerId, -jugBetValue);
               })
