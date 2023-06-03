@@ -92,6 +92,11 @@ function buildLeaderboardText(users, wallets) {
     const userDataExtremes = users.reduce((extremes, _, index) => {
       const wallet = wallets[index][1];
 
+      const walletValue = `${wallet.value}`;
+      if (walletValue.length > extremes.walletValueLength) {
+        extremes.walletValueLength = walletValue.length;
+      }
+
       const splitValue = `${wallet.value}${wallet.bank}`;
       if (splitValue.length > extremes.splitValueLength) {
         extremes.splitValueLength = splitValue.length;
@@ -103,14 +108,15 @@ function buildLeaderboardText(users, wallets) {
       }
 
       return extremes;
-    }, { splitValueLength: 0, combinedValueLength: 0 });
+    }, { splitValueLength: 0, combinedValueLength: 0, walletValueLength: 0 });
 
     leaderboardText = users.map((user, index) => {
       const wallet = wallets[index][1];
       const walletValue = wallet.value;
       const bankValue = wallet.bank;
+      const walletValueDisplay = `${walletValue}`.padEnd(userDataExtremes.walletValueLength, ' ');
       const totalBilaimCount = `${walletValue + bankValue}`.padEnd(userDataExtremes.combinedValueLength, ' ');
-      const splitValuesDisplay = `(👛${walletValue} / 🏛️${bankValue}) `.padEnd(userDataExtremes.splitValueLength + 13, '-');
+      const splitValuesDisplay = `(${walletValueDisplay} / 🏛️${bankValue}) `.padEnd(userDataExtremes.splitValueLength + 11, '-');
       const rank = index + 1;
       const rankOrdinalSuffix = getOrdinalSuffix(rank);
       const rankDisplay = `${rank}${rankOrdinalSuffix}`.padStart(4, ' ');
