@@ -36,7 +36,7 @@ module.exports = {
     const targetId = target === null ? null : target.id;
 
     try {
-      const { responseCode, value: finalJugAmount } = await EconomyController.jug(user.id, targetId, value);
+      const { responseCode, value: responseValue } = await EconomyController.jug(user.id, targetId, value);
 
       switch (responseCode) {
         case responseCodes.success: {
@@ -45,7 +45,10 @@ module.exports = {
               new EmbedBuilder()
                 .setTitle('Success')
                 .setColor(messageTypeColors.success)
-                .setDescription(`You have sucessfully jugged ${EconomyController.currencyEmoji} ${finalJugAmount} from ${target?.displayName ?? 'monsters'}.`)
+                .setDescription(`You have sucessfully jugged ${EconomyController.currencyEmoji} ${responseValue.finalJugAmount} from ${target?.displayName ?? 'monsters'}.`)
+                .setFields([
+                  { name: 'Cooldown', value: time(new Date(responseValue.cooldownEndTime), 'R') }
+                ])
             ]
           });
           break;
@@ -67,7 +70,10 @@ module.exports = {
               new EmbedBuilder()
                 .setTitle('Counter')
                 .setColor(messageTypeColors.success)
-                .setDescription(`You tried to jug ${target.displayName} but instead you got jugged for ${EconomyController.currencyEmoji} ${finalJugAmount}.`)
+                .setDescription(`You tried to jug ${target.displayName} but instead you got jugged for ${EconomyController.currencyEmoji} ${responseValue.finalJugAmount}.`)
+                .setFields([
+                  { name: 'Cooldown', value: time(new Date(responseValue.cooldownEndTime), 'R') }
+                ])
             ]
           });
           break;
@@ -79,12 +85,15 @@ module.exports = {
                 .setTitle('Failure')
                 .setColor(messageTypeColors.success)
                 .setDescription(`You failed to jug ${target?.displayName ?? 'monsters'}.`)
+                .setFields([
+                  { name: 'Cooldown', value: time(new Date(responseValue), 'R') }
+                ])
             ]
           });
           break;
         }
         case responseCodes.onCooldown: {
-          const offCooldownTime = finalJugAmount;
+          const offCooldownTime = responseValue;
           await interaction.editReply(
             messages.onCooldown(
               time(new Date(offCooldownTime), 'R')
