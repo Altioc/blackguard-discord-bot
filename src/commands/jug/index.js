@@ -6,6 +6,7 @@ const {
   messages
 } = require('../../constants');
 const EconomyController = require('../../controllers/economy-controller');
+const RPGController = require('../../controllers/rpg-controller');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -34,13 +35,14 @@ module.exports = {
     const value = options.getString('value');
 
     const targetId = target === null ? null : target.id;
+    const { currencyEmoji } = EconomyController;
 
     try {
-      const { responseCode, value: responseValue } = await EconomyController.jug(user.id, targetId, value);
+      const { responseCode, value: responseValue } = await RPGController.jug(user.id, targetId, value);
       let initialWagerDisplay = '';
 
       if (value) {
-        initialWagerDisplay = `wagered ${EconomyController.currencyEmoji} ${value} and `;
+        initialWagerDisplay = `wagered ${currencyEmoji} ${value} and `;
       }
 
       switch (responseCode) {
@@ -50,7 +52,7 @@ module.exports = {
               new EmbedBuilder()
                 .setTitle('Success')
                 .setColor(messageTypeColors.success)
-                .setDescription(`You ${initialWagerDisplay}have sucessfully jugged ${EconomyController.currencyEmoji} ${responseValue.finalJugAmount} from ${target?.displayName ?? 'monsters'}.`)
+                .setDescription(`You ${initialWagerDisplay}have sucessfully jugged ${currencyEmoji} ${responseValue.finalJugAmount} from ${target?.displayName ?? 'monsters'}.`)
                 .setFields([
                   { name: 'Cooldown', value: time(new Date(responseValue.cooldownEndTime), 'R') }
                 ])
@@ -75,7 +77,7 @@ module.exports = {
               new EmbedBuilder()
                 .setTitle('Counter')
                 .setColor(messageTypeColors.success)
-                .setDescription(`You ${initialWagerDisplay}tried to jug ${target.displayName} but instead you got jugged for ${EconomyController.currencyEmoji} ${responseValue.finalJugAmount}.`)
+                .setDescription(`You ${initialWagerDisplay}tried to jug ${target.displayName} but instead you got jugged for ${currencyEmoji} ${responseValue.finalJugAmount}.`)
                 .setFields([
                   { name: 'Cooldown', value: time(new Date(responseValue.cooldownEndTime), 'R') }
                 ])
@@ -127,7 +129,7 @@ module.exports = {
         }
       }
     } catch (error) {
-      console.log(error, 'jug.execute() -> EconomyController.jug()');
+      console.log(error, 'jug.execute() -> RPGController.jug()');
       interaction.editReply(messages.unknownError());
     }
   },

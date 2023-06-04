@@ -7,28 +7,10 @@ const {
   currentLocationType
 } = require('../constants');
 const Wallet = require('../models/Wallet');
-const random = require('../utils/random');
 const response = require('../utils/response');
 
 class EconomyController {
   constructor() {
-    this.jugging = {
-      pvp: {
-        baseSuccessChance: null,
-        baseCounterChance: null,
-        baseRewardFloor: null,
-        baseRewardCeiling: null,
-        baseCounterRewardFloor: null,
-        baseCounterRewardCeiling: null
-      },
-      pve: {
-        baseSuccessChance: null,
-        baseRewardFloor: null,
-        baseRewardCeiling: null
-      },
-      cooldownLength: null,
-      playerCooldowns: {}
-    }
     this.bank = {
       interestRate: null,
       storableValueRatio: null,
@@ -65,17 +47,10 @@ class EconomyController {
   initConfig() {
     return this.db.get(blackguardDbDocNames.economyDoc)
       .then((doc) => {
-        this.jugging.pvp = {
-          ...doc.config.jug.pvp
-        };
-        this.jugging.pve = {
-          ...doc.config.jug.pve
-        };
         this.bank = {
           ...this.bank,
           ...doc.config.bank
         }
-        this.jugging.cooldownLength = doc.config.jug.cooldown;
         this.currencyEmoji = doc.config.currencyEmoji;
         this.walletInitialCurrencyAmount = doc.config.wallet.initialCurrencyAmount,
        
@@ -368,163 +343,6 @@ class EconomyController {
       .catch((error) => {
         console.log(error, 'EconomyController.bulkModifyCurrency()');
       });
-  }
-
-  clearJugCooldown(juggerId) {
-    if (!juggerId) {
-      Object.values(this.jugging.playerCooldowns).forEach(({ timer }) => {
-        clearTimeout(timer);
-      });
-      this.jugging.playerCooldowns = {};
-    } else if (this.jugging.playerCooldowns[juggerId]) {
-      this.jugging.playerCooldowns[juggerId].isActive = false;
-      clearTimeout(this.jugging.playerCooldowns[juggerId].timer);
-    } else {
-      return response(responseCodes.userDoesNotExist);
-    }
-
-    return response(responseCodes.success);
-  }
-
-  startJugCooldown(juggerId) {
-    this.jugging.playerCooldowns[juggerId] = {};
-    this.jugging.playerCooldowns[juggerId].isActive = true;
-    this.jugging.playerCooldowns[juggerId].endTime = Date.now() + this.jugging.cooldownLength;
-    clearTimeout(this.jugging.playerCooldowns[juggerId].timer);
-    this.jugging.playerCooldowns[juggerId].timer = setTimeout(() => {
-      this.jugging.playerCooldowns[juggerId].isActive = false;
-    }, this.jugging.cooldownLength);
-  }
-
-  npcJug(juggerId) {
-    return this.db.get(blackguardDbDocNames.economyDoc)
-      .then((doc) => {
-        const juggersWallet = doc.wallets[juggerId];
-
-        if (!juggersWallet) {
-          result = response(responseCodes.economy.noFromUser);
-          return;
-        }
-
-        const juggingRoll = Math.random();
-
-        this.startJugCooldown(juggerId);
-        const { pve } = this.jugging;
-        if (juggingRoll <= pve.baseSuccessChance) {
-          const jugValue = Math.round(random(pve.baseRewardFloor, pve.baseRewardCeiling));
-
-          return this.modifyCurrency(juggerId, jugValue)
-            .then(() => {
-              return response(responseCodes.success, {
-                finalJugAmount: jugValue,
-                cooldownEndTime: this.jugging.playerCooldowns[juggerId].endTime
-              });
-            })
-            .catch((error) => {
-              console.log(error, 'EconomyController.npcJug() -> success modifyCurrency');
-            });
-        } else {
-          return response(responseCodes.failure, this.jugging.playerCooldowns[juggerId].endTime);
-        }
-      });
-  }
-
-  jug(juggerId, juggedId, initialJugBetValue) {
-    if (this.jugging.playerCooldowns[juggerId]?.isActive) {
-      return response(responseCodes.onCooldown, this.jugging.playerCooldowns[juggerId].endTime);
-    }
-
-    if (juggedId === null) {
-      return this.npcJug(juggerId);
-    }
-
-    if (`${initialJugBetValue}`.toLowerCase() !== 'all' && (isNaN(+initialJugBetValue) || +initialJugBetValue <= 0)) {
-      return response(responseCodes.invalidInput);
-    }
-
-    let result = {};
-    return this.db.get(blackguardDbDocNames.economyDoc)
-      .then((doc) => {
-        const juggersWallet = doc.wallets[juggerId];
-        const juggedsWallet = doc.wallets[juggedId];
-
-        if (!juggersWallet) {
-          result = response(responseCodes.economy.noFromUser);
-          return;
-        }
-
-        if (!juggedsWallet) {
-          result = response(responseCodes.economy.noToUser);
-          return;
-        }
-
-        if (juggerId === juggedId) {
-          result = response(responseCodes.economy.sameUser);
-          return;
-        }
-
-        const jugBetValue = initialJugBetValue.toLowerCase() === 'all' ? juggersWallet.value : +initialJugBetValue;
-        if (juggersWallet.value < jugBetValue) {
-          result = response(responseCodes.economy.insufficientFunds);
-          return;
-        }
-
-        const juggingRoll = Math.random();
-
-        this.startJugCooldown(juggerId);
-        const { pvp } = this.jugging;
-        if (juggingRoll <= pvp.baseSuccessChance) {
-          const jugMultiplier = random(pvp.baseRewardFloor, pvp.baseRewardCeiling);
-          const idealJugValue = Math.floor(jugBetValue * jugMultiplier);
-          const finalJugValue = juggedsWallet.value < idealJugValue ? juggedsWallet.value : idealJugValue;
-
-          result = response(
-            responseCodes.success, {
-            finalJugAmount: Math.max(finalJugValue, 1),
-            cooldownEndTime: this.jugging.playerCooldowns[juggerId].endTime
-          });
-
-          return this.transferCurrency(juggedId, juggerId, result.value.finalJugAmount)
-            .catch((error) => {
-              console.log(error, 'EconomyController.jug() -> success transferCurrency');
-            });
-        } else {
-          const counterRoll = Math.random();
-
-          if (counterRoll <= pvp.baseCounterChance) {
-            const counterValue = random(pvp.baseCounterRewardFloor, pvp.baseCounterRewardCeiling);
-
-            result = response(
-              responseCodes.economy.jug.counterSuccess, {
-              finalJugAmount: Math.max(Math.floor(jugBetValue * counterValue), 1),
-              cooldownEndTime: this.jugging.playerCooldowns[juggerId].endTime
-            });
-
-            return this.transferCurrency(juggerId, juggedId, result.value.finalJugAmount)
-              .then(() => {
-                return this.modifyCurrency(juggerId, -jugBetValue);
-              })
-              .catch((error) => {
-                console.log(error, 'EconomyController.jug() -> countered transferCurrency');
-              });
-          } else {
-            result = response(responseCodes.failure, this.jugging.playerCooldowns[juggerId].endTime);
-
-            return this.modifyCurrency(juggerId, -jugBetValue)
-              .catch((error) => {
-                console.log(error, 'EconomyController.jug() -> failure transferCurrency');
-              });
-          }
-        }
-
-      })
-      .then(() => {
-        return result;
-      })
-      .catch((error) => {
-        console.log(error, 'EconomyController.jug() -> db.get');
-      });
-
   }
 }
 
