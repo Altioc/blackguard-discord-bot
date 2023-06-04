@@ -3,6 +3,7 @@ const { EmbedBuilder } = require('discord.js')
 const { messageTypeColors, responseCodes, messages, leaderboardType } = require('../../constants');
 const EconomyController = require('../../controllers/economy-controller');
 const RPGController = require('../../controllers/rpg-controller');
+const capitalize = require('../../utils/capitalize');
 
 const leaderboardRankEmoji = ['🥇', '🥈', '🥉'];
 
@@ -63,7 +64,7 @@ module.exports = {
           await interaction.editReply({
             embeds: [
               new EmbedBuilder()
-                .setTitle('Bilaim Leaderboard')
+                .setTitle(`${capitalize(type)} Bilaim Leaderboard`)
                 .setColor(messageTypeColors.success)
                 .setDescription(
                   codeBlock(leaderboard)
