@@ -26,19 +26,18 @@ class RPGController {
         baseRewardCeiling: null
       },
       cooldownLength: null,
-      playerCooldowns: {}
+      playerCooldowns: {},
+      ...initialRPGDoc.config.jug // these should be moved out of the doc since they are constants can't be configured live due to message length
     }
     this.equipmentStats = {
       upgrades: [],
       weapon: [],
-      armor: []
+      armor: [],
+      ...initialRPGDoc.config.equipmentStats
     };
     this.characters = {};
     this.db = new PouchDB('BlackguardBotDb');
     this.createRPGDocIfDoesntExist()
-      .then(() => {
-        return this.setConstants();
-      })
       .then(() => {
         return this.loadCharacters();
       })
@@ -58,28 +57,6 @@ class RPGController {
     return this.db.upsert(blackguardDbDocNames.rpgDoc, () => (
       initialRPGDoc
     ));
-  }
-
-  setConstants() {
-    return this.db.get(blackguardDbDocNames.rpgDoc)
-      .then((doc) => {
-        this.jugging.pvp = {
-          ...doc.config.jug.pvp
-        };
-        
-        this.jugging.pve = {
-          ...doc.config.jug.pve
-        };
-
-        this.equipmentStats = {
-          ...doc.config.equipmentStats
-        };
-
-        this.jugging.cooldownLength = doc.config.jug.cooldown;
-      })
-      .catch((error) => {
-        console.log(error, 'RPGController.setConstants()');
-      });
   }
 
   loadCharacters() {

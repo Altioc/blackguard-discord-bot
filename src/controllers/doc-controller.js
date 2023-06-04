@@ -54,10 +54,7 @@ class DocController {
         } else if (blackguardDbDocNames[docNameKey] === blackguardDbDocNames.economyDoc) {
           return EconomyController.initConfig();
         } else if (blackguardDbDocNames[docNameKey] === blackguardDbDocNames.rpgDoc) {
-          return BookController.setConstants()
-            .then(() => {
-              return RPGController.loadCharacters()
-            });
+          return RPGController.loadCharacters()
         }
       })
       .then(() => {
@@ -91,9 +88,6 @@ class DocController {
         }
         case blackguardDbDocNames.rpgDoc: {
           RPGController.resetDoc()
-            .then(() => {
-              return RPGController.setConstants()
-            })
             .then(() => {
               return RPGController.loadCharacters()
             })
