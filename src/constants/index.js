@@ -168,7 +168,7 @@ const initialRPGDoc = {
         baseRewardFloor: 5,
         baseRewardCeiling: 50
       },
-      cooldown: minute * 5,
+      cooldownLength: minute * 5,
     }
   }
 };
