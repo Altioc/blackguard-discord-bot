@@ -1,4 +1,4 @@
-const { EmbedBuilder, SlashCommandBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder, ComponentType } = require('discord.js')
+const { EmbedBuilder, SlashCommandBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder, ComponentType, PermissionFlagsBits } = require('discord.js')
 const RPGController = require('../../controllers/rpg-controller');
 const EconomyController = require('../../controllers/economy-controller');
 const Character = require('../../models/Character');
@@ -18,11 +18,12 @@ module.exports = {
     await interaction.deferReply({
       ephemeral: true
     });
-    const { user, options } = interaction;
+    const { user, options, memberPermissions } = interaction;
     const targetUserId = options.getUser('target')?.id || user.id;
-
-    const weaponResponse = await interaction.editReply(await getEquipmentWindow(equipmentType.Weapon, interaction, targetUserId));
-    const armorResponse = await interaction.followUp(await getEquipmentWindow(equipmentType.Armor, interaction, targetUserId));
+    const character = await RPGController.getCharacter(targetUserId);
+    
+    const weaponResponse = await interaction.editReply(await getEquipmentWindow(equipmentType.Weapon, interaction, targetUserId, character));
+    const armorResponse = await interaction.followUp(await getEquipmentWindow(equipmentType.Armor, interaction, targetUserId, character));
 
     const weaponEnhanceCollector = weaponResponse.createMessageComponentCollector({
       componentType: ComponentType.Button, time: 600000
@@ -32,6 +33,20 @@ module.exports = {
       componentType: ComponentType.Button, time: 600000
     });
     armorEnhanceCollector.on('collect', enhanceButtonInteractionHandler(equipmentType.Armor, user));
+
+    const armorLevel = character.equipmentLevels.armor;
+    const currentArmor = RPGController.equipmentStats.armor[armorLevel];
+    if (currentArmor.failStackModifier > 0 || memberPermissions.has(PermissionFlagsBits.Administrator)) {
+      const failStackDisplay = new EmbedBuilder()
+        .setTitle('Fail Stacks')
+        .setDescription(`${character.failStacks}`);
+        
+      await interaction.followUp({
+        embeds: [failStackDisplay],
+        ephemeral: true
+      });
+      return;
+    }
   },
 };
 
@@ -59,7 +74,7 @@ function getPercentField(name, currentValue, nextValue, showNextValue) {
   return { name, value, inline: true };
 }
 
-async function getEquipmentWindow(type, interaction, targetUserId) {
+async function getEquipmentWindow(type, interaction, targetUserId, character) {
   const { user, guild } = interaction;
 
   const targetUserIsOwner = targetUserId === user.id;
@@ -74,7 +89,6 @@ async function getEquipmentWindow(type, interaction, targetUserId) {
       return currenyEmojiEntry.id;
     });
 
-  const character = await RPGController.getCharacter(targetUserId);
   const walletResponse = await EconomyController.getWallet(targetUserId);
   const currentBankBalance = walletResponse?.value?.bank;
 
@@ -195,10 +209,11 @@ const enhanceButtonInteractionHandler = (type, user) => async (interaction) => {
   try {
     const response = await RPGController.enhanceEquipment(user.id, type);
     const responseCode = response?.responseCode;
+    const character = await RPGController.getCharacter(user.id);
 
     switch (responseCode) {
       case responseCodes.success: {
-        await interaction.update(await getEquipmentWindow(type, interaction, user.id));
+        await interaction.update(await getEquipmentWindow(type, interaction, user.id, character));
         break;
       }
       case responseCodes.failure: {
