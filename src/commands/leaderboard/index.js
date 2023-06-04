@@ -2,6 +2,7 @@ const { SlashCommandBuilder, codeBlock } = require('@discordjs/builders');
 const { EmbedBuilder } = require('discord.js')
 const { messageTypeColors, responseCodes, messages } = require('../../constants');
 const EconomyController = require('../../controllers/economy-controller');
+const RPGController = require('../../controllers/rpg-controller');
 
 const leaderboardRankEmoji = ['🥇', '🥈', '🥉'];
 
@@ -27,7 +28,7 @@ module.exports = {
             })
           );
 
-          const leaderboard = buildLeaderboardText(users, sortedWallets);
+          const leaderboard = await buildLeaderboardText(users, sortedWallets);
 
           await interaction.editReply({
             embeds: [
@@ -85,7 +86,7 @@ function getOrdinalSuffix(num) {
   return 'th';
 }
 
-function buildLeaderboardText(users, wallets) {
+async function buildLeaderboardText(users, wallets) {
   let leaderboardText = '';
 
   if (users.length > 0) {
@@ -110,7 +111,9 @@ function buildLeaderboardText(users, wallets) {
       return extremes;
     }, { splitValueLength: 0, combinedValueLength: 0, walletValueLength: 0 });
 
-    leaderboardText = users.map((user, index) => {
+    leaderboardText = []; 
+    for (let index = 0; index < users.length; index++) {
+      const user = users[index];
       const wallet = wallets[index][1];
       const walletValue = wallet.value;
       const bankValue = wallet.bank;
@@ -121,8 +124,12 @@ function buildLeaderboardText(users, wallets) {
       const rankOrdinalSuffix = getOrdinalSuffix(rank);
       const rankDisplay = `${rank}${rankOrdinalSuffix}`.padStart(4, ' ');
       const rankIndicator = leaderboardRankEmoji[index] || '⬛';
-      return `󠀠󠀠${rankIndicator} ${rankDisplay}  ${totalBilaimCount} ${splitValuesDisplay} ${user.displayName}`;
-    }).join('\n');
+      const character = await RPGController.getCharacter(user.id);
+      const { weapon, armor } = character.equipmentLevels;
+      leaderboardText.push(`󠀠󠀠${rankIndicator} ${rankDisplay}  ${totalBilaimCount} ${splitValuesDisplay} ${user.displayName} ⚔️${weapon} 🛡️${armor}`);
+    }
+
+    leaderboardText = leaderboardText.join('\n');
   } else {
     leaderboardText = 'There is nobody to place on the leaderboard.'
   }
