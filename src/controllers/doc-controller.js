@@ -7,6 +7,7 @@ const {
 const BookController = require('../controllers/book-controller');
 const EconomyController = require('../controllers/economy-controller');
 const response = require('../utils/response');
+const RPGController = require('./rpg-controller');
 
 class DocController {
   constructor() {
@@ -52,6 +53,11 @@ class DocController {
           return BookController.initConfig();
         } else if (blackguardDbDocNames[docNameKey] === blackguardDbDocNames.economyDoc) {
           return EconomyController.initConfig();
+        } else if (blackguardDbDocNames[docNameKey] === blackguardDbDocNames.rpgDoc) {
+          return BookController.setConstants()
+            .then(() => {
+              return RPGController.loadCharacters()
+            });
         }
       })
       .then(() => {
@@ -78,6 +84,18 @@ class DocController {
           BookController.resetDoc()
             .then(() => {
               return BookController.initConfig()
+            })
+            .then(resolve)
+            .catch(reject);
+          break;
+        }
+        case blackguardDbDocNames.rpgDoc: {
+          RPGController.resetDoc()
+            .then(() => {
+              return RPGController.setConstants()
+            })
+            .then(() => {
+              return RPGController.loadCharacters()
             })
             .then(resolve)
             .catch(reject);

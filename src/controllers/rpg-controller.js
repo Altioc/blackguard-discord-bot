@@ -37,7 +37,10 @@ class RPGController {
     this.db = new PouchDB('BlackguardBotDb');
     this.createRPGDocIfDoesntExist()
       .then(() => {
-        return this.initConfig();
+        return this.setConstants();
+      })
+      .then(() => {
+        return this.loadCharacters();
       })
       .catch((error) => {
         console.log(error, 'RPGController.constructor()');
@@ -57,7 +60,7 @@ class RPGController {
     ));
   }
 
-  initConfig() {
+  setConstants() {
     return this.db.get(blackguardDbDocNames.rpgDoc)
       .then((doc) => {
         this.jugging.pvp = {
@@ -72,14 +75,22 @@ class RPGController {
           ...doc.config.equipmentStats
         };
 
-        Object.values(doc.characters).forEach((character) => {
-          this.characters[character.ownerId] = new Character(character);
-        });
-        
         this.jugging.cooldownLength = doc.config.jug.cooldown;
       })
       .catch((error) => {
-        console.log(error, 'RPGController.initConfig()');
+        console.log(error, 'RPGController.setConstants()');
+      });
+  }
+
+  loadCharacters() {
+    return this.db.get(blackguardDbDocNames.rpgDoc)
+      .then((doc) => {
+        Object.values(doc.characters).forEach((character) => {
+          this.characters[character.ownerId] = new Character(character);
+        });
+      })
+      .catch((error) => {
+        console.log(error, 'RPGController.loadCharacters()');
       });
   }
 
