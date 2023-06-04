@@ -5,7 +5,7 @@ const {
   messages
 } = require('../../constants');
 const ids = require('../../ids.json');
-const EconomyController = require('../../controllers/economy-controller')
+const RPGController = require('../../controllers/rpg-controller');
 
 module.exports = {
   subCommandData: (subcommand) => (
@@ -34,7 +34,7 @@ module.exports = {
     }
 
     try {
-      const { responseCode } = EconomyController.clearJugCooldown(targetUserId);
+      const { responseCode } = RPGController.clearJugCooldown(targetUserId);
 
       switch (responseCode) {
         case responseCodes.success: {
@@ -68,7 +68,7 @@ module.exports = {
         }
       }
     } catch (error) {
-      console.log(error, 'jugClearcooldown.execute() -> EconomyController.clearJugCooldown()');
+      console.log(error, 'jugClearcooldown.execute() -> RPGController.clearJugCooldown()');
       interaction.editReply(messages.unknownError());
     }
   }
