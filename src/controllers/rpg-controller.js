@@ -195,7 +195,7 @@ class RPGController {
         if (juggingRoll <= successChance) {
           const jugAmount = Math.round(random(
             Character.getModifiedRewardValue(baseRewardFloor, weapon.rewardModifier), 
-            character.getModifiedRewardValue(baseRewardCeiling, weapon.rewardModifier)
+            Character.getModifiedRewardValue(baseRewardCeiling, weapon.rewardModifier)
           ));
 
           return EconomyController.modifyCurrency(juggerId, jugAmount)
