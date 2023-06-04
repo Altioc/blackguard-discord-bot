@@ -130,7 +130,7 @@ class RPGController {
           return response(responseCodes.economy.insufficientFunds);
         }
 
-        return EconomyController.modifyCurrency(ownerId, cost, currentLocationType.Bank)
+        return EconomyController.modifyCurrency(ownerId, -cost, currentLocationType.Bank)
           .then(async ({ responseCode }) => {
             if (responseCode !== responseCodes.success) {
               return;
