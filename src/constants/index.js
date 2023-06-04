@@ -62,6 +62,11 @@ const equipmentType = {
   Weapon: 'weapon'
 };
 
+const leaderboardType = {
+  Power: 'power',
+  Wealth: 'wealth'
+};
+
 const initialRPGDoc = {
   _id: blackguardDbDocNames.rpgDoc,
   characters: {},
@@ -360,5 +365,6 @@ module.exports = {
   second,
   currentLocationType,
   initialRPGDoc,
-  equipmentType
+  equipmentType,
+  leaderboardType
 };
