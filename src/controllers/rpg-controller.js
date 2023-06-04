@@ -289,7 +289,7 @@ class RPGController {
 
             return EconomyController.transferCurrency(juggerId, victimId, finalCounterAmount)
               .then(() => {
-                return EconomyController.modifyCurrency(juggerId, -(jugAmount * (1 - recovery)));
+                return EconomyController.modifyCurrency(juggerId, -Math.round(jugAmount * (1 - recovery)));
               })
               .catch((error) => {
                 console.log(error, 'RPGController.jug() -> countered transferCurrency');
@@ -297,7 +297,7 @@ class RPGController {
           } else {
             result = response(responseCodes.failure, this.jugging.playerCooldowns[juggerId].endTime);
 
-            return EconomyController.modifyCurrency(juggerId, -(jugAmount * (1 - recovery)))
+            return EconomyController.modifyCurrency(juggerId, -Math.round(jugAmount * (1 - recovery)))
               .catch((error) => {
                 console.log(error, 'RPGController.jug() -> failure transferCurrency');
               });
