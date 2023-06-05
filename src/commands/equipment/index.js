@@ -34,19 +34,14 @@ module.exports = {
     });
     armorEnhanceCollector.on('collect', enhanceButtonInteractionHandler(equipmentType.Armor, user));
 
-    const armorLevel = character.equipmentLevels.armor;
-    const currentArmor = RPGController.equipmentStats.armor[armorLevel];
-    if (currentArmor.failStackModifier > 0 || memberPermissions.has(PermissionFlagsBits.Administrator)) {
-      const failStackDisplay = new EmbedBuilder()
-        .setTitle('Fail Stacks')
-        .setDescription(`${character.failStacks}`);
-        
-      await interaction.followUp({
-        embeds: [failStackDisplay],
-        ephemeral: true
-      });
-      return;
-    }
+    const failStackDisplay = new EmbedBuilder()
+      .setTitle('Fail Stacks')
+      .setDescription(`${character.failStacks}`);
+      
+    await interaction.followUp({
+      embeds: [failStackDisplay],
+      ephemeral: true
+    });
   },
 };
 
