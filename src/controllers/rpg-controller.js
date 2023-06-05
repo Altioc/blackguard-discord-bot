@@ -252,7 +252,7 @@ class RPGController {
         const { armor: armorLevel, weapon: weaponLevel } = equipmentLevels;
         const { recovery, failStackModifier } = this.equipmentStats.armor[armorLevel];
         const { rewardFloor, rewardCeiling, rewardModifier } = this.equipmentStats.weapon[weaponLevel];
-        const realSuccessChance = successChance + ((failStackModifier + 0.01) * failStacks) ;
+        const realSuccessChance = successChance + ((failStackModifier + 0.001) * failStacks) ;
 
         if (juggingRoll <= realSuccessChance) {
           await this.resetFailStacks(juggerId);          
