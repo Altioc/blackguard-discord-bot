@@ -164,7 +164,7 @@ const initialRPGDoc = {
         counterRewardCeiling: 0.3,
       },
       pve: {
-        successChance: 0.65,
+        successChance: 0.7,
         baseRewardFloor: 20,
         baseRewardCeiling: 50
       },
