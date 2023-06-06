@@ -36,7 +36,7 @@ module.exports = {
           });
           break;
         }
-        case responseCode.invalidInput: {
+        case responseCodes.invalidInput: {
           await interaction.editReply({
             embeds: [
               new EmbedBuilder()
