@@ -143,7 +143,7 @@ const initialRPGDoc = {
         { recovery: 0.45, failStackModifier: 0.03, stars: 12 },
         { recovery: 0.49, failStackModifier: 0.03, stars: 13 },
         { recovery: 0.53, failStackModifier: 0.03, stars: 14 },
-        { recovery: 0.56, failStackModifier: 0.03, stars: 15 },
+        { recovery: 0.56, failStackModifier: 0.06, stars: 15 },
         { recovery: 0.6, failStackModifier: 0.06, stars: 16 },
         { recovery: 0.64, failStackModifier: 0.06, stars: 17 },
         { recovery: 0.68, failStackModifier: 0.06, stars: 18 },
