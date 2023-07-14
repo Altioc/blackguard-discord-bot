@@ -23,7 +23,7 @@ class View {
         }
 
         return true;
-      }
+      },
     });
 
     this.init?.(props);
@@ -35,7 +35,7 @@ class View {
     
     const response = await this.interaction[interactionMethod]({
       ephemeral: this.ephemeral,
-      ...this.render()
+      ...this.render(),
     });
 
     if (this._interacted) {
@@ -44,7 +44,7 @@ class View {
 
     this._interacted = true;
     const interactionCollector = response.createMessageComponentCollector({
-      time: hour
+      time: hour,
     });
     interactionCollector.on('collect', (interaction) => {
       this.interaction = interaction;
@@ -58,5 +58,5 @@ class View {
 }
 
 module.exports = {
-  View
+  View,
 };

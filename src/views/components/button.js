@@ -13,5 +13,5 @@ const SuccessButton = ({ label, disabled }) => Button(label, ButtonStyle.Success
 
 module.exports = {
   SecondaryButton,
-  SuccessButton
+  SuccessButton,
 };

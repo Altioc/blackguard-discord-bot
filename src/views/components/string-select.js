@@ -18,10 +18,10 @@ const StringSelect = ({ options, placeholder, id, selectedOptions }) => {
         }
   
         return newStringOption;
-      })
+      }),
     );
 };
 
 module.exports = {
-  StringSelect
+  StringSelect,
 };

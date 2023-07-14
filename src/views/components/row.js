@@ -3,10 +3,10 @@ const { ActionRowBuilder } = require('discord.js');
 const Row = (...children) => {
   return new ActionRowBuilder()
     .addComponents(
-      ...children
+      ...children,
     );
 };
 
 module.exports = { 
-  Row
+  Row,
 };

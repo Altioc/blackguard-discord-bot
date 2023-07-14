@@ -77,32 +77,32 @@ class MultiSelectView extends View {
             id: 'Select',
             options: Array.from(this.currentPage.values()),
             placeholder: this.props.placeholder,
-            selectedOptions: this.state.selectedOptions
-          })
+            selectedOptions: this.state.selectedOptions,
+          }),
         ),
         Row (
           SecondaryButton({
             label: 'Prev',
-            disabled: this.state.currentPageIndex === this.firstPageIndex
+            disabled: this.state.currentPageIndex === this.firstPageIndex,
           }),
           SecondaryButton({
             label: 'Next',
-            disabled: this.state.currentPageIndex === this.lastPageIndex
-          })
+            disabled: this.state.currentPageIndex === this.lastPageIndex,
+          }),
         ),
         Row(
           SuccessButton({
-            label: 'Submit'
+            label: 'Submit',
           }),
           SecondaryButton({
-            label: 'Cancel'
-          })
-        )
-      ]
+            label: 'Cancel',
+          }),
+        ),
+      ],
     };
   }
 }
 
 module.exports = {
-  MultiSelectView
+  MultiSelectView,
 };

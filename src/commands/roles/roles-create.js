@@ -49,7 +49,7 @@ module.exports = {
     new MultiSelectView(interaction, {
       options: allRoles,
       placeholder: 'Select roles',
-      ephemeral: true
+      ephemeral: true,
     });
   },
 };

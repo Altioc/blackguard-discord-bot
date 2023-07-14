@@ -78,9 +78,9 @@ const responseCodes = {
   },
   discord: {
     ui: {
-      doesntExist: 'discordUiDoesntExist'
-    }
-  }
+      doesntExist: 'discordUiDoesntExist',
+    },
+  },
 };
 
 const betOptions = { 

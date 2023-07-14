@@ -25,11 +25,11 @@ class PersistentUiController extends DbController {
       .then((discordDeleteResponse) => {
         if (discordDeleteResponse === responseCodes.success) {
           return this.db.upsert(this.docName, (doc) => {
-              delete doc.uiElements[messageId];
-              delete this.uiElements[messageId];
+            delete doc.uiElements[messageId];
+            delete this.uiElements[messageId];
               
-              return doc;
-            })
+            return doc;
+          })
             .then(() => {
               return response(responseCodes.success);
             });

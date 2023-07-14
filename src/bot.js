@@ -33,7 +33,7 @@ const client = new Client({
     Partials.Reaction,
     Partials.GuildScheduledEvent,
     Partials.ThreadMember,
-  ]
+  ],
 });
 
 const commandsPath = `${__dirname}/commands`;
