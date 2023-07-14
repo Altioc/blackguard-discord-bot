@@ -1,14 +1,14 @@
-const { EmbedBuilder } = require('discord.js')
+const { EmbedBuilder } = require('discord.js');
 const {
   messageTypeColors,
   responseCodes,
-  blackguardDbDocNames,
-  messages
+  messages,
 } = require('../../constants');
-const DocController = require('../../controllers/doc-controller')
+const { DocName } = require('../../constants/docs');
+const DocController = require('../../controllers/doc-controller');
 
 module.exports = {
-  subCommandData: (subcommand) => (
+  subCommandData: subcommand => (
     subcommand
       .setName('set')
       .setDescription('Saves the provided json object to the specified doc.')
@@ -17,11 +17,11 @@ module.exports = {
           .setName('name')
           .setDescription('The name of the doc to save to.')
           .addChoices(
-            ...Object.entries(blackguardDbDocNames)
+            ...Object.entries(DocName)
               .map(([key, value]) => ({
                 name: value,
-                value: key
-              }))
+                value: key,
+              })),
           )
           .setRequired(true)
       ))
@@ -54,33 +54,33 @@ module.exports = {
           new EmbedBuilder()
             .setTitle('Invalid JSON')
             .setColor(messageTypeColors.success)
-            .setDescription('You must provide a valid JSON when using the set command.')
-        ]
+            .setDescription('You must provide a valid JSON when using the set command.'),
+        ],
       });
       return;
     }
 
     try {
-      const { responseCode } = await DocController.setDoc(docNameKey, valueAsJson, configOnly);
+      const { responseCode } = await DocController.setDoc(DocName[docNameKey], valueAsJson, configOnly);
 
       switch (responseCode) {
-        case responseCodes.success: {
-          await interaction.editReply({
-            embeds: [
-              new EmbedBuilder()
-                .setTitle('Doc Updated')
-                .setColor(messageTypeColors.success)
-            ]
-          });
-          break;
-        }
-        default: {
-          interaction.editReply(messages.unknownError());
-        }
+      case responseCodes.success: {
+        await interaction.editReply({
+          embeds: [
+            new EmbedBuilder()
+              .setTitle('Doc Updated')
+              .setColor(messageTypeColors.success),
+          ],
+        });
+        break;
+      }
+      default: {
+        interaction.editReply(messages.unknownError());
+      }
       }
     } catch (error) {
-      console.log(error, 'docSet.execute() -> DocController.setDoc()');
+      console.log(error, 'docSet.execute -> DocController.setDoc');
       interaction.editReply(messages.unknownError());
     }
-  }
-}
+  },
+};

@@ -1,7 +1,7 @@
 function response(code, value) {
   return {
     responseCode: code,
-    value
+    value,
   };
 }
 

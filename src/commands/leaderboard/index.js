@@ -1,6 +1,6 @@
 const { SlashCommandBuilder, codeBlock } = require('@discordjs/builders');
-const { EmbedBuilder } = require('discord.js')
-const { messageTypeColors, responseCodes, messages, leaderboardType } = require('../../constants');
+const { EmbedBuilder } = require('discord.js');
+const { messageTypeColors, responseCodes, messages, LeaderboardType } = require('../../constants');
 const EconomyController = require('../../controllers/economy-controller');
 const RPGController = require('../../controllers/rpg-controller');
 const capitalize = require('../../utils/capitalize');
@@ -11,71 +11,71 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName('leaderboard')
     .setDescription('Prints the current Bilaim wallet leaderboard.')
-    .addStringOption((option) => (
+    .addStringOption(option => (
       option
         .setName('type')
         .setDescription('What leaderboard type to show. Defaults to wealth')
         .addChoices(
-          { name: 'Power', value: leaderboardType.Power },
-          { name: 'Wealth', value: leaderboardType.Wealth },
+          { name: 'Power', value: LeaderboardType.Power },
+          { name: 'Wealth', value: LeaderboardType.Wealth },
         )
     )),
 
   async execute(interaction) {
     await interaction.deferReply();
-    const type = interaction.options.getString('type') || leaderboardType.Wealth;
+    const type = interaction.options.getString('type') || LeaderboardType.Wealth;
 
     try {
       const { responseCode, value: wallets } = await EconomyController.getAllWallets();
       
       switch (responseCode) {
-        case responseCodes.success: {
-          let leaderboard;
+      case responseCodes.success: {
+        let leaderboard;
 
-          switch(type) {
-            case leaderboardType.Wealth: {
-              const sortedWealthUsers = sortWalletsByWealth(wallets, 25);
+        switch(type) {
+        case LeaderboardType.Wealth: {
+          const sortedWealthUsers = sortWalletsByWealth(wallets, 25);
 
-              const users = await Promise.all(
-                sortedWealthUsers.map((wallet) => {
-                  const [userId] = wallet;
-                  return interaction.guild.members.fetch(userId);
-                })
-              );
+          const users = await Promise.all(
+            sortedWealthUsers.map((wallet) => {
+              const [userId] = wallet;
+              return interaction.guild.members.fetch(userId);
+            }),
+          );
 
-              leaderboard = await buildWealthLeaderboardText(users, sortedWealthUsers);
-              break;
-            }
-            case leaderboardType.Power: {
-              const sortedCharacters = await sortCharactersByPower(Object.keys(wallets), 25);
-
-              const users = await Promise.all(
-                sortedCharacters.map((character) => {
-                  const { ownerId } = character;
-                  return interaction.guild.members.fetch(ownerId);
-                })
-              );
-
-              leaderboard = await buildPowerLeaderboardText(users, sortedCharacters);
-              break;
-            }
-          } 
-
-          await interaction.editReply({
-            embeds: [
-              new EmbedBuilder()
-                .setTitle(`${capitalize(type)} Bilaim Leaderboard`)
-                .setColor(messageTypeColors.success)
-                .setDescription(
-                  codeBlock(leaderboard)
-                )
-            ]
-          });
+          leaderboard = await buildWealthLeaderboardText(users, sortedWealthUsers);
           break;
         }
-        default: {
-          interaction.editReply(messages.unknownError());
+        case LeaderboardType.Power: {
+          const sortedCharacters = await sortCharactersByPower(Object.keys(wallets), 25);
+
+          const users = await Promise.all(
+            sortedCharacters.map((character) => {
+              const { ownerId } = character;
+              return interaction.guild.members.fetch(ownerId);
+            }),
+          );
+
+          leaderboard = await buildPowerLeaderboardText(users, sortedCharacters);
+          break;
         }
+        } 
+
+        await interaction.editReply({
+          embeds: [
+            new EmbedBuilder()
+              .setTitle(`${capitalize(type)} Bilaim Leaderboard`)
+              .setColor(messageTypeColors.success)
+              .setDescription(
+                codeBlock(leaderboard),
+              ),
+          ],
+        });
+        break;
+      }
+      default: {
+        interaction.editReply(messages.unknownError());
+      }
       }
     } catch (error) {
       console.log(error, 'leaderboard.execute() -> EconomyController.getAllWallets()');
@@ -88,24 +88,24 @@ function sortWalletsByWealth(wallets, limit) {
   return Object.entries(wallets)
     .sort((
       [_, { value: valueA, bank: bankA }],
-      [__, { value: valueB, bank: bankB }]
+      [__, { value: valueB, bank: bankB }],
     ) => {
-      return (valueB + bankB) - (valueA + bankA)
+      return (valueB + bankB) - (valueA + bankA);
     })
     .slice(0, limit);
 }
 
 async function sortCharactersByPower(userIds, limit) {
   const characters = await Promise.all(
-    userIds.map((id) => (
+    userIds.map(id => (
       RPGController.getCharacter(id)
-    ))
+    )),
   );
   return characters
     .sort((characterA, characterB) => {
       const { armor: armorA, weapon: weaponA } = characterA.equipmentLevels;
       const { armor: armorB, weapon: weaponB } = characterB.equipmentLevels;
-      return (armorB + weaponB) - (armorA + weaponA)
+      return (armorB + weaponB) - (armorA + weaponA);
     })
     .slice(0, limit);
 }
@@ -175,7 +175,7 @@ async function buildWealthLeaderboardText(users, wallets) {
 
     leaderboardText = leaderboardText.join('\n');
   } else {
-    leaderboardText = 'There is nobody to place on the leaderboard.'
+    leaderboardText = 'There is nobody to place on the leaderboard.';
   }
 
   return leaderboardText;
@@ -224,7 +224,7 @@ async function buildPowerLeaderboardText(users, characters) {
 
     leaderboardText = leaderboardText.join('\n');
   } else {
-    leaderboardText = 'There is nobody to place on the leaderboard.'
+    leaderboardText = 'There is nobody to place on the leaderboard.';
   }
 
   return leaderboardText;

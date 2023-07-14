@@ -9,17 +9,17 @@ module.exports = {
     .addSubcommand(economyClearjugcooldown.subCommandData),
 
   async execute(interaction) {
-    await interaction.deferReply()
+    await interaction.deferReply();
     const subCommand = interaction.options.getSubcommand();
 
     switch (subCommand) {
-      case 'clear-jug-cooldown': {
-        economyClearjugcooldown.execute(interaction);
-        break;
-      }
-      default: {
-        await interaction.editReply(messages.unknownError());
-      }
+    case 'clear-jug-cooldown': {
+      economyClearjugcooldown.execute(interaction);
+      break;
     }
-  }
+    default: {
+      await interaction.editReply(messages.unknownError());
+    }
+    }
+  },
 };

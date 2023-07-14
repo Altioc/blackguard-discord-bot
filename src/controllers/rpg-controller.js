@@ -1,80 +1,57 @@
-const PouchDB = require('pouchdb');
-PouchDB.plugin(require('pouchdb-upsert'));
 const {
-  blackguardDbDocNames,
   responseCodes,
-  initialRPGDoc,
-  currentLocationType
+  CurrentLocationType,
 } = require('../constants');
+const {
+  DocName,
+  initialRPGDoc,
+} = require('../constants/docs');
 const random = require('../utils/random');
 const response = require('../utils/response');
 const EconomyController = require('./economy-controller');
-const Character = require('../models/Character');
+const Character = require('../models/character');
+const DbController = require('./base/db-controller');
 
-class RPGController {
+class RPGController extends DbController {
   constructor() {
+    super(DocName.RPG, initialRPGDoc);
+    this.init();
+  }
+
+  initConfig(doc) {
     this.jugging = {
       pvp: {
         successChance: null,
         counterChance: null,
         counterRewardFloor: null,
-        counterRewardCeiling: null
+        counterRewardCeiling: null,
       },
       pve: {
         successChance: null,
         baseRewardFloor: null,
-        baseRewardCeiling: null
+        baseRewardCeiling: null,
       },
       cooldownLength: null,
       playerCooldowns: {},
-      ...initialRPGDoc.config.jug // these should be moved out of the doc since they are constants can't be configured live due to message length
-    }
+      ...doc.config.jug,
+    };
     this.equipmentStats = {
       upgrades: [],
       weapon: [],
       armor: [],
-      ...initialRPGDoc.config.equipmentStats
+      ...doc.config.equipmentStats,
     };
     this.characters = {};
-    this.db = new PouchDB('BlackguardBotDb');
-    this.createRPGDocIfDoesntExist()
-      .then(() => {
-        return this.loadCharacters();
-      })
-      .catch((error) => {
-        console.log(error, 'RPGController.constructor()');
-      });
-  }
 
-  createRPGDocIfDoesntExist() {
-    return this.db.putIfNotExists(blackguardDbDocNames.rpgDoc, initialRPGDoc)
-      .catch((error) => {
-        console.log(error, 'RPGController.createRPGDocIfDoesntExist()');
-      });
-  }
-
-  resetDoc() {
-    return this.db.upsert(blackguardDbDocNames.rpgDoc, () => (
-      initialRPGDoc
-    ));
-  }
-
-  loadCharacters() {
-    return this.db.get(blackguardDbDocNames.rpgDoc)
-      .then((doc) => {
-        Object.values(doc.characters).forEach((character) => {
-          this.characters[character.ownerId] = new Character(character);
-        });
-      })
-      .catch((error) => {
-        console.log(error, 'RPGController.loadCharacters()');
-      });
+    Object.values(doc.characters).forEach((character) => {
+      this.characters[character.ownerId] = new Character(character);
+    });
   }
 
   async saveCharacter(characterId) {
     const character = this.characters[characterId];
 
-    return this.db.upsert(blackguardDbDocNames.rpgDoc, (doc) => {
+    return this.db.upsert(this.docName, (doc) => {
       doc.characters[characterId] = character.toJsonCompatibleObject();
       return doc;
     });
@@ -118,7 +95,7 @@ class RPGController {
           return response(responseCodes.economy.insufficientFunds);
         }
 
-        return EconomyController.modifyCurrency(ownerId, -cost, currentLocationType.Bank)
+        return EconomyController.modifyCurrency(ownerId, -cost, CurrentLocationType.Bank)
           .then(async ({ responseCode }) => {
             if (responseCode !== responseCodes.success) {
               return;
@@ -135,8 +112,8 @@ class RPGController {
             } else {
               return response(responseCodes.failure);
             }
-          })
-      })
+          });
+      });
   }
 
   clearJugCooldown(juggerId) {
@@ -183,18 +160,18 @@ class RPGController {
         if (juggingRoll <= successChance) {
           const jugAmount = Math.round(random(
             Character.getModifiedRewardValue(baseRewardFloor, weapon.rewardModifier), 
-            Character.getModifiedRewardValue(baseRewardCeiling, weapon.rewardModifier)
+            Character.getModifiedRewardValue(baseRewardCeiling, weapon.rewardModifier),
           ));
 
           return EconomyController.modifyCurrency(juggerId, jugAmount)
             .then(() => {
               return response(responseCodes.success, {
                 finalJugAmount: jugAmount,
-                cooldownEndTime: this.jugging.playerCooldowns[juggerId].endTime
+                cooldownEndTime: this.jugging.playerCooldowns[juggerId].endTime,
               });
             })
             .catch((error) => {
-              console.log(error, 'RPGController.npcJug() -> success modifyCurrency');
+              this.log(error, 'npcJug -> success modifyCurrency');
             });
         } else {
           await this.increaseFailStacks(juggerId);
@@ -258,20 +235,20 @@ class RPGController {
           await this.resetFailStacks(juggerId);          
           const jugMultiplier = random(
             Character.getModifiedRewardValue(rewardFloor, rewardModifier), 
-            Character.getModifiedRewardValue(rewardCeiling, rewardModifier)
+            Character.getModifiedRewardValue(rewardCeiling, rewardModifier),
           );
           const idealJugAmount = Math.round(jugAmount * jugMultiplier);
           const finalJugAmount = Math.max(victimWallet.value < idealJugAmount ? victimWallet.value : idealJugAmount, 1);
 
           result = response(
             responseCodes.success, {
-            finalJugAmount,
-            cooldownEndTime: this.jugging.playerCooldowns[juggerId].endTime
-          });
+              finalJugAmount,
+              cooldownEndTime: this.jugging.playerCooldowns[juggerId].endTime,
+            });
 
           return EconomyController.transferCurrency(victimId, juggerId, finalJugAmount)
             .catch((error) => {
-              console.log(error, 'RPGController.jug() -> success transferCurrency');
+              this.log(error, 'jug -> success transferCurrency');
             });
         } else {
           await this.increaseFailStacks(juggerId);
@@ -283,23 +260,23 @@ class RPGController {
 
             result = response(
               responseCodes.economy.jug.counterSuccess, {
-              finalJugAmount: finalCounterAmount,
-              cooldownEndTime: this.jugging.playerCooldowns[juggerId].endTime
-            });
+                finalJugAmount: finalCounterAmount,
+                cooldownEndTime: this.jugging.playerCooldowns[juggerId].endTime,
+              });
 
             return EconomyController.transferCurrency(juggerId, victimId, finalCounterAmount)
               .then(() => {
                 return EconomyController.modifyCurrency(juggerId, -Math.round(jugAmount * (1 - recovery)));
               })
               .catch((error) => {
-                console.log(error, 'RPGController.jug() -> countered transferCurrency');
+                this.log(error, 'jug -> countered transferCurrency');
               });
           } else {
             result = response(responseCodes.failure, this.jugging.playerCooldowns[juggerId].endTime);
 
             return EconomyController.modifyCurrency(juggerId, -Math.round(jugAmount * (1 - recovery)))
               .catch((error) => {
-                console.log(error, 'RPGController.jug() -> failure transferCurrency');
+                this.log(error, 'jug -> failure transferCurrency');
               });
           }
         }
@@ -308,7 +285,7 @@ class RPGController {
         return result;
       })
       .catch((error) => {
-        console.log(error, 'RPGController.jug() -> db.get');
+        this.log(error, 'jug -> db.get');
       });
 
   }

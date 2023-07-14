@@ -1,14 +1,14 @@
 module.exports = {
-  subCommandData: (subcommand) =>
+  subCommandData: subcommand =>
     subcommand
-    .setName('kidstalkingshit')
-    .setDescription('i think its hilarious...')
-    .addStringOption(option => (
-      option
-        .setName('name')
-        .setDescription('The name of person the kids are talking shit about.')
-        .setRequired(true)
-    )),
+      .setName('kidstalkingshit')
+      .setDescription('i think its hilarious...')
+      .addStringOption(option => (
+        option
+          .setName('name')
+          .setDescription('The name of person the kids are talking shit about.')
+          .setRequired(true)
+      )),
 
   async execute(interaction) {
     const { options } = interaction;

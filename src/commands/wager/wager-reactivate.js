@@ -1,9 +1,9 @@
-const { EmbedBuilder, PermissionFlagsBits } = require('discord.js')
+const { EmbedBuilder, PermissionFlagsBits } = require('discord.js');
 const { messageTypeColors } = require('../../constants');
 const BookController = require('../../controllers/book-controller');
 
 module.exports = {
-  subCommandData: (subcommand) => (
+  subCommandData: subcommand => (
     subcommand
       .setName('reactivate')
       .setDescription('Reactivates an inactive wager.')
@@ -22,8 +22,8 @@ module.exports = {
           new EmbedBuilder()
             .setTitle('Reactivate Wager')
             .setColor(messageTypeColors.success)
-            .setDescription('The latest wager was reactivated.')
-        ]
+            .setDescription('The latest wager was reactivated.'),
+        ],
       });
     } else {
       await interaction.editReply({
@@ -31,10 +31,10 @@ module.exports = {
           new EmbedBuilder()
             .setTitle('No Inactive Wager')
             .setColor(messageTypeColors.failure)
-            .setDescription('There is no inactive wager to reactivate.')
+            .setDescription('There is no inactive wager to reactivate.'),
         ],
-        ephemeral: true
+        ephemeral: true,
       });
     }
-  }
-}
+  },
+};

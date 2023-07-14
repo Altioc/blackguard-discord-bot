@@ -1,14 +1,14 @@
-const { EmbedBuilder } = require('discord.js')
+const { EmbedBuilder } = require('discord.js');
 const {
   messageTypeColors,
   responseCodes,
-  blackguardDbDocNames,
-  messages
+  messages,
 } = require('../../constants');
+const { DocName } = require('../../constants/docs');
 const DocController = require('../../controllers/doc-controller');
 
 module.exports = {
-  subCommandData: (subcommand) => (
+  subCommandData: subcommand => (
     subcommand
       .setName('get')
       .setDescription('Saves the provided json object to the specified doc.')
@@ -17,11 +17,11 @@ module.exports = {
           .setName('name')
           .setDescription('The name of the doc to get.')
           .addChoices(
-            ...Object.entries(blackguardDbDocNames)
+            ...Object.entries(DocName)
               .map(([key, value]) => ({
                 name: value,
-                value: key
-              }))
+                value: key,
+              })),
           )
           .setRequired(true)
       ))
@@ -34,31 +34,31 @@ module.exports = {
 
   async execute(interaction) {
     const { options } = interaction;
-    const docNameKey = options.getString('name')
+    const docNameKey = options.getString('name');
     const configOnly = !!options.getBoolean('config-only');
 
     try {
-      const { responseCode, value } = await DocController.getDoc(docNameKey, configOnly);
+      const { responseCode, value } = await DocController.getDoc(DocName[docNameKey], configOnly);
 
       switch (responseCode) {
-        case responseCodes.success: {
-          await interaction.editReply({
-            embeds: [
-              new EmbedBuilder()
-                .setTitle('Doc Results')
-                .setColor(messageTypeColors.success)
-                .setDescription(value)
-            ]
-          });
-          break;
-        }
-        default: {
-          interaction.editReply(messages.unknownError());
-        }
+      case responseCodes.success: {
+        await interaction.editReply({
+          embeds: [
+            new EmbedBuilder()
+              .setTitle('Doc Results')
+              .setColor(messageTypeColors.success)
+              .setDescription(value),
+          ],
+        });
+        break;
+      }
+      default: {
+        interaction.editReply(messages.unknownError());
+      }
       }
     } catch (error) {
-      console.log(error, 'docGet.execute() -> DocController.getDoc()');
+      console.log(error, 'docGet.execute -> DocController.getDoc');
       interaction.editReply(messages.unknownError());
     }
-  }
-}
+  },
+};

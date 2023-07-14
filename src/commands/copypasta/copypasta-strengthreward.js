@@ -1,5 +1,5 @@
 module.exports = {
-  subCommandData: (subcommand) => (
+  subCommandData: subcommand => (
     subcommand
       .setName('strengthreward')
       .setDescription('If your party is strong enough to kill the boss...')
@@ -11,5 +11,5 @@ If your party is strong enough to kill the boss before you all die out then you 
 
 Easy clears are the reward you get for being strong ya know
     `);
-  }
-}
+  },
+};

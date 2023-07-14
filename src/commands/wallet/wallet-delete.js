@@ -1,9 +1,9 @@
-const { EmbedBuilder, PermissionFlagsBits } = require('discord.js')
+const { EmbedBuilder, PermissionFlagsBits } = require('discord.js');
 const { messageTypeColors, responseCodes, messages } = require('../../constants');
 const EconomyController = require('../../controllers/economy-controller');
 
 module.exports = {
-  subCommandData: (subcommand) => (
+  subCommandData: subcommand => (
     subcommand
       .setName('delete')
       .setDescription('Deletes the target user\'s wallet.')
@@ -32,36 +32,36 @@ module.exports = {
       const possessivePronoun = walletOwnedByAuthor ? 'Your' : 'Their';
 
       switch (responseCode) {
-        case responseCodes.success: {
-          await interaction.editReply({
-            embeds: [
-              new EmbedBuilder()
-                .setTitle('Delete Wallet')
-                .setColor(messageTypeColors.success)
-                .setDescription(`${possessivePronoun} Bilaim wallet has been deleted.`)
-            ]
-          });
-          break;
-        }
-        case responseCodes.doesntExist: {
-          await interaction.editReply({
-            embeds: [
-              new EmbedBuilder()
-                .setTitle('Doesn\'t Exist')
-                .setColor(messageTypeColors.failure)
-                .setDescription(`${pronoun} don't have a Bilaim wallet.`)
-            ],
-            ephemeral: true
-          });
-          break;
-        }
-        default: {
-          interaction.editReply(messages.unknownError());
-        }
+      case responseCodes.success: {
+        await interaction.editReply({
+          embeds: [
+            new EmbedBuilder()
+              .setTitle('Delete Wallet')
+              .setColor(messageTypeColors.success)
+              .setDescription(`${possessivePronoun} Bilaim wallet has been deleted.`),
+          ],
+        });
+        break;
+      }
+      case responseCodes.doesntExist: {
+        await interaction.editReply({
+          embeds: [
+            new EmbedBuilder()
+              .setTitle('Doesn\'t Exist')
+              .setColor(messageTypeColors.failure)
+              .setDescription(`${pronoun} don't have a Bilaim wallet.`),
+          ],
+          ephemeral: true,
+        });
+        break;
+      }
+      default: {
+        interaction.editReply(messages.unknownError());
+      }
       }
     } catch (error) {
       console.log(error, 'WalletDelete.execute() -> EconomyController.deleteWallet()');
       interaction.editReply(messages.unknownError());
     }
-  }
-}
+  },
+};

@@ -1,8 +1,8 @@
 module.exports = {
-  subCommandData: (subcommand) =>
+  subCommandData: subcommand =>
     subcommand
-    .setName('56kadele')
-    .setDescription('I know you\'re afraid of me...'),
+      .setName('56kadele')
+      .setDescription('I know you\'re afraid of me...'),
 
   async execute(interaction) {
     await interaction.reply(`

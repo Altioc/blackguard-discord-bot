@@ -5,7 +5,9 @@
   "main": "./src/bot.js",
   "scripts": {
     "start": "node ./src/bot.js",
-    "deploy": "node ./src/deploy-commands.js"
+    "deploy": "node ./src/deploy-commands.js",
+    "lint": "npx eslint --fix src",
+    "prepare": "husky install"
   },
   "repository": {
     "type": "git",
@@ -28,6 +30,11 @@
     "discord.js": "14.11.0",
     "pouchdb": "7.3.0",
     "pouchdb-find": "7.3.0",
-    "pouchdb-upsert": "2.2.0"
+    "pouchdb-upsert": "2.2.0",
+    "uuid": "9.0.0"
+  },
+  "devDependencies": {
+    "eslint": "8.44.0",
+    "husky": "8.0.3"
   }
 }

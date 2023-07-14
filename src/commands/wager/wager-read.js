@@ -1,10 +1,10 @@
-const { EmbedBuilder } = require('discord.js')
+const { EmbedBuilder } = require('discord.js');
 const { messageTypeColors, messages } = require('../../constants');
 const BookController = require('../../controllers/book-controller');
 const EconomyController = require('../../controllers/economy-controller');
 
 module.exports = {
-  subCommandData: (subcommand) => (
+  subCommandData: subcommand => (
     subcommand
       .setName('read')
       .setDescription('Prints out the currently active wager.')
@@ -32,18 +32,18 @@ module.exports = {
       if (authorsBet) {
         message.addFields({ 
           name: 'You have bet:', 
-          value: `${EconomyController.currencyEmoji} ${authorsBet.value} on "${authorsBet.option}".`
+          value: `${EconomyController.currencyEmoji} ${authorsBet.value} on "${authorsBet.option}".`,
         });
       }
 
       message.addFields({ name: 'Status:', value: ['Closed', 'Open'][+latestWager.isOpen] });
 
       await interaction.editReply({
-        embeds: [message]
+        embeds: [message],
       });
     } catch (error) {
       console.log(error, 'wagerRead.execute() -> guild.members.fetch()');
       interaction.editReply(messages.unknownError());
     }
-  }
-}
+  },
+};

@@ -1,5 +1,5 @@
 module.exports = {
-  subCommandData: (subcommand) => (
+  subCommandData: subcommand => (
     subcommand
       .setName('notnormally')
       .setDescription('skilled player but that is not normally...')
@@ -18,5 +18,5 @@ module.exports = {
     interaction.reply(`
 ${name} skilled player but that is not normally, This very very insane..They need to check them pc and game..Maybe they not cheating but maybe they using the game deficit..and this cant seem on screen..
     `);
-  }
-}
+  },
+};

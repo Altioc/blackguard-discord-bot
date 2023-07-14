@@ -2,7 +2,7 @@ const { PermissionFlagsBits } = require('discord.js');
 const { messages } = require('../../constants');
 
 module.exports = {
-  subCommandData: (subcommand) => (
+  subCommandData: subcommand => (
     subcommand
       .setName('delete')
       .setDescription('Deletes a role selector')
@@ -17,5 +17,5 @@ module.exports = {
     }
 
     interaction.editReply(messages.unknownError());
-  }
-}
+  },
+};

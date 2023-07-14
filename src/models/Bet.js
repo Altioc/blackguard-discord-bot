@@ -9,7 +9,7 @@ class Bet {
     return {
       value: this.value,
       option: this.option,
-      ownerId: this.ownerId
+      ownerId: this.ownerId,
     };
   }
 }

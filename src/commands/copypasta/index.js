@@ -50,89 +50,89 @@ module.exports = {
     const subCommand = interaction.options.getSubcommand();
 
     switch (subCommand) {
-      case 'hero': {
-        await copypastaHero.execute(interaction);
-        break;
-      }
-      case 'darksight': {
-        await copypastaDarksight.execute(interaction);
-        break;
-      }
-      case 'disgusting': {
-        await copypastaDisgusting.execute(interaction);
-        break;
-      }
-      case 'notnormally': {
-        await copypastaNotnormally.execute(interaction);
-        break;
-      }
-      case 'strengthreward': {
-        await copypastaStrengthreward.execute(interaction);
-        break;
-      }
-      case 'oakba': {
-        await copypastaOakba.execute(interaction);
-        break;
-      }
-      case 'whodoyouknow': {
-        await copypastaWhodoyouknow.execute(interaction);
-        break;
-      }
-      case 'sillychild': {
-        await copypastaSillychild.execute(interaction);
-        break;
-      }
-      case 'occasionalattack': {
-        await copypastaOccasionalattack.execute(interaction);
-        break;
-      }
-      case '56kadele': {
-        await copypasta56kadele.execute(interaction);
-        break;
-      }
-      case 'misinformation': {
-        await copypastaMisinformation.execute(interaction);
-        break;
-      }
-      case 'misplay': {
-        await copypastaMisplay.execute(interaction);
-        break;
-      }
-      case 'singlethought': {
-        await copypastaSinglethought.execute(interaction);
-        break;
-      }
-      case 'blessyourheart': {
-        await copypastaBlessyourheart.execute(interaction);
-        break;
-      }
-      case 'runculvert': {
-        await copypastaRunculvert.execute(interaction);
-        break;
-      }
-      case 'pleaserefrain': {
-        await copypastaPleaserefrain.execute(interaction);
-        break;
-      }
-      case 'kidstalkingshit': {
-        await copypastaKidstalkingshit.execute(interaction);
-        break;
-      }
-      case 'justbegood': {
-        await copypastaJustbegood.execute(interaction);
-        break;
-      }
-      case 'lightnovel': {
-        await copypastaLightnovel.execute(interaction);
-        break;
-      }
-      case 'imjustdone': {
-        await copypastaImJustDone.execute(interaction);
-        break;
-      }
-      default: {
-        await interaction.editReply(messages.unknownError());
-      }
+    case 'hero': {
+      await copypastaHero.execute(interaction);
+      break;
+    }
+    case 'darksight': {
+      await copypastaDarksight.execute(interaction);
+      break;
+    }
+    case 'disgusting': {
+      await copypastaDisgusting.execute(interaction);
+      break;
+    }
+    case 'notnormally': {
+      await copypastaNotnormally.execute(interaction);
+      break;
+    }
+    case 'strengthreward': {
+      await copypastaStrengthreward.execute(interaction);
+      break;
+    }
+    case 'oakba': {
+      await copypastaOakba.execute(interaction);
+      break;
+    }
+    case 'whodoyouknow': {
+      await copypastaWhodoyouknow.execute(interaction);
+      break;
+    }
+    case 'sillychild': {
+      await copypastaSillychild.execute(interaction);
+      break;
+    }
+    case 'occasionalattack': {
+      await copypastaOccasionalattack.execute(interaction);
+      break;
+    }
+    case '56kadele': {
+      await copypasta56kadele.execute(interaction);
+      break;
+    }
+    case 'misinformation': {
+      await copypastaMisinformation.execute(interaction);
+      break;
+    }
+    case 'misplay': {
+      await copypastaMisplay.execute(interaction);
+      break;
+    }
+    case 'singlethought': {
+      await copypastaSinglethought.execute(interaction);
+      break;
+    }
+    case 'blessyourheart': {
+      await copypastaBlessyourheart.execute(interaction);
+      break;
+    }
+    case 'runculvert': {
+      await copypastaRunculvert.execute(interaction);
+      break;
+    }
+    case 'pleaserefrain': {
+      await copypastaPleaserefrain.execute(interaction);
+      break;
+    }
+    case 'kidstalkingshit': {
+      await copypastaKidstalkingshit.execute(interaction);
+      break;
+    }
+    case 'justbegood': {
+      await copypastaJustbegood.execute(interaction);
+      break;
+    }
+    case 'lightnovel': {
+      await copypastaLightnovel.execute(interaction);
+      break;
+    }
+    case 'imjustdone': {
+      await copypastaImJustDone.execute(interaction);
+      break;
+    }
+    default: {
+      await interaction.editReply(messages.unknownError());
+    }
     }
   },
 };

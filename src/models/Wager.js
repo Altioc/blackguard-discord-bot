@@ -1,4 +1,4 @@
-const Bet = require('./Bet');
+const Bet = require('./bet');
 
 class Wager {
   constructor({ ownerId, premise, bets, isActive, isOpen }) {
@@ -27,9 +27,9 @@ class Wager {
   getResults(outcome) {
     const { totalWinnings, totalLosings } = this.bets.reduce((results, bet) => {
       if (bet.option === outcome) {
-          results.totalWinnings += bet.value;
+        results.totalWinnings += bet.value;
       } else {
-          results.totalLosings += bet.value;
+        results.totalLosings += bet.value;
       }
 
       return results;
@@ -41,13 +41,13 @@ class Wager {
         results.winners.push({
           userId: bet.ownerId,
           value: Math.floor(winnings + bet.value),
-          net: `+${winnings}`
+          net: `+${winnings}`,
         });
       } else {
         results.losers.push({
           userId: bet.ownerId,
           value: bet.value,
-          net: `-${bet.value}`
+          net: `-${bet.value}`,
         });
       }
 
@@ -61,7 +61,7 @@ class Wager {
       premise: this.premise,
       bets: this.bets.map(bet => bet.toJsonCompatibleObject()),
       isActive: this.isActive,
-      isOpen: this.isOpen
+      isOpen: this.isOpen,
     };
   }
 }

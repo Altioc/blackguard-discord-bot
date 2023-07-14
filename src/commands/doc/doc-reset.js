@@ -1,14 +1,14 @@
-const { EmbedBuilder } = require('discord.js')
+const { EmbedBuilder } = require('discord.js');
 const {
   messageTypeColors,
   responseCodes,
-  blackguardDbDocNames,
-  messages
+  messages,
 } = require('../../constants');
-const DocController = require('../../controllers/doc-controller')
+const { DocName } = require('../../constants/docs');
+const DocController = require('../../controllers/doc-controller');
 
 module.exports = {
-  subCommandData: (subcommand) => (
+  subCommandData: subcommand => (
     subcommand
       .setName('reset')
       .setDescription('Resets the specified doc to its default value.')
@@ -17,11 +17,11 @@ module.exports = {
           .setName('name')
           .setDescription('The name of the doc to reset.')
           .addChoices(
-            ...Object.values(blackguardDbDocNames)
-              .map((value) => ({
+            ...Object.values(DocName)
+              .map(value => ({
                 name: value,
-                value: value
-              }))
+                value: value,
+              })),
           )
           .setRequired(true)
       ))
@@ -32,26 +32,26 @@ module.exports = {
     const docNameKey = options.getString('name');
 
     try {
-      const { responseCode } = await DocController.resetDoc(docNameKey);
+      const { responseCode } = await DocController.resetDoc(DocName[docNameKey]);
 
       switch (responseCode) {
-        case responseCodes.success: {
-          await interaction.editReply({
-            embeds: [
-              new EmbedBuilder()
-                .setTitle('Doc Reset')
-                .setColor(messageTypeColors.success)
-            ]
-          });
-          break;
-        }
-        default: {
-          interaction.editReply(messages.unknownError());
-        }
+      case responseCodes.success: {
+        await interaction.editReply({
+          embeds: [
+            new EmbedBuilder()
+              .setTitle('Doc Reset')
+              .setColor(messageTypeColors.success),
+          ],
+        });
+        break;
+      }
+      default: {
+        interaction.editReply(messages.unknownError());
+      }
       }
     } catch (error) {
-      console.log(error, 'docReset.execute() -> DocController.resetDoc()');
+      console.log(error, 'docReset.execute -> DocController.resetDoc');
       interaction.editReply(messages.unknownError());
     }
-  }
-}
+  },
+};

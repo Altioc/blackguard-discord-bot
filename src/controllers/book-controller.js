@@ -1,49 +1,30 @@
-const PouchDB = require('pouchdb');
-PouchDB.plugin(require('pouchdb-upsert'));
+const { responseCodes } = require('../constants');
 const {
+  DocName,
   initialBookDoc,
-  blackguardDbDocNames,
-  responseCodes
-} = require('../constants');
-const Wager = require('../models/Wager');
-const Bet = require('../models/Bet');
+} = require('../constants/docs');
+const Wager = require('../models/wager');
+const Bet = require('../models/bet');
 const EconomyController = require('./economy-controller');
 const response = require('../utils/response');
+const DbController = require('./base/db-controller');
 
-class BookController {
+class BookController extends DbController {
   constructor() {
+    super(DocName.Book, initialBookDoc);
+    this.init();
+  }
+
+  initConfig(doc) {
     this.latestWager = null;
-    this.wagerTimeoutMs = null;
+    this.wagerTimeoutMs = doc.config.wagerTimeoutMs || null;
     this.wagerTimeout = null;
 
-    this.db = new PouchDB('BlackguardBotDb');
-    this.createBookDocIfDoesntExist()
-      .then(() => {
-        return this.initConfig()
-      })
-      .then(() => {
-        return this.initLatestWager();
-      })
-      .catch((error) => {
-        console.log(error, 'BookController.constructor()');
-      });
-  }
-
-  createBookDocIfDoesntExist() {
-    return this.db.putIfNotExists(blackguardDbDocNames.bookDoc, initialBookDoc)
-      .catch((error) => {
-        console.log(error, 'BookController.createBookDocIfDoesntExist()');
-      });
-  }
-
-  resetDoc() {
-    return this.db.upsert(blackguardDbDocNames.bookDoc, () => (
-      initialBookDoc
-    ));
+    return this.initLatestWager();
   }
 
   initLatestWager() {
-    return this.db.get(blackguardDbDocNames.bookDoc)
+    return this.db.get(this.docName)
       .then((doc) => {
         if (doc.latestWager) {
           this.latestWager = new Wager(doc.latestWager);
@@ -51,17 +32,7 @@ class BookController {
         }
       })
       .catch((error) => {
-        console.log(error, 'BookController.initLatestWager()');
-      });
-  }
-
-  initConfig() {
-    return this.db.get(blackguardDbDocNames.bookDoc)
-      .then((doc) => {
-        this.wagerTimeoutMs = doc.config.wagerTimeoutMs;
-      })
-      .catch((error) => {
-        console.log(error, 'BookController.initConfig()');
+        this.log(error, 'initLatestWager');
       });
   }
 
@@ -73,7 +44,7 @@ class BookController {
             this.rollBackBets();
           })
           .catch((error) => {
-            console.log(error, 'BookController.startLatestWagerTimeout() -> timeout');
+            this.log(error, 'startLatestWagerTimeout -> timeout');
           });
       }
     }, this.wagerTimeoutMs);
@@ -85,13 +56,13 @@ class BookController {
     if (this.wagerIsValid()) {
       if (!this.latestWager.isOpen) {
         return Promise.resolve(
-          response(responseCodes.book.noOpenWager)
+          response(responseCodes.book.noOpenWager),
         );
       }
 
       if (this.latestWager.ownerId === ownerId) {
         return Promise.resolve(
-          response(responseCodes.book.ownWager)
+          response(responseCodes.book.ownWager),
         );
       }
 
@@ -124,20 +95,20 @@ class BookController {
               .then(() => {
                 return response(
                   responseCodes.success,
-                  newBet.value
+                  newBet.value,
                 );
               })
               .catch((error) => {
-                console.log(error, 'BookController.bet() -> EconomyController.modifyCurrency()');
+                this.log(error, 'bet -> EconomyController.modifyCurrency');
               });
           }
         })
         .catch((error) => {
-          console.log(error, 'BookController.bet() -> EconomyController.getWallet()');
+          this.log(error, 'bet -> EconomyController.getWallet');
         });
     } else {
       return Promise.resolve(
-        response(responseCodes.book.noActiveWager)
+        response(responseCodes.book.noActiveWager),
       );
     }
   }
@@ -151,7 +122,7 @@ class BookController {
           return response(responseCodes.success);
         })
         .catch((error) => {
-          console.log(error, 'BookController.startWager()');
+          this.log(error, 'startWager');
         });
     }
 
@@ -194,11 +165,11 @@ class BookController {
         .then(() => {
           return response(
             responseCodes.success,
-            results
+            results,
           );
         })
         .catch((error) => {
-          console.log(error, 'BookController.distributePayout()');
+          this.log(error, 'distributePayout');
         });
     }
 
@@ -219,12 +190,12 @@ class BookController {
         return response(responseCode);
       })
       .catch((error) => {
-        console.log(error, 'BookController.rollBackBets()');
+        this.log(error, 'rollBackBets');
       });
   }
 
   saveWager() {
-    return this.db.upsert(blackguardDbDocNames.bookDoc, (doc) => {
+    return this.db.upsert(this.docName, (doc) => {
       doc.latestWager = this.latestWager.toJsonCompatibleObject();
       return doc;
     })
@@ -232,7 +203,7 @@ class BookController {
         return response(responseCodes.success);
       })
       .catch((error) => {
-        console.log(error, 'BookController.saveWager()');
+        this.log(error, 'saveWager');
       });
   }
 

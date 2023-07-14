@@ -1,5 +1,5 @@
 module.exports = {
-  subCommandData: (subcommand) => (
+  subCommandData: subcommand => (
     subcommand
       .setName('pleaserefrain')
       .setDescription('please refrain from making...')
@@ -22,5 +22,5 @@ module.exports = {
     const response = Array(count).fill(singleResponse).join('\n');
 
     interaction.reply(response);
-  }
-}
+  },
+};

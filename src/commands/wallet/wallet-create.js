@@ -1,9 +1,9 @@
-const { EmbedBuilder, PermissionFlagsBits, } = require('discord.js')
+const { EmbedBuilder, PermissionFlagsBits } = require('discord.js');
 const { messageTypeColors, responseCodes, messages } = require('../../constants');
 const EconomyController = require('../../controllers/economy-controller');
 
 module.exports = {
-  subCommandData: (subcommand) => (
+  subCommandData: subcommand => (
     subcommand
       .setName('create')
       .setDescription('Creates a new wallet for the target user or the author if no target specified.')
@@ -32,36 +32,36 @@ module.exports = {
       const possessivePronoun = walletOwnedByUser ? 'Your' : 'Their';
 
       switch (responseCode) {
-        case responseCodes.success: {
-          await interaction.editReply({
-            embeds: [
-              new EmbedBuilder()
-                .setTitle('Create Wallet')
-                .setColor(messageTypeColors.success)
-                .setDescription(`${possessivePronoun} Bilaim wallet has been created.`)
-            ]
-          });
-          break;
-        }
-        case responseCodes.alreadyExists: {
-          await interaction.editReply({
-            embeds: [
-              new EmbedBuilder()
-                .setTitle('Already Exists')
-                .setColor(messageTypeColors.failure)
-                .setDescription(`${pronoun} already have a Bilaim wallet.`)
-            ],
-            ephemeral: true
-          });
-          break;
-        }
-        default: {
-          interaction.editReply(messages.unknownError());
-        }
+      case responseCodes.success: {
+        await interaction.editReply({
+          embeds: [
+            new EmbedBuilder()
+              .setTitle('Create Wallet')
+              .setColor(messageTypeColors.success)
+              .setDescription(`${possessivePronoun} Bilaim wallet has been created.`),
+          ],
+        });
+        break;
+      }
+      case responseCodes.alreadyExists: {
+        await interaction.editReply({
+          embeds: [
+            new EmbedBuilder()
+              .setTitle('Already Exists')
+              .setColor(messageTypeColors.failure)
+              .setDescription(`${pronoun} already have a Bilaim wallet.`),
+          ],
+          ephemeral: true,
+        });
+        break;
+      }
+      default: {
+        interaction.editReply(messages.unknownError());
+      }
       }
     } catch (error) {
       console.log(error, 'leaderboard.execute() -> EconomyController.getAllWallets()');
       interaction.editReply(messages.unknownError());
     }
-  }
-}
+  },
+};

@@ -1,5 +1,5 @@
 module.exports = {
-  subCommandData: (subcommand) => (
+  subCommandData: subcommand => (
     subcommand
       .setName('blessyourheart')
       .setDescription('Well bless your heart...')
@@ -18,5 +18,5 @@ module.exports = {
     interaction.reply(`
 Well bless your heart ${name}, it's so nice to have a reasonable discussion where we agree to disagree on this discord
     `);
-  }
-}
+  },
+};

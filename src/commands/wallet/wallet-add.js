@@ -1,9 +1,9 @@
-const { EmbedBuilder, PermissionFlagsBits } = require('discord.js')
-const { messageTypeColors, responseCodes, messages, currentLocationType } = require('../../constants');
+const { EmbedBuilder, PermissionFlagsBits } = require('discord.js');
+const { messageTypeColors, responseCodes, messages, CurrentLocationType } = require('../../constants');
 const EconomyController = require('../../controllers/economy-controller');
 
 module.exports = {
-  subCommandData: (subcommand) => (
+  subCommandData: subcommand => (
     subcommand
       .setName('add')
       .setDescription('Adds a specified amount of Bilaim to the target\'s wallet.')
@@ -34,7 +34,7 @@ module.exports = {
     const value = options.getInteger('value');
     const toBank = options.getBoolean('bank');
 
-    const addTarget = toBank ? currentLocationType.Bank : currentLocationType.Wallet;
+    const addTarget = toBank ? CurrentLocationType.Bank : CurrentLocationType.Wallet;
 
     if (!interaction.memberPermissions.has(PermissionFlagsBits.Administrator)) {
       await interaction.editReply(messages.incorrectPermissions());
@@ -47,9 +47,9 @@ module.exports = {
           new EmbedBuilder()
             .setTitle('Invalid Value')
             .setColor(messageTypeColors.failure)
-            .setDescription('You can only add Bilaim in values greater than 0.')
+            .setDescription('You can only add Bilaim in values greater than 0.'),
         ],
-        ephemeral: true
+        ephemeral: true,
       });
       return;
     }
@@ -58,32 +58,32 @@ module.exports = {
       const { responseCode, value: newValue } = await EconomyController.modifyCurrency(target.id, value, addTarget);
 
       switch (responseCode) {
-        case responseCodes.success: {
-          await interaction.editReply({
-            embeds: [
-              new EmbedBuilder()
-                .setTitle('Bilaim Added')
-                .setColor(messageTypeColors.success)
-                .setDescription(`${EconomyController.currencyEmoji} ${value} has been added.`)
-                .addFields(
-                  { name: 'To:', value: target.displayName },
-                  { name: 'New balance:', value: `${newValue}` }
-                )
-            ]
-          });
-          break;
-        }
-        case responseCodes.userDoesNotExist: {
-          await interaction.editReply(messages.targetNoWallet(target.displayName));
-          break;
-        }
-        default: {
-          interaction.editReply(messages.unknownError());
-        }
+      case responseCodes.success: {
+        await interaction.editReply({
+          embeds: [
+            new EmbedBuilder()
+              .setTitle('Bilaim Added')
+              .setColor(messageTypeColors.success)
+              .setDescription(`${EconomyController.currencyEmoji} ${value} has been added.`)
+              .addFields(
+                { name: 'To:', value: target.displayName },
+                { name: 'New balance:', value: `${newValue}` },
+              ),
+          ],
+        });
+        break;
+      }
+      case responseCodes.userDoesNotExist: {
+        await interaction.editReply(messages.targetNoWallet(target.displayName));
+        break;
+      }
+      default: {
+        interaction.editReply(messages.unknownError());
+      }
       }
     } catch (error) {
       console.log(error, 'walletAdd.execute() -> EconomyController.modifyCurrency()');
       interaction.editReply(messages.unknownError());
     }
-  }
-}
+  },
+};

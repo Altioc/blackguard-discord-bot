@@ -1,86 +1,83 @@
-const PouchDB = require('pouchdb');
-PouchDB.plugin(require('pouchdb-upsert'));
 const {
-  blackguardDbDocNames,
-  initialEconomyDoc,
   responseCodes,
-  currentLocationType
+  CurrentLocationType,
+  minute,
 } = require('../constants');
-const Wallet = require('../models/Wallet');
+const {
+  initialEconomyDoc,
+  DocName,
+} = require('../constants/docs');
+const Wallet = require('../models/wallet');
 const response = require('../utils/response');
+const DbController = require('./base/db-controller');
 
-class EconomyController {
+class EconomyController extends DbController {
   constructor() {
+    super(DocName.Economy, initialEconomyDoc);
+    this.init();
+  }
+
+  async initConfig(doc) {
     this.bank = {
       interestRate: null,
       storableValueRatio: null,
-      interestTickRate: null,
       withdrawalTime: null,
-      activeWithdrawals: {}
+      activeWithdrawals: {},
+      ...doc.config.bank,
     };
-    this.currencyEmoji = null;
-    this.walletInitialCurrencyAmount = null;
+    this.currencyEmoji = doc.config.currencyEmoji || null;
+    this.walletInitialCurrencyAmount = doc.config.wallet.initialCurrencyAmount || null;
     this.bankInterestInterval = null;
-    this.db = new PouchDB('BlackguardBotDb');
-    this.createEconomyDocIfDoesntExist()
-      .then(() => {
-        return this.initConfig();
-      })
-      .catch((error) => {
-        console.log(error, 'EconomyController.constructor()');
-      });
+    this.nextInterestPayoutDate = null;
+
+    if (doc.nextInterestPayoutDate) {
+      this.nextInterestPayoutDate = new Date(doc.nextInterestPayoutDate);
+    }
+    
+    this.startInterestSystem();
   }
 
-  createEconomyDocIfDoesntExist() {
-    return this.db.putIfNotExists(blackguardDbDocNames.economyDoc, initialEconomyDoc)
-      .catch((error) => {
-        console.log(error, 'EconomyController.createEconomyDocIfDoesntExist()');
-      });
-  }
+  getCurrentDate() {
+    const currentDate = new Date();
+    currentDate.setHours(0);
+    currentDate.setMinutes(0);
+    currentDate.setSeconds(0);
+    currentDate.setMilliseconds(0);
 
-  resetDoc() {
-    return this.db.upsert(blackguardDbDocNames.economyDoc, () => (
-      initialEconomyDoc
-    ));
-  }
-
-  initConfig() {
-    return this.db.get(blackguardDbDocNames.economyDoc)
-      .then((doc) => {
-        this.bank = {
-          ...this.bank,
-          ...doc.config.bank
-        }
-        this.currencyEmoji = doc.config.currencyEmoji;
-        this.walletInitialCurrencyAmount = doc.config.wallet.initialCurrencyAmount,
-       
-        this.startInterestSystem();
-      })
-      .catch((error) => {
-        console.log(error, 'EconomyController.initConfig()');
-      });
+    return currentDate;
   }
 
   startInterestSystem() {
     clearInterval(this.bankInterestInterval);
     this.bankInterestInterval = setInterval(() => {
-      this.db.upsert(blackguardDbDocNames.economyDoc, (doc) => {
-        Object.entries(doc.wallets).forEach(([ userId ]) => {
-          doc.wallets[userId].bank = Math.floor(doc.wallets[userId].bank * (1 + this.bank.interestRate));
-        });
+      if (this.nextInterestPayoutDate === null || this.getCurrentDate() > this.nextInterestPayoutDate) {
+        this.db.upsert(this.docName, (doc) => {
+          const newNextInterestPayoutDate = new Date(this.getCurrentDate());
+          newNextInterestPayoutDate.setDate(newNextInterestPayoutDate.getDate() + 1);
+          doc.nextInterestPayoutDate = newNextInterestPayoutDate.toString();
+          this.nextInterestPayoutDate = newNextInterestPayoutDate;
 
-        return doc;
-      })
-        .catch((error) => {
-          console.log(error, 'EconomyController.startInterestSystem()');
-        });
-    }, this.bank.interestTickRate);
+          Object.entries(doc.wallets).forEach(([userId]) => {
+            doc.wallets[userId].bank = Math.floor(doc.wallets[userId].bank * (1 + this.bank.interestRate));
+          });
+  
+          return doc;
+        })
+          .catch((error) => {
+            this.log(error, 'startInterestSystem');
+          });
+      }
+    }, 5 * minute);
+  }
+
+  async saveLastInterestPayout() {
+
   }
 
   createWallet(userId) {
     let responseCode = responseCodes.success;
 
-    return this.db.upsert(blackguardDbDocNames.economyDoc, (doc) => {
+    return this.db.upsert(this.docName, (doc) => {
       if (!doc.wallets[userId]) {
         doc.wallets[userId] = new Wallet(this.walletInitialCurrencyAmount);
         responseCode = responseCodes.success;
@@ -93,35 +90,35 @@ class EconomyController {
         return response(responseCode);
       })
       .catch((error) => {
-        console.log(error, 'EconomyController.createWallet()');
+        this.log(error, 'createWallet');
       });
   }
 
   getWallet(userId) {
-    return this.db.get((blackguardDbDocNames.economyDoc))
+    return this.db.get((this.docName))
       .then((doc) => {
         const responseCode = doc.wallets[userId] ? responseCodes.success : responseCodes.doesntExist;
 
         return response(responseCode, doc.wallets[userId]);
       })
       .catch((error) => {
-        console.log(error, 'EconomyController.getWallet()');
+        this.log(error, 'getWallet');
       });
   }
 
   getAllWallets() {
-    return this.db.get((blackguardDbDocNames.economyDoc))
+    return this.db.get((this.docName))
       .then((doc) => {
         return response(responseCodes.success, doc.wallets);
       })
       .catch((error) => {
-        console.log(error, 'EconomyController.getAllWallets()');
+        this.log(error, 'getAllWallets');
       });
   }
 
   deleteWallet(userId) {
     let responseCode = responseCodes.success;
-    return this.db.upsert(blackguardDbDocNames.economyDoc, (doc) => {
+    return this.db.upsert(this.docName, (doc) => {
       if (doc.wallets[userId]) {
         delete doc.wallets[userId];
         responseCode = responseCodes.success;
@@ -135,7 +132,7 @@ class EconomyController {
         return response(responseCode);
       })
       .catch((error) => {
-        console.log(error, 'EconomyController.deleteWallet()');
+        this.log(error, 'deleteWallet');
       });
   }
 
@@ -150,7 +147,7 @@ class EconomyController {
       return Promise.resolve(response(responseCodes.economy.sameUser));
     }
 
-   return this.db.upsert(blackguardDbDocNames.economyDoc, (doc) => {
+    return this.db.upsert(this.docName, (doc) => {
       const fromUserWallet = doc.wallets[fromUserId];
       const toUserWallet = doc.wallets[toUserId];
 
@@ -171,7 +168,7 @@ class EconomyController {
         return response(responseCode);
       })
       .catch((error) => {
-        console.log(error, 'EconomyController.transferCurrency()');
+        this.log(error, 'transferCurrency');
       });
   }
 
@@ -190,7 +187,7 @@ class EconomyController {
       return Promise.resolve(response(responseCodes.positiveValueNeeded));
     }
 
-    return this.db.get(blackguardDbDocNames.economyDoc)
+    return this.db.get(this.docName)
       .then((doc) => {
         const wallet = doc.wallets[targetUserId];
 
@@ -213,31 +210,31 @@ class EconomyController {
               const amountToWithdrawal = thisWithdrawalAttempt.amount;
               thisWithdrawalAttempt.isActive = false;
               this.commitWithdrawal(targetUserId, amountToWithdrawal);
-            }, this.bank.withdrawalTime)
+            }, this.bank.withdrawalTime),
           };
 
           return response(responseCodes.success, withdrawalTime);
         }
       })
       .catch((error) => {
-        console.log(error, 'EconomyController.withdrawCurrency()');
+        this.log(error, 'withdrawCurrency');
       });
   }
 
   commitWithdrawal(targetUserId, amount) {
-    this.db.upsert(blackguardDbDocNames.economyDoc, (doc) => {
-        const wallet = doc.wallets[targetUserId];
-        const expectedBankValue = wallet.bank - amount;
+    this.db.upsert(this.docName, (doc) => {
+      const wallet = doc.wallets[targetUserId];
+      const expectedBankValue = wallet.bank - amount;
 
-        if (expectedBankValue >= 0) {
-          doc.wallets[targetUserId].bank -= amount;
-          doc.wallets[targetUserId].value += amount;
-        }
+      if (expectedBankValue >= 0) {
+        doc.wallets[targetUserId].bank -= amount;
+        doc.wallets[targetUserId].value += amount;
+      }
 
-        return doc;
-      })
+      return doc;
+    })
       .catch((error) => {
-        console.log(error, 'EconomyController.commitWithdrawal()');
+        this.log(error, 'commitWithdrawal');
       });
   }
 
@@ -252,7 +249,7 @@ class EconomyController {
 
     let result;
 
-    return this.db.upsert(blackguardDbDocNames.economyDoc, (doc) => {
+    return this.db.upsert(this.docName, (doc) => {
       const wallet = doc.wallets[targetUserId];
 
       if (!wallet) {
@@ -284,20 +281,20 @@ class EconomyController {
         return result;
       })
       .catch((error) => {
-        console.log(error, 'EconomyController.depositCurrency()');
+        this.log(error, 'depositCurrency');
       });
   }
 
-  modifyCurrency(targetUserId, amount, location = currentLocationType.Wallet) {
+  modifyCurrency(targetUserId, amount, location = CurrentLocationType.Wallet) {
     let newValue;
 
-    return this.db.get(blackguardDbDocNames.economyDoc)
+    return this.db.get(this.docName)
       .then((doc) => {
         if (!doc.wallets[targetUserId]) {
-          return Promise.resolve(response(responseCodes.userDoesNotExist))
+          return Promise.resolve(response(responseCodes.userDoesNotExist));
         }
 
-        return this.db.upsert(blackguardDbDocNames.economyDoc, (doc) => {
+        return this.db.upsert(this.docName, (doc) => {
           doc.wallets[targetUserId][location] += amount;
 
           if (doc.wallets[targetUserId][location] < 0) {
@@ -310,22 +307,22 @@ class EconomyController {
           .then(() => {
             return response(
               responseCodes.success,
-              newValue
+              newValue,
             );
           })
           .catch((error) => {
-            console.log(error, 'EconomyController.modifyCurrency() -> db.upsert');
+            this.log(error, 'modifyCurrency -> db.upsert');
           });
 
       })
       .catch((error) => {
-        console.log(error, 'EconomyController.modifyCurrency() -> db.get');
+        this.log(error, 'modifyCurrency -> db.get');
       });
 
   }
 
   bulkModifyCurrency(modifications) {
-    return this.db.upsert(blackguardDbDocNames.economyDoc, (doc) => {
+    return this.db.upsert(this.docName, (doc) => {
       modifications.forEach((modification) => {
         const { userId, value } = modification;
         doc.wallets[userId].value += +value;
@@ -341,7 +338,7 @@ class EconomyController {
         return response(responseCodes.success);
       })
       .catch((error) => {
-        console.log(error, 'EconomyController.bulkModifyCurrency()');
+        this.log(error, 'bulkModifyCurrency');
       });
   }
 }

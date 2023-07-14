@@ -1,5 +1,5 @@
 module.exports = {
-  subCommandData: (subcommand) => (
+  subCommandData: subcommand => (
     subcommand
       .setName('disgusting')
       .setDescription('BA should be done on high defense dummy...')
@@ -17,5 +17,5 @@ Dark sight. Haha. Kid's Protection Skill.
 
 To the readers, prepare popcorn, those dark sight crybabies are coming.
     `);
-  }
-}
+  },
+};

@@ -15,7 +15,7 @@ module.exports = {
 
   async execute(interaction) {
     await interaction.deferReply({
-      ephemeral: true
+      ephemeral: true,
     });
     const subCommand = interaction.options.getSubcommand();
 
@@ -25,21 +25,21 @@ module.exports = {
     }
 
     switch (subCommand) {
-      case 'get': {
-        await docGet.execute(interaction);
-        break;
-      }
-      case 'set': {
-        await docSet.execute(interaction);
-        break;
-      }
-      case 'reset': {
-        await docReset.execute(interaction);
-        break;
-      }
-      default: {
-        await interaction.editReply(messages.unknownError());
-      }
+    case 'get': {
+      await docGet.execute(interaction);
+      break;
+    }
+    case 'set': {
+      await docSet.execute(interaction);
+      break;
+    }
+    case 'reset': {
+      await docReset.execute(interaction);
+      break;
+    }
+    default: {
+      await interaction.editReply(messages.unknownError());
+    }
     }
   },
 };

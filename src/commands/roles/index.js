@@ -6,31 +6,31 @@ const rolesDelete = require('./roles-delete');
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('bg-roles')
+    .setName('roles')
     .setDescription('Create/modify role selectors')
     .addSubcommand(rolesCreate.subCommandData)
     .addSubcommand(rolesUpdate.subCommandData)
     .addSubcommand(rolesDelete.subCommandData),
 
   async execute(interaction) {
-    const subCommand = interaction.options.getSubcommand()
+    const subCommand = interaction.options.getSubcommand();
 
     switch (subCommand) {
-      case 'create': {
-        await rolesCreate.execute(interaction);
-        break;
-      }
-      case 'update': {
-        await rolesUpdate.execute(interaction);
-        break;
-      }
-      case 'delete': {
-        await rolesDelete.execute(interaction);
-        break;
-      }
-      default: {
-        await interaction.editReply(messages.unknownError());
-      }
+    case 'create': {
+      await rolesCreate.execute(interaction);
+      break;
+    }
+    case 'update': {
+      await rolesUpdate.execute(interaction);
+      break;
+    }
+    case 'delete': {
+      await rolesDelete.execute(interaction);
+      break;
+    }
+    default: {
+      await interaction.editReply(messages.unknownError());
+    }
     }
   },
 };

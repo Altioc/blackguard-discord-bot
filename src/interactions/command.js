@@ -1,8 +1,8 @@
-const allCommands = require('../constants/commandHandlers');
+const allCommands = require('../constants/command-handlers');
 
 module.exports = {
-	async execute(interaction) {    
-    const { commandName } = interaction
+  async execute(interaction) {    
+    const { commandName } = interaction;
     const command = allCommands.get(commandName);
 
     if (!command) {
@@ -14,5 +14,5 @@ module.exports = {
     } catch (error) {
       console.log(error, 'command->execute');
     }
-  }
-}
+  },
+};

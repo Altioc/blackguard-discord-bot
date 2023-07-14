@@ -23,44 +23,44 @@ module.exports = {
     .addSubcommand(walletWithdrawal.subCommandData),
 
   async execute(interaction) {
-    const subCommand = interaction.options.getSubcommand()
+    const subCommand = interaction.options.getSubcommand();
 
     switch (subCommand) {
-      case 'create': {
-        await walletCreate.execute(interaction);
-        break;
-      }
-      case 'add': {
-        await walletAdd.execute(interaction);
-        break;
-      }
-      case 'delete': {
-        await walletDelete.execute(interaction);
-        break;
-      }
-      case 'send': {
-        await walletSend.execute(interaction);
-        break;
-      }
-      case 'read': {
-        await walletRead.execute(interaction);
-        break;
-      }
-      case 'deduct': {
-        await walletDeduct.execute(interaction);
-        break;
-      }
-      case 'deposit': {
-        await walletDeposit.execute(interaction);
-        break;
-      }
-      case 'withdrawal': {
-        await walletWithdrawal.execute(interaction);
-        break;
-      }
-      default: {
-        await interaction.editReply(messages.unknownError());
-      }
+    case 'create': {
+      await walletCreate.execute(interaction);
+      break;
+    }
+    case 'add': {
+      await walletAdd.execute(interaction);
+      break;
+    }
+    case 'delete': {
+      await walletDelete.execute(interaction);
+      break;
+    }
+    case 'send': {
+      await walletSend.execute(interaction);
+      break;
+    }
+    case 'read': {
+      await walletRead.execute(interaction);
+      break;
+    }
+    case 'deduct': {
+      await walletDeduct.execute(interaction);
+      break;
+    }
+    case 'deposit': {
+      await walletDeposit.execute(interaction);
+      break;
+    }
+    case 'withdrawal': {
+      await walletWithdrawal.execute(interaction);
+      break;
+    }
+    default: {
+      await interaction.editReply(messages.unknownError());
+    }
     }
   },
 };

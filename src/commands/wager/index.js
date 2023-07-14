@@ -21,41 +21,41 @@ module.exports = {
     .addSubcommand(wagerStart.subCommandData),
 
   async execute(interaction) {
-    await interaction.deferReply()
-    const subCommand = interaction.options.getSubcommand()
+    await interaction.deferReply();
+    const subCommand = interaction.options.getSubcommand();
 
     switch (subCommand) {
-      case 'bet': {
-        await wagerBet.execute(interaction);
-        break;
-      }
-      case 'close': {
-        await wagerClose.execute(interaction);
-        break;
-      }
-      case 'end': {
-        await wagerEnd.execute(interaction);
-        break;
-      }
-      case 'open': {
-        await wagerOpen.execute(interaction);
-        break;
-      }
-      case 'reactivate': {
-        await wagerReactivate.execute(interaction);
-        break;
-      }
-      case 'read': {
-        await wagerRead.execute(interaction);
-        break;
-      }
-      case 'start': {
-        await wagerStart.execute(interaction);
-        break;
-      }
-      default: {
-        await interaction.editReply(messages.unknownError());
-      }
+    case 'bet': {
+      await wagerBet.execute(interaction);
+      break;
+    }
+    case 'close': {
+      await wagerClose.execute(interaction);
+      break;
+    }
+    case 'end': {
+      await wagerEnd.execute(interaction);
+      break;
+    }
+    case 'open': {
+      await wagerOpen.execute(interaction);
+      break;
+    }
+    case 'reactivate': {
+      await wagerReactivate.execute(interaction);
+      break;
+    }
+    case 'read': {
+      await wagerRead.execute(interaction);
+      break;
+    }
+    case 'start': {
+      await wagerStart.execute(interaction);
+      break;
+    }
+    default: {
+      await interaction.editReply(messages.unknownError());
+    }
     }
   },
 };

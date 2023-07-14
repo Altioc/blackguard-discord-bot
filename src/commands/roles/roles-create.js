@@ -1,22 +1,21 @@
 const { 
   ActionRowBuilder, 
   PermissionFlagsBits, 
-  RoleSelectMenuBuilder, 
-  ChannelSelectMenuBuilder, 
   ButtonBuilder,
   ButtonStyle,
   ComponentType,
-  ChannelType,
   StringSelectMenuBuilder,
   StringSelectMenuOptionBuilder,
   ModalBuilder,
   TextInputBuilder,
-  TextInputStyle
+  TextInputStyle,
 } = require('discord.js');
 const { messages } = require('../../constants');
+const persistentUiController = require('../../controllers/persistent-ui-controller');
+const { MultiSelectView } = require('../../views/multi-select');
 
 module.exports = {
-  subCommandData: (subcommand) => (
+  subCommandData: subcommand => (
     subcommand
       .setName('create')
       .setDescription('Creates a role selector')
@@ -34,7 +33,7 @@ module.exports = {
   ),
 
   async execute(interaction) {
-    const { memberPermissions, options } = interaction;
+    const { memberPermissions, options, guild } = interaction;
     const title = options.getString('title');
     const canSelectMultiple = options.getBoolean('multiselect');
 
@@ -43,130 +42,14 @@ module.exports = {
       return;
     }
 
-    const allRoleSelectMenu = new RoleSelectMenuBuilder()
-      .setCustomId('totalRoleSelect')
-      .setPlaceholder('Select roles')
-      .setMinValues(1)
-			.setMaxValues(25);
+    const roles = await guild.roles.fetch();
+    const allRoles = roles.map(({ name, id, icon }) => ({ name, id, icon, selected: false }));
+    allRoles[0].icon = '<:keklops:1048234963876716575>';
     
-    const openChannelSelectModalButton = new ButtonBuilder()
-      .setCustomId('roleSelectCreateButton_channelSelect')
-      .setStyle(ButtonStyle.Primary)
-      .setLabel('Set Channel ID');
-
-    const channelSelectModal = new ModalBuilder()
-      .setCustomId('channelSelectModal')
-      .setTitle('Channel Select');
-    
-    const channelIdInput = new TextInputBuilder()
-      .setCustomId('channelIdInput')
-      .setLabel('Channel ID')
-      .setStyle(TextInputStyle.Short)
-      .setRequired(true);
-
-    const channelIdRow = new ActionRowBuilder().addComponents(channelIdInput);
-    channelSelectModal.addComponents(channelIdRow);
-    
-    const submitButton = new ButtonBuilder()
-      .setCustomId('roleSelectCreateButton_submit')
-      .setStyle(ButtonStyle.Success)
-      .setLabel('Submit');
-    
-    const cancelButton = new ButtonBuilder()
-      .setCustomId('roleSelectCreateButton_cancel')
-      .setStyle(ButtonStyle.Secondary)
-      .setLabel('Cancel');
-
-		const roleSelectCreateRow = new ActionRowBuilder().addComponents(allRoleSelectMenu);
-    const channelSelectRow = new ActionRowBuilder().addComponents(openChannelSelectModalButton);
-    const buttonsRow = new ActionRowBuilder().addComponents(submitButton, cancelButton);
-
-    const response = await interaction.reply({
-			content: 'Select all potentially allowed roles (max 25) and the channel you want the selector in.',
-      ephemeral: true,
-			components: [
-        roleSelectCreateRow,
-        channelSelectRow,
-        buttonsRow
-      ],
-		});
-
-    const roleSelectCollector = response.createMessageComponentCollector({ 
-      componentType: ComponentType.RoleSelect
+    new MultiSelectView(interaction, {
+      options: allRoles,
+      placeholder: 'Select roles',
+      ephemeral: true
     });
-    let rolesSelection;
-    roleSelectCollector.on('collect', (interaction) => {
-      interaction.deferUpdate();
-      rolesSelection = interaction.roles;
-    });
-
-    let selectedChannelId;
-
-    const buttonCollector = response.createMessageComponentCollector({ 
-      componentType: ComponentType.Button
-    });
-    buttonCollector.on('collect', async (interaction) => {
-      const { customId } = interaction;
-      
-      if (customId.endsWith('channelSelect')) {
-        await interaction.showModal(channelSelectModal);
-        const submitted = await interaction.awaitModalSubmit({
-          time: 300000
-        }).catch(error => {
-          console.error(error)
-          return null
-        })
-        
-        if (submitted) {
-          selectedChannelId = submitted.fields.getTextInputValue('channelIdInput');
-          submitted.deferUpdate();
-          return;
-        }
-
-        interaction.deferUpdate();
-        return;
-      }
-
-      if (customId.endsWith('cancel')) {
-        return await interaction.update({
-          content: 'Role selection creation canceled.',
-          components: []
-        });
-      }
-
-      if (customId.endsWith('submit')) {
-        const roleSelectMenu = new StringSelectMenuBuilder()
-          .setCustomId('test')
-          .setPlaceholder(canSelectMultiple ? 'Select roles' : 'Select role')
-          .setMinValues(0)
-          .setMaxValues(canSelectMultiple ? Math.min(rolesSelection.size, 25) : 1)
-          .addOptions(
-            ...rolesSelection.map((role) => {
-              const option = new StringSelectMenuOptionBuilder()
-                .setLabel(role.name)
-                .setValue(role.id);
-
-              if (role.icon) {
-                option.setEmoji(role.icon);
-              }
-
-              return option;
-            })
-          );
-          
-        const roleSelectMenuRow = new ActionRowBuilder().addComponents(roleSelectMenu);
-        const channel = await interaction.guild.channels.fetch(selectedChannelId);
-        
-        await channel.send({
-          content: title,
-          components: [roleSelectMenuRow]
-        });
-
-        return await interaction.update({
-          content: `${rolesSelection.size} ${channel.name} Submitted`,
-          components: []
-        });
-      }
-    });
-  }
-}
+  },
+};

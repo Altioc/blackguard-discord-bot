@@ -6,7 +6,7 @@ class Character {
     this.equipmentLevels = {
       weapon: 0,
       armor: 0,
-      ...(equipmentLevels || {})
+      ...(equipmentLevels || {}),
     };
   }
 
@@ -19,7 +19,7 @@ class Character {
       ownerId: this.ownerId,
       level: this.level,
       failStacks: this.failStacks,
-      equipmentLevels: this.equipmentLevels
+      equipmentLevels: this.equipmentLevels,
     };
   }
 }
