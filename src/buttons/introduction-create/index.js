@@ -9,11 +9,10 @@ module.exports = {
   interact: async (interaction) => {
     const member = await interaction.member.fetch(true);
     
-    const alreadyIntroduced = false;
-    // const alreadyIntroduced = member.roles.cache.some(role => (
-    //   role.name.toLowerCase().trim() === "blackguard" ||
-    //   role.name.toLowerCase().trim() === "guest"
-    // ));
+    const alreadyIntroduced = member.roles.cache.some(role => (
+      role.name.toLowerCase().trim() === "blackguard" ||
+      role.name.toLowerCase().trim() === "guest"
+    ));
 
     if (alreadyIntroduced) {
       await interaction.reply({

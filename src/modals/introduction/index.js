@@ -29,10 +29,18 @@ module.exports = {
       let newNickname = preferedName;
 
       if (ign) {
-        newNickname += `(${ign})`;
+        newNickname += ` (${ign})`;
       }
 
-      await user.setNickname(newNickname);
+      if (newNickname.length > 32) {
+        if (ign) {
+          await user.setNickname(ign);
+        } else {
+          await user.setNickname(preferedName);
+        }
+      } else {
+        await user.setNickname(newNickname);
+      }
     } catch {}
 
     const optionalFields = [];
