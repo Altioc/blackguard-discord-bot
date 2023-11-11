@@ -37,6 +37,7 @@ module.exports = {
         .setCustomId(elementIds.preferedName)
         .setLabel(elementLabels.preferedName)
         .setStyle(TextInputStyle.Short)
+        .setMaxLength(32)
         .setRequired(true)
     );
 
@@ -52,6 +53,7 @@ module.exports = {
       new TextInputBuilder()
         .setCustomId(elementIds.ign)
         .setLabel(elementLabels.ign)
+        .setMaxLength(32)
         .setStyle(TextInputStyle.Short)
         .setRequired(false)
     );
