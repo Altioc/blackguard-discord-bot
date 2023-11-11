@@ -14,11 +14,13 @@ module.exports = {
         .setDescription('The user whose equipment will be shown. Defaults to your equipment.')
     )),
 
+  requiredRoles: ['Blackguard', 'Guest'],
+
   async execute(interaction) {
     await interaction.deferReply({
       ephemeral: true
     });
-    const { user, options, memberPermissions } = interaction;
+    const { user, options } = interaction;
     const targetUserId = options.getUser('target')?.id || user.id;
     const character = await RPGController.getCharacter(targetUserId);
     

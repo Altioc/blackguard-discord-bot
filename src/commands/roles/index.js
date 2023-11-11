@@ -12,6 +12,8 @@ module.exports = {
     .addSubcommand(rolesUpdate.subCommandData)
     .addSubcommand(rolesDelete.subCommandData),
 
+  requiredRoles: ['Blackguard'],
+  
   async execute(interaction) {
     const subCommand = interaction.options.getSubcommand()
 

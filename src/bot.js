@@ -1,24 +1,30 @@
 const { Client } = require('discord.js');
 const { token } = require('./config.json');
-const allCommands = require('./constants/commandHandlers');
+const handlers = require('./constants/interactionHandlers');
 const fs = require('fs');
 
 const client = new Client({ intents: 8 });
 
-const commandsPath = `${__dirname}/commands`;
-const commandDirectories = fs.readdirSync(commandsPath);
-commandDirectories.forEach((commandDirectory) => {
-  const directoryStat = fs.statSync(`${commandsPath}/${commandDirectory}`);
-
-  if (directoryStat?.isDirectory()) {
-    const commandFiles = fs.readdirSync(`${commandsPath}/${commandDirectory}`);
-    
-    if (commandFiles?.includes('index.js')) {
-      const command = require(`${commandsPath}/${commandDirectory}/index.js`);
-      allCommands.set(command.data.name, command);
+const loadHandlers = (directoriesPath, collection) => {
+  const directories = fs.readdirSync(directoriesPath);
+  directories.forEach((directory) => {
+    const path = `${directoriesPath}/${directory}`;
+    const directoryStat = fs.statSync(path);
+  
+    if (directoryStat?.isDirectory()) {
+      const files = fs.readdirSync(path);
+      
+      if (files?.includes('index.js')) {
+        const handler = require(`${path}/index.js`);
+        collection.set(handler.data.name, handler);
+      }
     }
-  }
-});
+  });
+};
+
+loadHandlers(`${__dirname}/commands`, handlers.commands);
+loadHandlers(`${__dirname}/buttons`, handlers.buttons);
+loadHandlers(`${__dirname}/modals`, handlers.modals);
 
 const eventsPath = `${__dirname}/events`;
 const javascriptFilesOnly = file => file.endsWith('.js');

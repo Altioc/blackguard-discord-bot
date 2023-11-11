@@ -43,13 +43,14 @@ const messageTypeColors = {
   success: 0x279C54,
   warning: 0xFFE030,
   failure: 0xCC2f4E,
-  unknown: 0xFF00D9
+  unknown: 0xFF00D9,
 };
 
 const blackguardDbDocNames = {
   economyDoc: 'economy',
   bookDoc: 'book',
-  rpgDoc: 'rpg'
+  rpgDoc: 'rpg',
+  guildDoc: 'guild'
 };
 
 const currentLocationType = {
@@ -65,6 +66,13 @@ const equipmentType = {
 const leaderboardType = {
   Power: 'power',
   Wealth: 'wealth'
+};
+
+const initialGuildDoc = {
+  _id: blackguardDbDocNames.guildDoc,
+  introductionAutomator: {
+    channelId: null
+  }
 };
 
 const initialRPGDoc = {
@@ -345,7 +353,9 @@ const messages = {
 
 const interactionTypes = {
   command: 'command',
-  roleSelectMenu: 'roleSelectMenu'
+  roleSelectMenu: 'roleSelectMenu',
+  button: 'button',
+  modal: 'modal'
 };
 
 module.exports = {
@@ -366,5 +376,6 @@ module.exports = {
   currentLocationType,
   initialRPGDoc,
   equipmentType,
-  leaderboardType
+  leaderboardType,
+  initialGuildDoc
 };

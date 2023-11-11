@@ -13,6 +13,8 @@ module.exports = {
     .addSubcommand(docSet.subCommandData)
     .addSubcommand(docReset.subCommandData),
 
+  requiredRoles: ['Blackguard'],
+
   async execute(interaction) {
     await interaction.deferReply({
       ephemeral: true

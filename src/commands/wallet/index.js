@@ -22,6 +22,8 @@ module.exports = {
     .addSubcommand(walletDeposit.subCommandData)
     .addSubcommand(walletWithdrawal.subCommandData),
 
+  requiredRoles: ['Blackguard', 'Guest'],
+
   async execute(interaction) {
     const subCommand = interaction.options.getSubcommand()
 

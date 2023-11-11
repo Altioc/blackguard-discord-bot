@@ -21,6 +21,8 @@ module.exports = {
         )
     )),
 
+  requiredRoles: ['Blackguard', 'Guest'],
+
   async execute(interaction) {
     await interaction.deferReply();
     const type = interaction.options.getString('type') || leaderboardType.Wealth;
