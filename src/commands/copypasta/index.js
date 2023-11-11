@@ -47,7 +47,9 @@ module.exports = {
     .addSubcommand(copypastaLightnovel.subCommandData)
     .addSubcommand(copypastaImJustDone.subCommandData)
     .addSubcommand(copypastaBoostedlol.subCommandData),
-        
+       
+  requiredRoles: ['Blackguard', 'Guest'],
+    
   async execute(interaction) {
     const subCommand = interaction.options.getSubcommand();
 

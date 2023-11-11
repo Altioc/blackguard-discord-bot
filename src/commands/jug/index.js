@@ -23,6 +23,8 @@ module.exports = {
         .setDescription('The amount to wager on the jug or "all" if you want to use all available funds as your jug wager.')
     )),
 
+  requiredRoles: ['Blackguard', 'Guest'],
+  
   async execute(interaction) {
     await interaction.deferReply()
 

@@ -20,6 +20,8 @@ module.exports = {
     .addSubcommand(wagerRead.subCommandData)
     .addSubcommand(wagerStart.subCommandData),
 
+  requiredRoles: ['Blackguard', 'Guest'],
+  
   async execute(interaction) {
     await interaction.deferReply()
     const subCommand = interaction.options.getSubcommand()

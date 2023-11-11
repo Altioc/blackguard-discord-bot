@@ -8,6 +8,8 @@ module.exports = {
     .setDescription('Attempts to jug someone elses bilaims with a small chance for a counter jug on failure.')
     .addSubcommand(economyClearjugcooldown.subCommandData),
 
+  requiredRoles: ['Blackguard'],
+
   async execute(interaction) {
     await interaction.deferReply()
     const subCommand = interaction.options.getSubcommand();
