@@ -10,7 +10,7 @@ module.exports = {
     .addSubcommand(introductionCreate.subCommandData)
     .addSubcommand(introductionDelete.subCommandData),
 
-  requiredRoles: [],
+  requiredRoles: ['Blackguard'],
   
   async execute(interaction) {
     await interaction.deferReply({
