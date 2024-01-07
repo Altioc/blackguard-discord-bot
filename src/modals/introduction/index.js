@@ -28,7 +28,7 @@ module.exports = {
     try {
       let newNickname = preferedName;
 
-      if (ign) {
+      if (ign && ign !== preferedName) {
         newNickname += ` (${ign})`;
       }
 

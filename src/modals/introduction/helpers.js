@@ -46,6 +46,7 @@ module.exports = {
         .setCustomId(elementIds.pronouns)
         .setLabel(elementLabels.pronouns)
         .setStyle(TextInputStyle.Short)
+        .setMaxLength(1024)
         .setRequired(false)
     );
 
@@ -63,6 +64,7 @@ module.exports = {
         .setCustomId(elementIds.referral)
         .setLabel(elementLabels.referral)
         .setStyle(TextInputStyle.Paragraph)
+        .setMaxLength(1024)
         .setRequired(true)
     );
 
@@ -71,6 +73,7 @@ module.exports = {
         .setCustomId(elementIds.joinReason)
         .setLabel(elementLabels.joinReason)
         .setStyle(TextInputStyle.Paragraph)
+        .setMaxLength(1024)
         .setRequired(true)
     );
 
