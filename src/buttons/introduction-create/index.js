@@ -9,7 +9,7 @@ module.exports = {
   interact: async (interaction) => {
     const member = await interaction.member.fetch(true);
 
-    const possibleRoles = ['Blackguard', 'Guest', 'Duskfallen'];
+    const possibleRoles = ['blackguard', 'guest', 'duskfallen'];
     
     const alreadyIntroduced = member.roles.cache.some(role => {
       const standardizedRoleName = role.name.toLowerCase().trim();
