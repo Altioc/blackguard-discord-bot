@@ -1,4 +1,5 @@
 const { create: createModal } = require('../../modals/introduction/helpers');
+const standardizeString = require('../../utils/standardizeString');
 const { buttonId } = require('./helpers');
 
 module.exports = {
@@ -9,11 +10,12 @@ module.exports = {
   interact: async (interaction) => {
     const member = await interaction.member.fetch(true);
 
-    const possibleRoles = ['Blackguard', 'Guest', 'Duskfallen'];
+    const possibleRoleNames = ['Blackguard', 'Guest', 'Duskfallen'];
     
     const alreadyIntroduced = member.roles.cache.some(role => {
-      const standardizedRoleName = role.name.toLowerCase().trim();
-      return possibleRoles.includes(standardizedRoleName);
+      const standardizedRoleName = standardizeString(role.name);
+      const standardizedPossibleRoleNames = possibleRoleNames.map((roleName) => standardizeString(roleName));
+      return standardizedPossibleRoleNames.includes(standardizedRoleName);
     });
 
     if (alreadyIntroduced) {
