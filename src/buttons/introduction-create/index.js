@@ -8,11 +8,13 @@ module.exports = {
 
   interact: async (interaction) => {
     const member = await interaction.member.fetch(true);
+
+    const possibleRoles = ['Blackguard', 'Guest', 'Duskfallen'];
     
-    const alreadyIntroduced = member.roles.cache.some(role => (
-      role.name.toLowerCase().trim() === "blackguard" ||
-      role.name.toLowerCase().trim() === "guest"
-    ));
+    const alreadyIntroduced = member.roles.cache.some(role => {
+      const standardizedRoleName = role.name.toLowerCase().trim();
+      return possibleRoles.includes(standardizedRoleName);
+    });
 
     if (alreadyIntroduced) {
       await interaction.reply({
