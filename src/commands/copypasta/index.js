@@ -21,6 +21,7 @@ const copypastaJustbegood = require('./copypasta-justbegood');
 const copypastaLightnovel = require('./copypasta-lightnovel');
 const copypastaImJustDone = require('./copypasta-im-just-done');
 const copypastaBoostedlol = require('./copypasta-boostedlol');
+const copypastaFemale = require('./copypasta-female.js');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -46,7 +47,8 @@ module.exports = {
     .addSubcommand(copypastaJustbegood.subCommandData)
     .addSubcommand(copypastaLightnovel.subCommandData)
     .addSubcommand(copypastaImJustDone.subCommandData)
-    .addSubcommand(copypastaBoostedlol.subCommandData),
+    .addSubcommand(copypastaBoostedlol.subCommandData)
+    .addSubcommand(copypastaFemale.subCommandData),
        
   requiredRoles: ['Blackguard', 'Guest'],
     
@@ -136,6 +138,10 @@ module.exports = {
       }
       case 'boostedlol': {
         await copypastaBoostedlol.execute(interaction);
+        break;
+      }
+      case 'female': {
+        await copypastaFemale.execute(interaction);
         break;
       }
       default: {
