@@ -37,6 +37,7 @@ module.exports = {
         .setCustomId(elementIds.preferedName)
         .setLabel(elementLabels.preferedName)
         .setStyle(TextInputStyle.Short)
+        .setMaxLength(32)
         .setRequired(true)
     );
 
@@ -45,6 +46,7 @@ module.exports = {
         .setCustomId(elementIds.pronouns)
         .setLabel(elementLabels.pronouns)
         .setStyle(TextInputStyle.Short)
+        .setMaxLength(1024)
         .setRequired(false)
     );
 
@@ -52,6 +54,7 @@ module.exports = {
       new TextInputBuilder()
         .setCustomId(elementIds.ign)
         .setLabel(elementLabels.ign)
+        .setMaxLength(32)
         .setStyle(TextInputStyle.Short)
         .setRequired(false)
     );
@@ -61,6 +64,7 @@ module.exports = {
         .setCustomId(elementIds.referral)
         .setLabel(elementLabels.referral)
         .setStyle(TextInputStyle.Paragraph)
+        .setMaxLength(1024)
         .setRequired(true)
     );
 
@@ -69,6 +73,7 @@ module.exports = {
         .setCustomId(elementIds.joinReason)
         .setLabel(elementLabels.joinReason)
         .setStyle(TextInputStyle.Paragraph)
+        .setMaxLength(1024)
         .setRequired(true)
     );
 
