@@ -1,4 +1,4 @@
-# Blackguard Bot
+# Blackguard Discord Bot
 The bot for the Blackguard Maplestory Discord server.
 
 ## Running the bot locally
