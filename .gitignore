@@ -15,6 +15,7 @@ node_modules/
 
 src/config.json
 src/ids.json
-src/**/*.js
+
+dist
 
 BlackguardBotDb

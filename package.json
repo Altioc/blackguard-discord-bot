@@ -5,8 +5,8 @@
     "main": "./src/bot.js",
     "scripts": {
         "build": "tsc",
-        "start": "node ./src/bot.js",
-        "deploy": "node ./src/deploy-commands.js",
+        "start": "node ./dist/bot.js",
+        "deploy": "node ./dist/deploy-commands.js",
         "lint": "dprint fmt"
     },
     "repository": {

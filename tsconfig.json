@@ -9,7 +9,8 @@
         "skipLibCheck": true,
         "lib": [
             "esnext"
-        ]
+        ],
+        "outDir": "dist"
     },
     "include": [
         "src/**/*"
