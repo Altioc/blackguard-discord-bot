@@ -1,5 +1,6 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
 import { messages } from "../../constants";
+import { BotCommand } from "../../types/BotCommand";
 import { Adele56k } from "./subcommands/Adele56k.js";
 import { BlessYourHeart } from "./subcommands/BlessYourHeart";
 import { BoostedLol } from "./subcommands/BoostedLol";
@@ -23,7 +24,7 @@ import { SingleThought } from "./subcommands/SingleThought";
 import { StrengthReward } from "./subcommands/StrengthReward";
 import { WhoDoYouKnow } from "./subcommands/WhoDoYouKnow";
 
-module.exports = {
+const Copypasta: BotCommand = {
     data: new SlashCommandBuilder()
         .setName("copypasta")
         .setDescription("Easy access to intellectual messages.")
@@ -150,3 +151,5 @@ module.exports = {
         }
     }
 };
+
+export default Copypasta;

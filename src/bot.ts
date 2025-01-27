@@ -25,7 +25,7 @@ const loadHandlers = (
             const files = fs.readdirSync(path);
 
             if (files?.includes("index.js")) {
-                const handler = require(`${path}/index.js`);
+                const handler = require(`${path}/index.js`).default;
                 collection.set(handler.data.name, handler);
             }
         }
@@ -42,7 +42,7 @@ const eventFiles = fs.readdirSync(eventsPath).filter(javascriptFilesOnly);
 
 eventFiles.forEach((file) => {
     const filePath = `${eventsPath}/${file}`;
-    const eventHandler = require(filePath);
+    const eventHandler = require(filePath).default;
 
     if (eventHandler.once) {
         client.once(eventHandler.name, eventHandler.execute);

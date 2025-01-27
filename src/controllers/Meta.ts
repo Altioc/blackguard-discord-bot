@@ -14,7 +14,7 @@ class MetaController {
     constructor() {
         this.db = new PouchDB("BlackguardBotDb");
         this.db.putIfNotExists(initialMetaDoc)
-            .then(this.loadGuildDoc);
+            .then(() => this.loadGuildDoc);
     }
 
     setBotId(newId: string): void {

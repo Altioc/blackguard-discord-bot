@@ -27,7 +27,7 @@ class EconomyController {
     constructor() {
         this.db = new PouchDB("BlackguardBotDb");
         this.db.putIfNotExists(initialEconomyDoc)
-            .then(this.initConfig);
+            .then(() => this.initConfig);
     }
 
     async resetDoc(): Promise<void> {
