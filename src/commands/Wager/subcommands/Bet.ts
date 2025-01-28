@@ -1,8 +1,4 @@
-import {
-    ChatInputCommandInteraction,
-    EmbedBuilder,
-    SlashCommandSubcommandBuilder
-} from "discord.js";
+import { EmbedBuilder } from "discord.js";
 import assert from "node:assert";
 import {
     BetOption,
@@ -12,11 +8,14 @@ import {
 } from "../../../constants";
 import { Books } from "../../../controllers/Books";
 import { Economy } from "../../../controllers/Economy";
+import { BotSubcommand } from "../../../types/BotSubcommand";
 
-export const Bet = {
-    subCommandData: (subcommand: SlashCommandSubcommandBuilder) => (
-        subcommand
-            .setName("bet")
+export const Bet: BotSubcommand = {
+    name: "bet",
+
+    serialize: (subcommand) => {
+        return subcommand
+            .setName(Bet.name)
             .setDescription(
                 "Places a bet on the current wager for a given option and amount."
             )
@@ -38,10 +37,10 @@ export const Bet = {
                             }))
                     )
                     .setRequired(true)
-            ))
-    ),
+            ));
+    },
 
-    async execute(interaction: ChatInputCommandInteraction) {
+    execute: async (interaction) => {
         const { user, options } = interaction;
         const value = options.getInteger("value");
         const option = options.getString("option");

@@ -1,12 +1,11 @@
-import {
-    ChatInputCommandInteraction,
-    SlashCommandSubcommandBuilder
-} from "discord.js";
+import { BotSubcommand } from "../../../types/BotSubcommand";
 
-export const OccasionalAttack = {
-    subCommandData: (subcommand: SlashCommandSubcommandBuilder) => (
-        subcommand
-            .setName("occasionalattack")
+export const OccasionalAttack: BotSubcommand = {
+    name: "occasionalattack",
+
+    serialize: (subcommand) => {
+        return subcommand
+            .setName(OccasionalAttack.name)
             .setDescription("throwing in the occasional attack...")
             .addStringOption(option => (
                 option
@@ -15,10 +14,10 @@ export const OccasionalAttack = {
                         "The name of the class you may or may not be bad at."
                     )
                     .setRequired(false)
-            ))
-    ),
+            ));
+    },
 
-    async execute(interaction: ChatInputCommandInteraction) {
+    execute: async (interaction) => {
         const { options } = interaction;
         const theClass = options.getString("class") || "nl";
 

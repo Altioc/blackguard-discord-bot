@@ -21,25 +21,37 @@ import {
 import { Economy } from "../../controllers/Economy";
 import { Rpg } from "../../controllers/Rpg";
 import { Character } from "../../models/Character";
-import { BotCommand } from "../../types/BotCommand";
+import { AuthorOf, Or } from "../../models/ExecutePermission";
+import { BotCommandWithoutSubcommands } from "../../types/WithoutSubcommands";
 
-const Equipment: BotCommand = {
-    data: new SlashCommandBuilder()
-        .setName("equipment")
-        .setDescription(
-            "Shows your equipment data or the equipment data of another person."
-        )
-        .addUserOption(option => (
-            option
-                .setName("target")
-                .setDescription(
-                    "The user whose equipment will be shown. Defaults to your equipment."
-                )
-        )),
+const Equipment: BotCommandWithoutSubcommands = {
+    name: "equipment",
 
-    requiredRoles: ["Blackguard", "Guest"],
+    serialize: () => {
+        const serialization = new SlashCommandBuilder()
+            .setName(Equipment.name)
+            .setDescription(
+                "Shows your equipment data or the equipment data of another person."
+            )
+            .addUserOption(option => (
+                option
+                    .setName("target")
+                    .setDescription(
+                        "The user whose equipment will be shown. Defaults to your equipment."
+                    )
+            ));
 
-    async execute(interaction) {
+        return serialization;
+    },
+
+    canExecute: async (interaction) => {
+        return Or(
+            AuthorOf(interaction).has("blackguard"),
+            AuthorOf(interaction).has("guest")
+        );
+    },
+
+    execute: async (interaction) => {
         await interaction.deferReply({
             ephemeral: true
         });

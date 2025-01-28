@@ -1,16 +1,15 @@
-import {
-    ChatInputCommandInteraction,
-    SlashCommandSubcommandBuilder
-} from "discord.js";
+import { BotSubcommand } from "../../../types/BotSubcommand";
 
-export const Disgusting = {
-    subCommandData: (subcommand: SlashCommandSubcommandBuilder) => (
-        subcommand
-            .setName("disgusting")
-            .setDescription("BA should be done on high defense dummy...")
-    ),
+export const Disgusting: BotSubcommand = {
+    name: "disgusting",
 
-    async execute(interaction: ChatInputCommandInteraction) {
+    serialize: (subcommand) => {
+        return subcommand
+            .setName(Disgusting.name)
+            .setDescription("BA should be done on high defense dummy...");
+    },
+
+    execute: async (interaction) => {
         interaction.reply(`
 It's fucking disgusting. It's so disgusting I can't hold myself anymore.
 

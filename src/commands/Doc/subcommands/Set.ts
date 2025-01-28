@@ -1,8 +1,4 @@
-import {
-    ChatInputCommandInteraction,
-    EmbedBuilder,
-    SlashCommandSubcommandBuilder
-} from "discord.js";
+import { EmbedBuilder } from "discord.js";
 import assert from "node:assert";
 import {
     BlackguardDbDocName,
@@ -11,11 +7,14 @@ import {
     responseCodes
 } from "../../../constants";
 import { Docs } from "../../../controllers/Docs";
+import { BotSubcommand } from "../../../types/BotSubcommand";
 
-export const Set = {
-    subCommandData: (subcommand: SlashCommandSubcommandBuilder) => (
-        subcommand
-            .setName("set")
+export const Set: BotSubcommand = {
+    name: "set",
+
+    serialize: (subcommand) => {
+        return subcommand
+            .setName(Set.name)
             .setDescription(
                 "Saves the provided json object to the specified doc."
             )
@@ -44,10 +43,10 @@ export const Set = {
                     .setDescription(
                         "Whether or not to set just the config or the whole doc object. Defaults to: false"
                     )
-            ))
-    ),
+            ));
+    },
 
-    async execute(interaction: ChatInputCommandInteraction) {
+    execute: async (interaction) => {
         const { options } = interaction;
         const docNameKey = options.getString("name");
         const value = options.getString("value");

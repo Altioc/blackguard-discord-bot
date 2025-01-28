@@ -1,12 +1,11 @@
-import {
-    ChatInputCommandInteraction,
-    SlashCommandSubcommandBuilder
-} from "discord.js";
+import { BotSubcommand } from "../../../types/BotSubcommand";
 
-export const Females = {
-    subCommandData: (subcommand: SlashCommandSubcommandBuilder) => (
-        subcommand
-            .setName("female")
+export const Females: BotSubcommand = {
+    name: "females",
+
+    serialize: (subcommand) => {
+        return subcommand
+            .setName(Females.name)
             .setDescription(
                 "Hello, I noticed you have a profile picture of a very beautiful (but also intelligent looking..."
             )
@@ -14,10 +13,10 @@ export const Females = {
                 option
                     .setName("class-name")
                     .setDescription("The class of the message recipient")
-            ))
-    ),
+            ));
+    },
 
-    async execute(interaction: ChatInputCommandInteraction) {
+    execute: async (interaction) => {
         const { options } = interaction;
         const className = options.getString("class-name") || "blaster";
 

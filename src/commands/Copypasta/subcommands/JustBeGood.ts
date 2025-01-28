@@ -1,17 +1,17 @@
-import {
-    ChatInputCommandInteraction,
-    SlashCommandSubcommandBuilder,
-    TextChannel
-} from "discord.js";
+import { TextChannel } from "discord.js";
 import assert from "node:assert";
+import { BotSubcommand } from "../../../types/BotSubcommand";
 
-export const JustBeGood = {
-    subCommandData: (subcommand: SlashCommandSubcommandBuilder) =>
-        subcommand
-            .setName("justbegood")
-            .setDescription("interesting :hmmge: just be good..."),
+export const JustBeGood: BotSubcommand = {
+    name: "justbegood",
 
-    async execute(interaction: ChatInputCommandInteraction) {
+    serialize: (subcommand) => {
+        return subcommand
+            .setName(JustBeGood.name)
+            .setDescription("interesting :hmmge: just be good...");
+    },
+
+    execute: async (interaction) => {
         assert(interaction.guild !== null);
 
         const channel = await interaction.guild.channels.fetch(

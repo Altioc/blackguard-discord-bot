@@ -1,17 +1,16 @@
-import {
-    ChatInputCommandInteraction,
-    SlashCommandSubcommandBuilder
-} from "discord.js";
 import assert from "node:assert";
+import { BotSubcommand } from "../../../types/BotSubcommand";
 
-export const ImJustDone = {
-    subCommandData: (subcommand: SlashCommandSubcommandBuilder) => (
-        subcommand
-            .setName("imjustdone")
-            .setDescription("I'm just done.")
-    ),
+export const ImJustDone: BotSubcommand = {
+    name: "imjustdone",
 
-    async execute(interaction: ChatInputCommandInteraction) {
+    serialize: (subcommand) => {
+        return subcommand
+            .setName(ImJustDone.name)
+            .setDescription("I'm just done.");
+    },
+
+    execute: async (interaction) => {
         assert(interaction.guild !== null);
 
         interaction.reply(`

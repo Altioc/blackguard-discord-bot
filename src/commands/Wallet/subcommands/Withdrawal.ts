@@ -6,11 +6,14 @@ import {
 } from "discord.js";
 import { messages, messageTypeColors, responseCodes } from "../../../constants";
 import { Economy } from "../../../controllers/Economy";
+import { BotSubcommand } from "../../../types/BotSubcommand";
 
-export const Withdrawal = {
-    subCommandData: (subcommand: SlashCommandSubcommandBuilder) => (
-        subcommand
-            .setName("withdrawal")
+export const Withdrawal: BotSubcommand = {
+    name: "withdrawal",
+
+    serialize: (subcommand) => {
+        return subcommand
+            .setName(Withdrawal.name)
             .setDescription(
                 "Starts the proccess of withdrawing a specified amount of Bilaim from your bank."
             )
@@ -20,10 +23,10 @@ export const Withdrawal = {
                     .setDescription(
                         "The amount of Bilaim to withdraw. If no amount provided then any active withdrawal status shown."
                     )
-            ))
-    ),
+            ));
+    },
 
-    async execute(interaction: ChatInputCommandInteraction) {
+    execute: async (interaction) => {
         await interaction.deferReply({ ephemeral: true });
         const { user, options } = interaction;
         const amount = options.getInteger("amount");

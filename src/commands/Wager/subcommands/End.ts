@@ -1,11 +1,4 @@
-import {
-    bold,
-    ChatInputCommandInteraction,
-    codeBlock,
-    EmbedBuilder,
-    PermissionFlagsBits,
-    SlashCommandSubcommandBuilder
-} from "discord.js";
+import { bold, codeBlock, EmbedBuilder, PermissionFlagsBits } from "discord.js";
 import assert from "node:assert";
 import {
     messages,
@@ -14,13 +7,17 @@ import {
     WagerEndOptions
 } from "../../../constants";
 import { Books } from "../../../controllers/Books";
+import { AuthorOf, Or } from "../../../models/ExecutePermission";
+import { BotSubcommand } from "../../../types/BotSubcommand";
 import { Response } from "../../../types/Response";
 import { WagerResult } from "../../../types/WagerResult";
 
-export const End = {
-    subCommandData: (subcommand: SlashCommandSubcommandBuilder) => (
-        subcommand
-            .setName("end")
+export const End: BotSubcommand = {
+    name: "end",
+
+    serialize: (subcommand) => {
+        return subcommand
+            .setName(End.name)
             .setDescription(
                 "Ends the current wager and distributes the payments."
             )
@@ -36,26 +33,26 @@ export const End = {
                                 value: key
                             }))
                     )
-            ))
-    ),
+            ));
+    },
 
-    async execute(interaction: ChatInputCommandInteraction) {
-        const { guild, options, user } = interaction;
+    canExecute: async (interaction) => {
+        if (Books.latestWager === null) {
+            return true;
+        }
+
+        return Or(
+            AuthorOf(interaction).has(PermissionFlagsBits.Administrator),
+            AuthorOf(interaction).is(Books.latestWager.ownerId)
+        );
+    },
+
+    execute: async (interaction) => {
+        const { guild, options } = interaction;
         const outcome = options.getString("outcome");
 
         if (Books.latestWager === null) {
             await interaction.editReply(messages.noActiveWager());
-            return;
-        }
-
-        if (
-            !interaction.memberPermissions || (
-                !interaction.memberPermissions.has(
-                    PermissionFlagsBits.Administrator
-                ) && user.id !== Books.latestWager.ownerId
-            )
-        ) {
-            await interaction.editReply(messages.incorrectPermissions());
             return;
         }
 

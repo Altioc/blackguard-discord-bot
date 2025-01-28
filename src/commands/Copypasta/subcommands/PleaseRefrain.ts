@@ -1,12 +1,11 @@
-import {
-    ChatInputCommandInteraction,
-    SlashCommandSubcommandBuilder
-} from "discord.js";
+import { BotSubcommand } from "../../../types/BotSubcommand";
 
-export const PleaseRefrain = {
-    subCommandData: (subcommand: SlashCommandSubcommandBuilder) => (
-        subcommand
-            .setName("pleaserefrain")
+export const PleaseRefrain: BotSubcommand = {
+    name: "pleaserefrain",
+
+    serialize: (subcommand) => {
+        return subcommand
+            .setName(PleaseRefrain.name)
             .setDescription("please refrain from making...")
             .addNumberOption(option => (
                 option
@@ -16,10 +15,10 @@ export const PleaseRefrain = {
                     )
                     .setMinValue(1)
                     .setMaxValue(5)
-            ))
-    ),
+            ));
+    },
 
-    async execute(interaction: ChatInputCommandInteraction) {
+    execute: async (interaction) => {
         const { options } = interaction;
         const countOption = Math.round(options.getNumber("count") || 1);
 

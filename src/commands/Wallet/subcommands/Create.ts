@@ -1,16 +1,15 @@
-import {
-    ChatInputCommandInteraction,
-    EmbedBuilder,
-    PermissionFlagsBits,
-    SlashCommandSubcommandBuilder
-} from "discord.js";
+import { EmbedBuilder, PermissionFlagsBits } from "discord.js";
 import { messages, messageTypeColors, responseCodes } from "../../../constants";
 import { Economy } from "../../../controllers/Economy";
+import { And, AuthorOf, Or } from "../../../models/ExecutePermission";
+import { BotSubcommand } from "../../../types/BotSubcommand";
 
-export const Create = {
-    subCommandData: (subcommand: SlashCommandSubcommandBuilder) => (
-        subcommand
-            .setName("create")
+export const Create: BotSubcommand = {
+    name: "create",
+
+    serialize: (subcommand) => {
+        return subcommand
+            .setName(Create.name)
             .setDescription(
                 "Creates a new wallet for the target user or the author if no target specified."
             )
@@ -18,24 +17,26 @@ export const Create = {
                 option
                     .setName("target")
                     .setDescription("The user or the author if ommitted.")
-            ))
-    ),
+            ));
+    },
 
-    async execute(interaction: ChatInputCommandInteraction) {
+    canExecute: async (interaction) => {
+        const { options, user } = interaction;
+        const target = options.getUser("target") || user;
+
+        return Or(
+            AuthorOf(interaction).is(target.id),
+            And(
+                AuthorOf(interaction).has(PermissionFlagsBits.Administrator),
+                AuthorOf(interaction).isnt(target.id)
+            )
+        );
+    },
+
+    execute: async (interaction) => {
         await interaction.deferReply();
         const { user, options } = interaction;
         const target = options.getUser("target") || user;
-
-        if (
-            !interaction.memberPermissions
-            || target.id !== user.id
-                && !interaction.memberPermissions.has(
-                    PermissionFlagsBits.Administrator
-                )
-        ) {
-            await interaction.editReply(messages.incorrectPermissions());
-            return;
-        }
 
         try {
             const { responseCode } = await Economy.createWallet(target.id);

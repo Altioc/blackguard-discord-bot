@@ -1,13 +1,12 @@
-import {
-    ChatInputCommandInteraction,
-    SlashCommandSubcommandBuilder
-} from "discord.js";
 import assert from "node:assert";
+import { BotSubcommand } from "../../../types/BotSubcommand";
 
-export const SillyChild = {
-    subCommandData: (subcommand: SlashCommandSubcommandBuilder) => (
-        subcommand
-            .setName("sillychild")
+export const SillyChild: BotSubcommand = {
+    name: "sillychild",
+
+    serialize: (subcommand) => {
+        return subcommand
+            .setName(SillyChild.name)
             .setDescription("silly child, you've got a lot to learn in life...")
             .addStringOption(option => (
                 option
@@ -28,10 +27,10 @@ export const SillyChild = {
                         "The rank of the weak class on the dpm chart"
                     )
                     .setRequired(true)
-            ))
-    ),
+            ));
+    },
 
-    async execute(interaction: ChatInputCommandInteraction) {
+    execute: async (interaction) => {
         const { options } = interaction;
         const weakClass = options.getString("weak-class");
         const strongClass = options.getString("strong-class");

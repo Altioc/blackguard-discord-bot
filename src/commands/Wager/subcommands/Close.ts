@@ -1,35 +1,32 @@
-import {
-    ChatInputCommandInteraction,
-    EmbedBuilder,
-    PermissionFlagsBits,
-    SlashCommandSubcommandBuilder
-} from "discord.js";
+import { EmbedBuilder, PermissionFlagsBits } from "discord.js";
 import { messages, messageTypeColors, responseCodes } from "../../../constants";
 import { Books } from "../../../controllers/Books";
+import { AuthorOf, Or } from "../../../models/ExecutePermission";
+import { BotSubcommand } from "../../../types/BotSubcommand";
 
-export const Close = {
-    subCommandData: (subcommand: SlashCommandSubcommandBuilder) => (
-        subcommand
-            .setName("close")
-            .setDescription("Closes an active wager to new bets.")
-    ),
+export const Close: BotSubcommand = {
+    name: "close",
 
-    async execute(interaction: ChatInputCommandInteraction) {
-        const { user } = interaction;
+    serialize: (subcommand) => {
+        return subcommand
+            .setName(Close.name)
+            .setDescription("Closes an active wager to new bets.");
+    },
 
+    canExecute: async (interaction) => {
         if (Books.latestWager === null) {
-            await interaction.editReply(messages.noActiveWager());
-            return;
+            return true;
         }
 
-        if (
-            !interaction.memberPermissions
-            || (!interaction.memberPermissions.has(
-                PermissionFlagsBits.Administrator
-            )
-                && user.id !== Books.latestWager.ownerId)
-        ) {
-            await interaction.editReply(messages.incorrectPermissions());
+        return Or(
+            AuthorOf(interaction).has(PermissionFlagsBits.Administrator),
+            AuthorOf(interaction).is(Books.latestWager.ownerId)
+        );
+    },
+
+    execute: async (interaction) => {
+        if (Books.latestWager === null) {
+            await interaction.editReply(messages.noActiveWager());
             return;
         }
 

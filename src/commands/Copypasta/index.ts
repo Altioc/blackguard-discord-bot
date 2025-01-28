@@ -1,5 +1,6 @@
-import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
+import { SlashCommandBuilder } from "discord.js";
 import { messages } from "../../constants";
+import { AuthorOf, Or } from "../../models/ExecutePermission";
 import { BotCommand } from "../../types/BotCommand";
 import { Adele56k } from "./subcommands/Adele56k.js";
 import { BlessYourHeart } from "./subcommands/BlessYourHeart";
@@ -25,129 +26,62 @@ import { StrengthReward } from "./subcommands/StrengthReward";
 import { WhoDoYouKnow } from "./subcommands/WhoDoYouKnow";
 
 const Copypasta: BotCommand = {
-    data: new SlashCommandBuilder()
-        .setName("copypasta")
-        .setDescription("Easy access to intellectual messages.")
-        .addSubcommand(Adele56k.subCommandData)
-        .addSubcommand(BlessYourHeart.subCommandData)
-        .addSubcommand(BoostedLol.subCommandData)
-        .addSubcommand(DarkSight.subCommandData)
-        .addSubcommand(Disgusting.subCommandData)
-        .addSubcommand(Females.subCommandData)
-        .addSubcommand(Hero.subCommandData)
-        .addSubcommand(ImJustDone.subCommandData)
-        .addSubcommand(JustBeGood.subCommandData)
-        .addSubcommand(KidsTalkingShit.subCommandData)
-        .addSubcommand(LightNovel.subCommandData)
-        .addSubcommand(Misinformation.subCommandData)
-        .addSubcommand(Misplay.subCommandData)
-        .addSubcommand(NotNormally.subCommandData)
-        .addSubcommand(OakBa.subCommandData)
-        .addSubcommand(OccasionalAttack.subCommandData)
-        .addSubcommand(PleaseRefrain.subCommandData)
-        .addSubcommand(RunCulvert.subCommandData)
-        .addSubcommand(SillyChild.subCommandData)
-        .addSubcommand(SingleThought.subCommandData)
-        .addSubcommand(StrengthReward.subCommandData)
-        .addSubcommand(WhoDoYouKnow.subCommandData),
+    name: "copypasta",
 
-    requiredRoles: ["Blackguard", "Guest"],
+    subcommands: new Map([
+        [Adele56k.name, Adele56k],
+        [BlessYourHeart.name, BlessYourHeart],
+        [BoostedLol.name, BoostedLol],
+        [DarkSight.name, DarkSight],
+        [Disgusting.name, Disgusting],
+        [Females.name, Females],
+        [Hero.name, Hero],
+        [ImJustDone.name, ImJustDone],
+        [JustBeGood.name, JustBeGood],
+        [KidsTalkingShit.name, KidsTalkingShit],
+        [LightNovel.name, LightNovel],
+        [Misinformation.name, Misinformation],
+        [Misplay.name, Misplay],
+        [NotNormally.name, NotNormally],
+        [OakBa.name, OakBa],
+        [OccasionalAttack.name, OccasionalAttack],
+        [PleaseRefrain.name, PleaseRefrain],
+        [RunCulvert.name, RunCulvert],
+        [SillyChild.name, SillyChild],
+        [SingleThought.name, SingleThought],
+        [StrengthReward.name, StrengthReward],
+        [WhoDoYouKnow.name, WhoDoYouKnow]
+    ]),
 
-    async execute(interaction: ChatInputCommandInteraction) {
-        const subCommand = interaction.options.getSubcommand();
+    serialize: () => {
+        const serialization = new SlashCommandBuilder()
+            .setName(Copypasta.name)
+            .setDescription("Easy access to intellectual messages.");
 
-        switch (subCommand) {
-            case "hero": {
-                await Hero.execute(interaction);
-                break;
-            }
-            case "darksight": {
-                await DarkSight.execute(interaction);
-                break;
-            }
-            case "disgusting": {
-                await Disgusting.execute(interaction);
-                break;
-            }
-            case "notnormally": {
-                await NotNormally.execute(interaction);
-                break;
-            }
-            case "strengthreward": {
-                await StrengthReward.execute(interaction);
-                break;
-            }
-            case "oakba": {
-                await OakBa.execute(interaction);
-                break;
-            }
-            case "whodoyouknow": {
-                await WhoDoYouKnow.execute(interaction);
-                break;
-            }
-            case "sillychild": {
-                await SillyChild.execute(interaction);
-                break;
-            }
-            case "occasionalattack": {
-                await OccasionalAttack.execute(interaction);
-                break;
-            }
-            case "56kadele": {
-                await Adele56k.execute(interaction);
-                break;
-            }
-            case "misinformation": {
-                await Misinformation.execute(interaction);
-                break;
-            }
-            case "misplay": {
-                await Misplay.execute(interaction);
-                break;
-            }
-            case "singlethought": {
-                await SingleThought.execute(interaction);
-                break;
-            }
-            case "blessyourheart": {
-                await BlessYourHeart.execute(interaction);
-                break;
-            }
-            case "runculvert": {
-                await RunCulvert.execute(interaction);
-                break;
-            }
-            case "pleaserefrain": {
-                await PleaseRefrain.execute(interaction);
-                break;
-            }
-            case "kidstalkingshit": {
-                await KidsTalkingShit.execute(interaction);
-                break;
-            }
-            case "justbegood": {
-                await JustBeGood.execute(interaction);
-                break;
-            }
-            case "lightnovel": {
-                await LightNovel.execute(interaction);
-                break;
-            }
-            case "imjustdone": {
-                await ImJustDone.execute(interaction);
-                break;
-            }
-            case "boostedlol": {
-                await BoostedLol.execute(interaction);
-                break;
-            }
-            case "female": {
-                await Females.execute(interaction);
-                break;
-            }
-            default: {
-                await interaction.editReply(messages.unknownError());
-            }
+        Copypasta.subcommands.forEach((subcommand) => {
+            serialization.addSubcommand(subcommand.serialize);
+        });
+
+        return serialization;
+    },
+
+    canExecute: async (interaction) => {
+        return Or(
+            AuthorOf(interaction).has("blackguard"),
+            AuthorOf(interaction).has("guest")
+        );
+    },
+
+    execute: async (interaction) => {
+        const subcommandName = interaction.options.getSubcommand();
+
+        const subcommand = Copypasta.subcommands.get(subcommandName);
+
+        try {
+            await subcommand?.execute(interaction);
+        } catch (error) {
+            console.log(error);
+            await interaction.editReply(messages.unknownError());
         }
     }
 };

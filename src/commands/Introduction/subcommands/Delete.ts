@@ -1,31 +1,18 @@
-import {
-    ChatInputCommandInteraction,
-    PermissionFlagsBits,
-    SlashCommandSubcommandBuilder
-} from "discord.js";
 import assert from "node:assert";
-import { messages } from "../../../constants";
 import { Meta } from "../../../controllers/Meta";
+import { BotSubcommand } from "../../../types/BotSubcommand";
 import { deleteIntroductionAutomatorButton } from "../helpers";
 
-export const Delete = {
-    subCommandData: (subcommand: SlashCommandSubcommandBuilder) => (
-        subcommand
-            .setName("delete")
-            .setDescription("Deletes the introduction automator")
-    ),
+export const Delete: BotSubcommand = {
+    name: "delete",
 
-    execute: async (interaction: ChatInputCommandInteraction) => {
-        const { memberPermissions } = interaction;
+    serialize: (subcommand) => {
+        return subcommand
+            .setName(Delete.name)
+            .setDescription("Deletes the introduction automator");
+    },
 
-        if (
-            !memberPermissions
-            || !memberPermissions.has(PermissionFlagsBits.Administrator)
-        ) {
-            await interaction.editReply(messages.incorrectPermissions());
-            return;
-        }
-
+    execute: async (interaction) => {
         assert(interaction.guild !== null);
 
         const buttonWasDeleted = await deleteIntroductionAutomatorButton(

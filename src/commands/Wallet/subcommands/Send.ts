@@ -1,16 +1,15 @@
-import {
-    ChatInputCommandInteraction,
-    EmbedBuilder,
-    SlashCommandSubcommandBuilder
-} from "discord.js";
+import { EmbedBuilder } from "discord.js";
 import assert from "node:assert";
 import { messages, messageTypeColors, responseCodes } from "../../../constants";
 import { Economy } from "../../../controllers/Economy";
+import { BotSubcommand } from "../../../types/BotSubcommand";
 
-export const Send = {
-    subCommandData: (subcommand: SlashCommandSubcommandBuilder) => (
-        subcommand
-            .setName("send")
+export const Send: BotSubcommand = {
+    name: "send",
+
+    serialize: (subcommand) => {
+        return subcommand
+            .setName(Send.name)
             .setDescription(
                 "Sends a specified amount of your Bilaim to another user."
             )
@@ -27,10 +26,10 @@ export const Send = {
                     .setName("value")
                     .setDescription("The amount of your Bilaim to send.")
                     .setRequired(true)
-            ))
-    ),
+            ));
+    },
 
-    async execute(interaction: ChatInputCommandInteraction) {
+    execute: async (interaction) => {
         await interaction.deferReply();
         const { user, options, guild } = interaction;
         const value = options.getInteger("value");

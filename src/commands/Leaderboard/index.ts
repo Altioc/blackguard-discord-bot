@@ -14,32 +14,44 @@ import {
 import { Economy } from "../../controllers/Economy";
 import { Rpg } from "../../controllers/Rpg";
 import { Character } from "../../models/Character";
+import { AuthorOf, Or } from "../../models/ExecutePermission";
 import { Wallet } from "../../models/Wallet";
-import { BotCommand } from "../../types/BotCommand";
 import { LeaderboardExtreme } from "../../types/LeaderboardExtreme";
+import { BotCommandWithoutSubcommands } from "../../types/WithoutSubcommands";
 import { capitalize } from "../../utils/capitalize";
 
 const leaderboardRankEmoji = ["🥇", "🥈", "🥉"];
 
-export const Leaderboard: BotCommand = {
-    data: new SlashCommandBuilder()
-        .setName("leaderboard")
-        .setDescription("Prints the current Bilaim wallet leaderboard.")
-        .addStringOption((option) => (
-            option
-                .setName("type")
-                .setDescription(
-                    "What leaderboard type to show. Defaults to wealth"
-                )
-                .addChoices(
-                    { name: "Power", value: LeaderboardType.Power },
-                    { name: "Wealth", value: LeaderboardType.Wealth }
-                )
-        )),
+export const Leaderboard: BotCommandWithoutSubcommands = {
+    name: "leaderboard",
 
-    requiredRoles: ["Blackguard", "Guest"],
+    serialize: () => {
+        const serialization = new SlashCommandBuilder()
+            .setName(Leaderboard.name)
+            .setDescription("Prints the current Bilaim wallet leaderboard.")
+            .addStringOption((option) => (
+                option
+                    .setName("type")
+                    .setDescription(
+                        "What leaderboard type to show. Defaults to wealth"
+                    )
+                    .addChoices(
+                        { name: "Power", value: LeaderboardType.Power },
+                        { name: "Wealth", value: LeaderboardType.Wealth }
+                    )
+            ));
 
-    async execute(interaction) {
+        return serialization;
+    },
+
+    canExecute: async (interaction) => {
+        return Or(
+            AuthorOf(interaction).has("blackguard"),
+            AuthorOf(interaction).has("guest")
+        );
+    },
+
+    execute: async (interaction) => {
         await interaction.deferReply();
         const type = interaction.options.getString("type")
             || LeaderboardType.Wealth;

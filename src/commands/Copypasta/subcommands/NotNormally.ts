@@ -1,22 +1,21 @@
-import {
-    ChatInputCommandInteraction,
-    SlashCommandSubcommandBuilder
-} from "discord.js";
+import { BotSubcommand } from "../../../types/BotSubcommand";
 
-export const NotNormally = {
-    subCommandData: (subcommand: SlashCommandSubcommandBuilder) => (
-        subcommand
-            .setName("notnormally")
+export const NotNormally: BotSubcommand = {
+    name: "notnormally",
+
+    serialize: (subcommand) => {
+        return subcommand
+            .setName(NotNormally.name)
             .setDescription("skilled player but that is not normally...")
             .addStringOption(option => (
                 option
                     .setName("name")
                     .setDescription("The name of skilled player.")
                     .setRequired(true)
-            ))
-    ),
+            ));
+    },
 
-    async execute(interaction: ChatInputCommandInteraction) {
+    execute: async (interaction) => {
         const { options } = interaction;
         const name = options.getString("name");
 

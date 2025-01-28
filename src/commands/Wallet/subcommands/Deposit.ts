@@ -1,16 +1,15 @@
-import {
-    ChatInputCommandInteraction,
-    EmbedBuilder,
-    SlashCommandSubcommandBuilder
-} from "discord.js";
+import { EmbedBuilder } from "discord.js";
 import assert from "node:assert";
 import { messages, messageTypeColors, responseCodes } from "../../../constants";
 import { Economy } from "../../../controllers/Economy";
+import { BotSubcommand } from "../../../types/BotSubcommand";
 
-export const Deposit = {
-    subCommandData: (subcommand: SlashCommandSubcommandBuilder) => (
-        subcommand
-            .setName("deposit")
+export const Deposit: BotSubcommand = {
+    name: "deposit",
+
+    serialize: (subcommand) => {
+        return subcommand
+            .setName(Deposit.name)
             .setDescription(
                 "Deposits a specified amount of Bilaim to your bank."
             )
@@ -21,10 +20,10 @@ export const Deposit = {
                         "The amount of Bilaim to deposit or \"max\" for the max you're allowed to deposit."
                     )
                     .setRequired(true)
-            ))
-    ),
+            ));
+    },
 
-    async execute(interaction: ChatInputCommandInteraction) {
+    execute: async (interaction) => {
         await interaction.deferReply({ ephemeral: true });
         const { user, options } = interaction;
         const amount = options.getString("amount");

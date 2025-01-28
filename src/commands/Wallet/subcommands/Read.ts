@@ -1,15 +1,14 @@
-import {
-    ChatInputCommandInteraction,
-    EmbedBuilder,
-    SlashCommandSubcommandBuilder
-} from "discord.js";
+import { EmbedBuilder } from "discord.js";
 import { messages, messageTypeColors, responseCodes } from "../../../constants";
 import { Economy } from "../../../controllers/Economy";
+import { BotSubcommand } from "../../../types/BotSubcommand";
 
-export const Read = {
-    subCommandData: (subcommand: SlashCommandSubcommandBuilder) => (
-        subcommand
-            .setName("read")
+export const Read: BotSubcommand = {
+    name: "read",
+
+    serialize: (subcommand) => {
+        return subcommand
+            .setName(Read.name)
             .setDescription(
                 "Prints out the contents of the target user's wallet or the author if no target is specified."
             )
@@ -19,10 +18,10 @@ export const Read = {
                     .setDescription(
                         "The user whose wallet to read or the author if omitted."
                     )
-            ))
-    ),
+            ));
+    },
 
-    async execute(interaction: ChatInputCommandInteraction) {
+    execute: async (interaction) => {
         await interaction.deferReply({ ephemeral: true });
         const { user, options } = interaction;
         const target = options.getUser("target") || user;

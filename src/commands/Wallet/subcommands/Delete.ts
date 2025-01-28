@@ -1,39 +1,32 @@
-import {
-    ChatInputCommandInteraction,
-    EmbedBuilder,
-    PermissionFlagsBits,
-    SlashCommandSubcommandBuilder
-} from "discord.js";
+import { EmbedBuilder, PermissionFlagsBits } from "discord.js";
 import { messages, messageTypeColors, responseCodes } from "../../../constants";
 import { Economy } from "../../../controllers/Economy";
+import { AuthorOf } from "../../../models/ExecutePermission";
+import { BotSubcommand } from "../../../types/BotSubcommand";
 
-export const Delete = {
-    subCommandData: (subcommand: SlashCommandSubcommandBuilder) => (
-        subcommand
-            .setName("delete")
+export const Delete: BotSubcommand = {
+    name: "delete",
+
+    serialize: (subcommand) => {
+        return subcommand
+            .setName(Delete.name)
             .setDescription("Deletes the target user's wallet.")
             .addUserOption(option => (
                 option
                     .setName("target")
                     .setDescription("The user whose wallet to delete.")
                     .setRequired(true)
-            ))
-    ),
+            ));
+    },
 
-    async execute(interaction: ChatInputCommandInteraction) {
+    canExecute: async (interaction) => {
+        return AuthorOf(interaction).has(PermissionFlagsBits.Administrator);
+    },
+
+    execute: async (interaction) => {
         await interaction.deferReply();
         const { user, options } = interaction;
         const target = options.getUser("target") || user;
-
-        if (
-            !interaction.memberPermissions
-            || !interaction.memberPermissions.has(
-                PermissionFlagsBits.Administrator
-            )
-        ) {
-            await interaction.editReply(messages.incorrectPermissions());
-            return;
-        }
 
         try {
             const { responseCode } = await Economy.deleteWallet(target.id);

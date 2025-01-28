@@ -1,17 +1,15 @@
-import {
-    ChatInputCommandInteraction,
-    EmbedBuilder,
-    SlashCommandSubcommandBuilder
-} from "discord.js";
+import { EmbedBuilder } from "discord.js";
 import assert from "node:assert";
 import { messages, messageTypeColors, responseCodes } from "../../../constants";
 import { Rpg } from "../../../controllers/Rpg";
-import ids from "../../../ids.json";
+import { BotSubcommand } from "../../../types/BotSubcommand";
 
-export const ClearJugCooldown = {
-    subCommandData: (subcommand: SlashCommandSubcommandBuilder) => (
-        subcommand
-            .setName("clear-jug-cooldown")
+export const ClearJugCooldown: BotSubcommand = {
+    name: "clear-jug-cooldown",
+
+    serialize: (subcommand) => {
+        return subcommand
+            .setName(ClearJugCooldown.name)
             .setDescription(
                 "Clears the jug cooldown for all users or a specific user."
             )
@@ -21,11 +19,11 @@ export const ClearJugCooldown = {
                     .setDescription(
                         "The user whose cooldown you want to clear."
                     )
-            ))
-    ),
+            ));
+    },
 
-    async execute(interaction: ChatInputCommandInteraction) {
-        const { options, guild, member } = interaction;
+    execute: async (interaction) => {
+        const { options, guild } = interaction;
         const targetUserId = options.getUser("target")?.id;
 
         try {
@@ -35,13 +33,6 @@ export const ClearJugCooldown = {
 
             if (targetUserId) {
                 target = await guild.members.fetch(targetUserId);
-            }
-
-            assert(member !== null);
-
-            if (!ids.superUsers.includes(member.user.id)) {
-                await interaction.editReply(messages.incorrectPermissions());
-                return;
             }
 
             assert(targetUserId !== undefined);

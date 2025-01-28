@@ -1,16 +1,16 @@
-import {
-    ChatInputCommandInteraction,
-    SlashCommandSubcommandBuilder
-} from "discord.js";
 import { lightNovelTitles } from "../../../constants/lightNovelTitles";
+import { BotSubcommand } from "../../../types/BotSubcommand";
 
-export const LightNovel = {
-    subCommandData: (subcommand: SlashCommandSubcommandBuilder) =>
-        subcommand
-            .setName("lightnovel")
-            .setDescription("Random lightnovel title"),
+export const LightNovel: BotSubcommand = {
+    name: "lightnovel",
 
-    async execute(interaction: ChatInputCommandInteraction) {
+    serialize: (subcommand) => {
+        return subcommand
+            .setName(LightNovel.name)
+            .setDescription("Random lightnovel title");
+    },
+
+    execute: async (interaction) => {
         const lightNovelTitle = lightNovelTitles[
             Math.floor(Math.random() * lightNovelTitles.length)
         ].title;

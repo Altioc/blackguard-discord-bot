@@ -1,44 +1,46 @@
 import { ChatInputCommandInteraction } from "discord.js";
+import assert from "node:assert";
 import { commands } from "../constants/interactionHandlers";
+import { superUsers } from "../ids.json";
+import { BotCommand } from "../types/BotCommand";
 
 export const commandInteraction = {
     async execute(interaction: ChatInputCommandInteraction) {
-        const { commandName } = interaction;
+        const { commandName, user } = interaction;
         const command = commands.get(commandName);
 
-        if (!command || interaction.member === null) {
-            return;
-        }
+        try {
+            assert(command !== undefined);
 
-        const requiredRoles = command.requiredRoles;
-        const roles = interaction.member.roles instanceof Array
-            ? interaction.member.roles
-            : interaction.member.roles.cache;
+            const isSuperUser = superUsers.includes(user.id);
 
-        const canAccessCommands = requiredRoles.some((roleName) => (
-            roles.some(role => {
-                if (typeof role === "string") {
-                    return role.toLowerCase().trim()
-                        === roleName.toLowerCase().trim();
-                }
+            if (isSuperUser) {
+                return executeCommand(command, interaction);
+            }
 
-                return role.name.toLowerCase().trim()
-                    === roleName.toLowerCase().trim();
-            })
-        ));
+            const canExecuteCommand = command.canExecute === undefined
+                ? true
+                : command.canExecute(interaction);
 
-        if (!canAccessCommands) {
-            await interaction.reply({
+            assert(canExecuteCommand);
+
+            return executeCommand(command, interaction);
+        } catch {
+            return interaction.reply({
                 content: "You do not have permission to run this command.",
                 ephemeral: true
             });
-            return;
         }
+    }
+};
 
-        try {
-            await command.execute(interaction);
-        } catch (error) {
-            console.log(error, "command -> execute");
-        }
+const executeCommand = async (
+    command: BotCommand,
+    interaction: ChatInputCommandInteraction
+) => {
+    try {
+        await command.execute(interaction);
+    } catch (error) {
+        console.log(error, "command -> execute");
     }
 };

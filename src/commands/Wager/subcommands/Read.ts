@@ -7,15 +7,18 @@ import assert from "node:assert";
 import { messages, messageTypeColors } from "../../../constants";
 import { Books } from "../../../controllers/Books";
 import { Economy } from "../../../controllers/Economy";
+import { BotSubcommand } from "../../../types/BotSubcommand";
 
-export const Read = {
-    subCommandData: (subcommand: SlashCommandSubcommandBuilder) => (
-        subcommand
-            .setName("read")
-            .setDescription("Prints out the currently active wager.")
-    ),
+export const Read: BotSubcommand = {
+    name: "read",
 
-    async execute(interaction: ChatInputCommandInteraction) {
+    serialize: (subcommand) => {
+        return subcommand
+            .setName(Read.name)
+            .setDescription("Prints out the currently active wager.");
+    },
+
+    execute: async (interaction) => {
         const { user, guild } = interaction;
 
         if (Books.latestWager === null || !Books.latestWager.isActive) {

@@ -6,25 +6,23 @@ import {
 } from "discord.js";
 import { messages, messageTypeColors } from "../../../constants";
 import { Books } from "../../../controllers/Books";
+import { AuthorOf } from "../../../models/ExecutePermission";
+import { BotSubcommand } from "../../../types/BotSubcommand";
 
-export const Reactivate = {
-    subCommandData: (subcommand: SlashCommandSubcommandBuilder) => (
-        subcommand
-            .setName("reactivate")
-            .setDescription("Reactivates an inactive wager.")
-    ),
+export const Reactivate: BotSubcommand = {
+    name: "reactivate",
 
-    async execute(interaction: ChatInputCommandInteraction) {
-        if (
-            !interaction.memberPermissions
-            || !interaction.memberPermissions.has(
-                PermissionFlagsBits.Administrator
-            )
-        ) {
-            await interaction.editReply(messages.incorrectPermissions());
-            return;
-        }
+    serialize: (subcommand) => {
+        return subcommand
+            .setName(Reactivate.name)
+            .setDescription("Reactivates an inactive wager.");
+    },
 
+    canExecute: async (interaction) => {
+        return AuthorOf(interaction).has(PermissionFlagsBits.Administrator);
+    },
+
+    execute: async (interaction) => {
         if (Books.latestWager && !Books.latestWager.isActive) {
             Books.latestWager.isActive = true;
             await interaction.editReply({

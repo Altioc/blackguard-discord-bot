@@ -3,30 +3,42 @@ import assert from "node:assert";
 import { messages, messageTypeColors, responseCodes } from "../../constants";
 import { Economy } from "../../controllers/Economy";
 import { Rpg } from "../../controllers/Rpg";
-import { BotCommand } from "../../types/BotCommand";
+import { AuthorOf, Or } from "../../models/ExecutePermission";
+import { BotCommandWithoutSubcommands } from "../../types/WithoutSubcommands";
 
-const Jug: BotCommand = {
-    data: new SlashCommandBuilder()
-        .setName("jug")
-        .setDescription(
-            "Attempts to jug someone elses bilaims with a small chance for a counter jug on failure."
-        )
-        .addUserOption(option => (
-            option
-                .setName("target")
-                .setDescription("The user to attempt to jug.")
-        ))
-        .addStringOption(option => (
-            option
-                .setName("value")
-                .setDescription(
-                    "The amount to wager on the jug or \"all\" if you want to use all available funds as your jug wager."
-                )
-        )),
+const Jug: BotCommandWithoutSubcommands = {
+    name: "jug",
 
-    requiredRoles: ["Blackguard", "Guest"],
+    serialize: () => {
+        const serialization = new SlashCommandBuilder()
+            .setName(Jug.name)
+            .setDescription(
+                "Attempts to jug someone elses bilaims with a small chance for a counter jug on failure."
+            )
+            .addUserOption(option => (
+                option
+                    .setName("target")
+                    .setDescription("The user to attempt to jug.")
+            ))
+            .addStringOption(option => (
+                option
+                    .setName("value")
+                    .setDescription(
+                        "The amount to wager on the jug or \"all\" if you want to use all available funds as your jug wager."
+                    )
+            ));
 
-    async execute(interaction) {
+        return serialization;
+    },
+
+    canExecute: async (interaction) => {
+        return Or(
+            AuthorOf(interaction).has("blackguard"),
+            AuthorOf(interaction).has("guest")
+        );
+    },
+
+    execute: async (interaction) => {
         await interaction.deferReply();
 
         const { user, options, guild } = interaction;

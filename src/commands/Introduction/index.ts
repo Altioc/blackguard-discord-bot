@@ -1,37 +1,48 @@
-import { SlashCommandBuilder } from "discord.js";
+import { PermissionFlagsBits, SlashCommandBuilder } from "discord.js";
 import { messages } from "../../constants";
+import { AuthorOf } from "../../models/ExecutePermission";
 import { BotCommand } from "../../types/BotCommand";
 import { Create } from "./subcommands/Create";
 import { Delete } from "./subcommands/Delete";
 
 const Introduce: BotCommand = {
-    data: new SlashCommandBuilder()
-        .setName("introduction-automator")
-        .setDescription("Create/Delete the introduction automator")
-        .addSubcommand(Create.subCommandData)
-        .addSubcommand(Delete.subCommandData),
+    name: "introduction-automator",
 
-    requiredRoles: ["Blackguard", "Duskfallen"],
+    subcommands: new Map([
+        [Create.name, Create],
+        [Delete.name, Delete]
+    ]),
 
-    async execute(interaction) {
+    serialize: () => {
+        const serialization = new SlashCommandBuilder()
+            .setName(Introduce.name)
+            .setDescription("Create/Delete the introduction automator");
+
+        Introduce.subcommands.forEach((subcommand) => {
+            serialization.addSubcommand(subcommand.serialize);
+        });
+
+        return serialization;
+    },
+
+    canExecute: async (interaction) => {
+        return AuthorOf(interaction).has(PermissionFlagsBits.Administrator);
+    },
+
+    execute: async (interaction) => {
         await interaction.deferReply({
             ephemeral: true
         });
 
-        const subCommand = interaction.options.getSubcommand();
+        const subcommandName = interaction.options.getSubcommand();
 
-        switch (subCommand) {
-            case "create": {
-                await Create.execute(interaction);
-                break;
-            }
-            case "delete": {
-                await Delete.execute(interaction);
-                break;
-            }
-            default: {
-                await interaction.editReply(messages.unknownError());
-            }
+        const subcommand = Introduce.subcommands.get(subcommandName);
+
+        try {
+            await subcommand?.execute(interaction);
+        } catch (error) {
+            console.log(error);
+            await interaction.editReply(messages.unknownError());
         }
     }
 };

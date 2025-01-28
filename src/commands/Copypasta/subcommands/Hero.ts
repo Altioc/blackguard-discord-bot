@@ -1,16 +1,15 @@
-import {
-    ChatInputCommandInteraction,
-    SlashCommandSubcommandBuilder
-} from "discord.js";
+import { BotSubcommand } from "../../../types/BotSubcommand";
 
-export const Hero = {
-    subCommandData: (subcommand: SlashCommandSubcommandBuilder) => (
-        subcommand
-            .setName("hero")
-            .setDescription("Why is Hero a hard class to play?...")
-    ),
+export const Hero: BotSubcommand = {
+    name: "hero",
 
-    async execute(interaction: ChatInputCommandInteraction) {
+    serialize: (subcommand) => {
+        return subcommand
+            .setName(Hero.name)
+            .setDescription("Why is Hero a hard class to play?...");
+    },
+
+    execute: async (interaction) => {
         interaction.reply(`
 Why is Hero a hard class to play?
 

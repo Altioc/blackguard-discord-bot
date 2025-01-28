@@ -1,9 +1,4 @@
-import {
-    ChatInputCommandInteraction,
-    EmbedBuilder,
-    PermissionFlagsBits,
-    SlashCommandSubcommandBuilder
-} from "discord.js";
+import { EmbedBuilder, PermissionFlagsBits } from "discord.js";
 import assert from "node:assert";
 import {
     CurrencyLocation,
@@ -12,11 +7,15 @@ import {
     responseCodes
 } from "../../../constants";
 import { Economy } from "../../../controllers/Economy";
+import { AuthorOf } from "../../../models/ExecutePermission";
+import { BotSubcommand } from "../../../types/BotSubcommand";
 
-export const Add = {
-    subCommandData: (subcommand: SlashCommandSubcommandBuilder) => (
-        subcommand
-            .setName("add")
+export const Add: BotSubcommand = {
+    name: "add",
+
+    serialize: (subcommand) => {
+        return subcommand
+            .setName(Add.name)
             .setDescription(
                 "Adds a specified amount of Bilaim to the target's wallet."
             )
@@ -38,10 +37,14 @@ export const Add = {
                     .setDescription(
                         "Whether or not to add money to the users bank instead of their wallet. Defaults to false."
                     )
-            ))
-    ),
+            ));
+    },
 
-    async execute(interaction: ChatInputCommandInteraction) {
+    canExecute: async (interaction) => {
+        return AuthorOf(interaction).has(PermissionFlagsBits.Administrator);
+    },
+
+    execute: async (interaction) => {
         await interaction.deferReply();
         const { options, guild } = interaction;
         const value = options.getInteger("value");
@@ -50,16 +53,6 @@ export const Add = {
         const addTarget = toBank
             ? CurrencyLocation.Bank
             : CurrencyLocation.Wallet;
-
-        if (
-            !interaction.memberPermissions
-            || !interaction.memberPermissions.has(
-                PermissionFlagsBits.Administrator
-            )
-        ) {
-            await interaction.editReply(messages.incorrectPermissions());
-            return;
-        }
 
         try {
             const targetUser = options.getUser("target");

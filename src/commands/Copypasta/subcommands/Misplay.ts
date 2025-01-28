@@ -1,16 +1,15 @@
-import {
-    ChatInputCommandInteraction,
-    SlashCommandSubcommandBuilder
-} from "discord.js";
+import { BotSubcommand } from "../../../types/BotSubcommand";
 
-export const Misplay = {
-    subCommandData: (subcommand: SlashCommandSubcommandBuilder) => (
-        subcommand
-            .setName("misplay")
-            .setDescription("some people might think it's a misplay...")
-    ),
+export const Misplay: BotSubcommand = {
+    name: "misplay",
 
-    async execute(interaction: ChatInputCommandInteraction) {
+    serialize: (subcommand) => {
+        return subcommand
+            .setName(Misplay.name)
+            .setDescription("some people might think it's a misplay...");
+    },
+
+    execute: async (interaction) => {
         interaction.reply(`
 some people might think it's a misplay. since it was intentional, you lined it up and demonstrated high level of game mechanics/physics. you make this play not because you have to, it's because you can
         `);

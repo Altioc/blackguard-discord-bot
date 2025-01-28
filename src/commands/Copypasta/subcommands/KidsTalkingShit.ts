@@ -1,12 +1,11 @@
-import {
-    ChatInputCommandInteraction,
-    SlashCommandSubcommandBuilder
-} from "discord.js";
+import { BotSubcommand } from "../../../types/BotSubcommand";
 
-export const KidsTalkingShit = {
-    subCommandData: (subcommand: SlashCommandSubcommandBuilder) =>
-        subcommand
-            .setName("kidstalkingshit")
+export const KidsTalkingShit: BotSubcommand = {
+    name: "kidstalkingshit",
+
+    serialize: (subcommand) => {
+        return subcommand
+            .setName(KidsTalkingShit.name)
             .setDescription("i think its hilarious...")
             .addStringOption(option => (
                 option
@@ -15,9 +14,10 @@ export const KidsTalkingShit = {
                         "The name of person the kids are talking shit about."
                     )
                     .setRequired(true)
-            )),
+            ));
+    },
 
-    async execute(interaction: ChatInputCommandInteraction) {
+    execute: async (interaction) => {
         const { options } = interaction;
         const name = options.getString("name");
 

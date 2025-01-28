@@ -1,15 +1,15 @@
-import {
-    ChatInputCommandInteraction,
-    SlashCommandSubcommandBuilder
-} from "discord.js";
+import { BotSubcommand } from "../../../types/BotSubcommand";
 
-export const Adele56k = {
-    subCommandData: (subcommand: SlashCommandSubcommandBuilder) =>
-        subcommand
-            .setName("56kadele")
-            .setDescription("I know you're afraid of me..."),
+export const Adele56k: BotSubcommand = {
+    name: "56kadele",
 
-    async execute(interaction: ChatInputCommandInteraction) {
+    serialize: (subcommand) => {
+        return subcommand
+            .setName(Adele56k.name)
+            .setDescription("I know you're afraid of me...");
+    },
+
+    execute: async (interaction) => {
         await interaction.reply(`
 I know you're afraid of me
 catching up to you

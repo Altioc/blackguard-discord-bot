@@ -6,21 +6,24 @@ import {
 import assert from "node:assert";
 import { messages, messageTypeColors, responseCodes } from "../../../constants";
 import { Books } from "../../../controllers/Books";
+import { BotSubcommand } from "../../../types/BotSubcommand";
 
-export const Start = {
-    subCommandData: (subcommand: SlashCommandSubcommandBuilder) => (
-        subcommand
-            .setName("start")
+export const Start: BotSubcommand = {
+    name: "start",
+
+    serialize: (subcommand) => {
+        return subcommand
+            .setName(Start.name)
             .setDescription("Starts a new wager with the given premise.")
             .addStringOption(option => (
                 option
                     .setName("premise")
                     .setDescription("The premise of the wager.")
                     .setRequired(true)
-            ))
-    ),
+            ));
+    },
 
-    async execute(interaction: ChatInputCommandInteraction) {
+    execute: async (interaction) => {
         const { user, options } = interaction;
         const premise = options.getString("premise");
 

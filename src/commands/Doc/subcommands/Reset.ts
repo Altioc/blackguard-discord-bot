@@ -1,8 +1,4 @@
-import {
-    ChatInputCommandInteraction,
-    EmbedBuilder,
-    SlashCommandSubcommandBuilder
-} from "discord.js";
+import { EmbedBuilder } from "discord.js";
 import assert from "node:assert";
 import {
     BlackguardDbDocName,
@@ -11,11 +7,14 @@ import {
     responseCodes
 } from "../../../constants";
 import { Docs } from "../../../controllers/Docs";
+import { BotSubcommand } from "../../../types/BotSubcommand";
 
-export const Reset = {
-    subCommandData: (subcommand: SlashCommandSubcommandBuilder) => (
-        subcommand
-            .setName("reset")
+export const Reset: BotSubcommand = {
+    name: "reset",
+
+    serialize: (subcommand) => {
+        return subcommand
+            .setName(Reset.name)
             .setDescription("Resets the specified doc to its default value.")
             .addStringOption(option => (
                 option
@@ -29,10 +28,10 @@ export const Reset = {
                             }))
                     )
                     .setRequired(true)
-            ))
-    ),
+            ));
+    },
 
-    async execute(interaction: ChatInputCommandInteraction) {
+    execute: async (interaction) => {
         const { options } = interaction;
         const docNameKey = options.getString("name");
 

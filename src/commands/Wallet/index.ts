@@ -1,6 +1,8 @@
 import { SlashCommandBuilder } from "discord.js";
 import { messages } from "../../constants";
+import { And, AuthorOf, Or } from "../../models/ExecutePermission";
 import { BotCommand } from "../../types/BotCommand";
+import { canExecuteSubcommand } from "../../utils/canExecuteSubcommand";
 import { Add } from "./subcommands/Add";
 import { Create } from "./subcommands/Create";
 import { Deduct } from "./subcommands/Deduct";
@@ -11,59 +13,56 @@ import { Send } from "./subcommands/Send";
 import { Withdrawal } from "./subcommands/Withdrawal";
 
 const Wallet: BotCommand = {
-    data: new SlashCommandBuilder()
-        .setName("wallet")
-        .setDescription("The base command for all things involving wallets.")
-        .addSubcommand(Create.subCommandData)
-        .addSubcommand(Add.subCommandData)
-        .addSubcommand(Delete.subCommandData)
-        .addSubcommand(Send.subCommandData)
-        .addSubcommand(Read.subCommandData)
-        .addSubcommand(Deduct.subCommandData)
-        .addSubcommand(Deposit.subCommandData)
-        .addSubcommand(Withdrawal.subCommandData),
+    name: "wallet",
 
-    requiredRoles: ["Blackguard", "Guest"],
+    subcommands: new Map([
+        [Add.name, Add],
+        [Create.name, Create],
+        [Deduct.name, Deduct],
+        [Delete.name, Delete],
+        [Deposit.name, Deposit],
+        [Read.name, Read],
+        [Send.name, Send],
+        [Withdrawal.name, Withdrawal]
+    ]),
 
-    async execute(interaction) {
-        const subCommand = interaction.options.getSubcommand();
+    serialize: () => {
+        const serialization = new SlashCommandBuilder()
+            .setName(Wallet.name)
+            .setDescription(
+                "The base command for all things involving wallets."
+            );
 
-        switch (subCommand) {
-            case "create": {
-                await Create.execute(interaction);
-                break;
-            }
-            case "add": {
-                await Add.execute(interaction);
-                break;
-            }
-            case "delete": {
-                await Delete.execute(interaction);
-                break;
-            }
-            case "send": {
-                await Send.execute(interaction);
-                break;
-            }
-            case "read": {
-                await Read.execute(interaction);
-                break;
-            }
-            case "deduct": {
-                await Deduct.execute(interaction);
-                break;
-            }
-            case "deposit": {
-                await Deposit.execute(interaction);
-                break;
-            }
-            case "withdrawal": {
-                await Withdrawal.execute(interaction);
-                break;
-            }
-            default: {
-                await interaction.editReply(messages.unknownError());
-            }
+        Wallet.subcommands.forEach((subcommand) => {
+            serialization.addSubcommand(subcommand.serialize);
+        });
+
+        return serialization;
+    },
+
+    canExecute: async (interaction) => {
+        return And(
+            Or(
+                AuthorOf(interaction).has("blackguard"),
+                AuthorOf(interaction).has("guest")
+            ),
+            canExecuteSubcommand(
+                interaction,
+                Wallet.subcommands
+            )
+        );
+    },
+
+    execute: async (interaction) => {
+        const subcommandName = interaction.options.getSubcommand();
+
+        const subcommand = Wallet.subcommands.get(subcommandName);
+
+        try {
+            await subcommand?.execute(interaction);
+        } catch (error) {
+            console.log(error);
+            await interaction.editReply(messages.unknownError());
         }
     }
 };

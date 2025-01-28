@@ -1,51 +1,51 @@
 import { SlashCommandBuilder } from "discord.js";
-import assert from "node:assert";
 import { messages } from "../../constants";
-import ids from "../../ids.json";
+import { superUsers } from "../../ids.json";
+import { AuthorOf } from "../../models/ExecutePermission";
 import { BotCommand } from "../../types/BotCommand";
 import { Get } from "./subcommands/Get";
 import { Reset } from "./subcommands/Reset";
 import { Set } from "./subcommands/Set";
 
 const Doc: BotCommand = {
-    data: new SlashCommandBuilder()
-        .setName("doc")
-        .setDescription("The base command for all things involving docs.")
-        .addSubcommand(Get.subCommandData)
-        .addSubcommand(Set.subCommandData)
-        .addSubcommand(Reset.subCommandData),
+    name: "doc",
 
-    requiredRoles: ["Blackguard"],
+    subcommands: new Map([
+        [Get.name, Get],
+        [Reset.name, Reset],
+        [Set.name, Set]
+    ]),
+
+    serialize: () => {
+        const serialization = new SlashCommandBuilder()
+            .setName(Doc.name)
+            .setDescription("The base command for all things involving docs.");
+
+        Doc.subcommands.forEach((subcommand) => {
+            serialization.addSubcommand(subcommand.serialize);
+        });
+
+        return serialization;
+    },
+
+    canExecute: async (interaction) => {
+        return AuthorOf(interaction).is(superUsers);
+    },
 
     async execute(interaction) {
         await interaction.deferReply({
             ephemeral: true
         });
-        const subCommand = interaction.options.getSubcommand();
 
-        assert(interaction.member !== null);
+        const subcommandName = interaction.options.getSubcommand();
 
-        if (!ids.superUsers.includes(interaction.member.user.id)) {
-            await interaction.editReply(messages.incorrectPermissions());
-            return;
-        }
+        const subcommand = Doc.subcommands.get(subcommandName);
 
-        switch (subCommand) {
-            case "get": {
-                await Get.execute(interaction);
-                break;
-            }
-            case "set": {
-                await Set.execute(interaction);
-                break;
-            }
-            case "reset": {
-                await Reset.execute(interaction);
-                break;
-            }
-            default: {
-                await interaction.editReply(messages.unknownError());
-            }
+        try {
+            await subcommand?.execute(interaction);
+        } catch (error) {
+            console.log(error);
+            await interaction.editReply(messages.unknownError());
         }
     }
 };

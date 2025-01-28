@@ -1,10 +1,9 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
-import { BotSubcommand } from "./BotSubcommand";
 import { InteractionHandler } from "./InteractionHandler";
 
-export type BotCommand =
+export type BotCommandWithoutSubcommands =
     & InteractionHandler<ChatInputCommandInteraction>
     & {
-        subcommands: Map<string, BotSubcommand>;
         serialize: () => Partial<SlashCommandBuilder>;
+        superUserOnly?: boolean;
     };
