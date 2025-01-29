@@ -1,0 +1,432 @@
+import {
+    ActionRowBuilder,
+    APIEmbedField,
+    BaseInteraction,
+    BaseMessageOptions,
+    ButtonBuilder,
+    ButtonInteraction,
+    ButtonStyle,
+    ComponentType,
+    EmbedBuilder,
+    SlashCommandBuilder,
+    User
+} from "discord.js";
+import assert from "node:assert";
+import {
+    EquipmentType,
+    messages,
+    MessageTypeColor,
+    responseCodes
+} from "../../constants";
+import { Economy } from "../../controllers/Economy";
+import { Rpg } from "../../controllers/Rpg";
+import { Character } from "../../models/Character";
+import { AuthorOf, Or } from "../../models/ExecutePermission";
+import { BotCommandWithoutSubcommands } from "../../types/WithoutSubcommands";
+
+const Equipment: BotCommandWithoutSubcommands = {
+    name: "equipment",
+
+    serialize: () => {
+        const serialization = new SlashCommandBuilder()
+            .setName(Equipment.name)
+            .setDescription(
+                "Shows your equipment data or the equipment data of another person."
+            )
+            .addUserOption(option => (
+                option
+                    .setName("target")
+                    .setDescription(
+                        "The user whose equipment will be shown. Defaults to your equipment."
+                    )
+            ));
+
+        return serialization;
+    },
+
+    canExecute: async (interaction) => {
+        return Or(
+            AuthorOf(interaction).has("blackguard"),
+            AuthorOf(interaction).has("guest")
+        );
+    },
+
+    execute: async (interaction) => {
+        await interaction.deferReply({
+            ephemeral: true
+        });
+        const { user, options } = interaction;
+        const targetUserId = options.getUser("target")?.id || user.id;
+        const character = await Rpg.getCharacter(targetUserId);
+
+        const weaponResponse = await interaction.editReply(
+            await getEquipmentWindow(
+                EquipmentType.Weapon,
+                interaction,
+                targetUserId,
+                character
+            )
+        );
+        const armorResponse = await interaction.followUp(
+            await getEquipmentWindow(
+                EquipmentType.Armor,
+                interaction,
+                targetUserId,
+                character
+            )
+        );
+
+        const weaponEnhanceCollector = weaponResponse
+            .createMessageComponentCollector({
+                componentType: ComponentType.Button,
+                time: 600000
+            });
+        weaponEnhanceCollector.on(
+            "collect",
+            enhanceButtonInteractionHandler(EquipmentType.Weapon, user)
+        );
+        const armorEnhanceCollector = armorResponse
+            .createMessageComponentCollector({
+                componentType: ComponentType.Button,
+                time: 600000
+            });
+        armorEnhanceCollector.on(
+            "collect",
+            enhanceButtonInteractionHandler(EquipmentType.Armor, user)
+        );
+
+        const failStackDisplay = new EmbedBuilder()
+            .setTitle("Fail Stacks")
+            .setDescription(`${character.failStacks}`);
+
+        await interaction.followUp({
+            embeds: [failStackDisplay],
+            ephemeral: true
+        });
+    }
+};
+
+const decimalToPercentDisplay = (value: number): string => {
+    return `+${Math.round(value * 100)}%`;
+};
+
+const getFlatField = (
+    name: string,
+    currentValue: number,
+    nextValue: number,
+    showNextValue: boolean
+): APIEmbedField => {
+    let value = `${currentValue}`;
+
+    if (!isNaN(nextValue) && nextValue !== null && showNextValue) {
+        value += ` (${nextValue})`;
+    }
+
+    return { name, value, inline: true };
+};
+
+const getPercentField = (
+    name: string,
+    currentValue: number,
+    nextValue: number,
+    showNextValue: boolean
+): APIEmbedField => {
+    let value = `${decimalToPercentDisplay(currentValue)}`;
+
+    if (!isNaN(nextValue) && nextValue !== null && showNextValue) {
+        value += ` (${decimalToPercentDisplay(nextValue)})`;
+    }
+
+    return { name, value, inline: true };
+};
+
+const getEquipmentWindow = async (
+    type: EquipmentType,
+    interaction: BaseInteraction,
+    targetUserId: string,
+    character: Character
+): Promise<BaseMessageOptions> => {
+    const { user, guild } = interaction;
+
+    const targetUserIsOwner = targetUserId === user.id;
+
+    const currencyEmojiName = Economy.currencyEmoji.replace(/:/g, "");
+
+    assert(guild !== null);
+    const currenyEmoji = await guild.emojis.fetch()
+        .then((emojis) => {
+            const currenyEmojiEntry = emojis.find(emoji =>
+                emoji.name === currencyEmojiName
+            );
+            if (!currenyEmojiEntry) {
+                return "🪙";
+            }
+            return currenyEmojiEntry.id;
+        });
+
+    const walletResponse = await Economy.getWallet(targetUserId);
+    const currentBankBalance = walletResponse?.value?.bank;
+
+    const currentBankBalanceButton = new ButtonBuilder()
+        .setCustomId("bank-balance-button")
+        .setEmoji("🏛️")
+        .setLabel(`${currentBankBalance}`)
+        .setStyle(ButtonStyle.Secondary)
+        .setDisabled(true);
+
+    switch (type) {
+        case EquipmentType.Weapon: {
+            const { pve } = Rpg.jugging;
+            const { weapon: weaponLevel } = character.equipmentLevels;
+
+            const currentWeapon = Rpg.equipmentStats.weapon[weaponLevel];
+            const nextWeapon = Rpg.equipmentStats.weapon[weaponLevel + 1];
+
+            const weaponUpgradeCost = Rpg.equipmentStats.upgrades[weaponLevel]
+                ?.cost;
+            const weaponUpgradeChance = `${
+                Math.round(
+                    Rpg.equipmentStats.upgrades[weaponLevel]?.chance
+                        * 100
+                )
+            }%`;
+
+            const currentMinReward = Character.getModifiedRewardValue(
+                currentWeapon.rewardFloor,
+                currentWeapon.rewardModifier
+            );
+            const currentMaxReward = Character.getModifiedRewardValue(
+                currentWeapon.rewardCeiling,
+                currentWeapon.rewardModifier
+            );
+            const currentPVEMinReward = Math.round(
+                Character.getModifiedRewardValue(
+                    pve.baseRewardFloor,
+                    currentWeapon.rewardModifier
+                )
+            );
+            const currentPVEMaxReward = Math.round(
+                Character.getModifiedRewardValue(
+                    pve.baseRewardCeiling,
+                    currentWeapon.rewardModifier
+                )
+            );
+
+            const nextMinReward = Character.getModifiedRewardValue(
+                currentWeapon.rewardFloor,
+                nextWeapon?.rewardModifier
+            );
+            const nextMaxReward = Character.getModifiedRewardValue(
+                currentWeapon.rewardCeiling,
+                nextWeapon?.rewardModifier
+            );
+            const nextPVEMinReward = Math.round(
+                Character.getModifiedRewardValue(
+                    pve.baseRewardFloor,
+                    nextWeapon?.rewardModifier
+                )
+            );
+            const nextPVEMaxReward = Math.round(
+                Character.getModifiedRewardValue(
+                    pve.baseRewardCeiling,
+                    nextWeapon?.rewardModifier
+                )
+            );
+
+            const weaponWindow = new EmbedBuilder()
+                .setTitle("Weapon")
+                .setAuthor({
+                    name: `+${weaponLevel}`,
+                    iconURL:
+                        "https://blkgrd.com/assets/blkgrd-bot/star-icon.png"
+                })
+                .setThumbnail(
+                    `https://blkgrd.com/assets/blkgrd-bot/star${weaponLevel}-weapon-icon.png`
+                )
+                .addFields([
+                    getPercentField(
+                        "Min PVP Reward",
+                        currentMinReward,
+                        nextMinReward,
+                        targetUserIsOwner
+                    ),
+                    getPercentField(
+                        "Max PVP Reward",
+                        currentMaxReward,
+                        nextMaxReward,
+                        targetUserIsOwner
+                    ),
+                    { name: " ", value: " " },
+                    getFlatField(
+                        "Min PVE Reward",
+                        currentPVEMinReward,
+                        nextPVEMinReward,
+                        targetUserIsOwner
+                    ),
+                    getFlatField(
+                        "Max PVE Reward",
+                        currentPVEMaxReward,
+                        nextPVEMaxReward,
+                        targetUserIsOwner
+                    )
+                ]);
+
+            const weaponEnhanceButton = new ButtonBuilder()
+                .setCustomId("weapon-enhance-button")
+                .setLabel("Enhance")
+                .setStyle(ButtonStyle.Primary);
+
+            const weaponEnhanceCostButton = new ButtonBuilder()
+                .setCustomId("weapon-enhance-cost-button")
+                .setEmoji(currenyEmoji)
+                .setLabel(`${weaponUpgradeCost} (${weaponUpgradeChance})`)
+                .setStyle(ButtonStyle.Secondary)
+                .setDisabled(true);
+
+            const weaponEnhanceRow = new ActionRowBuilder<ButtonBuilder>()
+                .addComponents([
+                    weaponEnhanceButton,
+                    weaponEnhanceCostButton,
+                    currentBankBalanceButton
+                ]);
+
+            return {
+                embeds: [weaponWindow],
+                components: (nextWeapon && targetUserIsOwner)
+                    ? [weaponEnhanceRow]
+                    : []
+            };
+        }
+        case EquipmentType.Armor: {
+            const { armor: armorLevel } = character.equipmentLevels;
+
+            const currentArmor = Rpg.equipmentStats.armor[armorLevel];
+            const nextArmor = Rpg.equipmentStats.armor[armorLevel + 1];
+
+            const armorUpgradeCost = Rpg.equipmentStats
+                .upgrades[armorLevel]?.cost;
+            const armorUpgradeChance = `${
+                Math.round(
+                    Rpg.equipmentStats.upgrades[armorLevel]?.chance
+                        * 100
+                )
+            }%`;
+
+            const armorFields = [
+                getPercentField(
+                    "Recovery",
+                    currentArmor.recovery,
+                    nextArmor?.recovery,
+                    targetUserIsOwner
+                )
+            ];
+
+            if (currentArmor.failStackModifier !== 0) {
+                armorFields.push(
+                    getPercentField(
+                        "Fail Stack Value",
+                        currentArmor.failStackModifier,
+                        nextArmor?.failStackModifier,
+                        targetUserIsOwner
+                    )
+                );
+            }
+
+            const armorWindow = new EmbedBuilder()
+                .setTitle("Armor")
+                .setAuthor({
+                    name: `+${armorLevel}`,
+                    iconURL:
+                        "https://blkgrd.com/assets/blkgrd-bot/star-icon.png"
+                })
+                .setThumbnail(
+                    `https://blkgrd.com/assets/blkgrd-bot/star${armorLevel}-armor-icon.png`
+                )
+                .addFields(armorFields);
+
+            const armorEnhanceButton = new ButtonBuilder()
+                .setCustomId("armor-enhance-button")
+                .setLabel("Enhance")
+                .setStyle(ButtonStyle.Primary);
+
+            const armorEnhanceCostButton = new ButtonBuilder()
+                .setCustomId("armor-enhance-cost-button")
+                .setEmoji(currenyEmoji)
+                .setLabel(`${armorUpgradeCost} (${armorUpgradeChance})`)
+                .setStyle(ButtonStyle.Secondary)
+                .setDisabled(true);
+
+            const armorEnhanceRow = new ActionRowBuilder<ButtonBuilder>()
+                .addComponents([
+                    armorEnhanceButton,
+                    armorEnhanceCostButton,
+                    currentBankBalanceButton
+                ]);
+
+            return {
+                embeds: [armorWindow],
+                components: (nextArmor && targetUserIsOwner)
+                    ? [armorEnhanceRow]
+                    : []
+            };
+        }
+    }
+};
+
+const enhanceButtonInteractionHandler =
+    (type: EquipmentType, user: User) =>
+    async (interaction: ButtonInteraction) => {
+        try {
+            const response = await Rpg.enhanceEquipment(
+                user.id,
+                type
+            );
+            const responseCode = response?.responseCode;
+            const character = await Rpg.getCharacter(user.id);
+
+            switch (responseCode) {
+                case responseCodes.success: {
+                    await interaction.update(
+                        await getEquipmentWindow(
+                            type,
+                            interaction,
+                            user.id,
+                            character
+                        )
+                    );
+                    break;
+                }
+                case responseCodes.failure: {
+                    await interaction.reply({
+                        embeds: [
+                            new EmbedBuilder()
+                                .setTitle("Failure")
+                                .setColor(MessageTypeColor.Success)
+                                .setDescription(`The enhancement failed.`)
+                        ],
+                        ephemeral: true
+                    });
+                    break;
+                }
+                case responseCodes.doesntExist: {
+                    await interaction.reply(messages.authorNoWallet());
+                    break;
+                }
+                case responseCodes.economy.insufficientFunds: {
+                    await interaction.reply(messages.insufficientFunds());
+                    break;
+                }
+                default: {
+                    interaction.reply(messages.unknownError());
+                }
+            }
+        } catch (error) {
+            console.log(
+                error,
+                "Equipment.execute() -> Rpg.enhanceEquipment()"
+            );
+            interaction.reply(messages.unknownError());
+        }
+    };
+
+export default Equipment;

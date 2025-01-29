@@ -1,5 +1,5 @@
 {
-  "superUsers": [
-    "discord user id for users that are able to interact with any commads"
-  ]
+    "superUsers": [
+        "discord user id for users that are able to interact with any commands"
+    ]
 }

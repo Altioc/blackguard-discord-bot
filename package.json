@@ -1,33 +1,39 @@
 {
-  "name": "blkgrd-bot",
-  "version": "1.0.0",
-  "description": "The bot for the Blackguard Maplestory Discord server.",
-  "main": "./src/bot.js",
-  "scripts": {
-    "start": "node ./src/bot.js",
-    "deploy": "node ./src/deploy-commands.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Mnesma/blkgrd-bot.git"
-  },
-  "keywords": [
-    "discord",
-    "bot"
-  ],
-  "author": "Mnesma",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/Mnesma/blkgrd-bot/issues"
-  },
-  "homepage": "https://github.com/Mnesma/blkgrd-bot#readme",
-  "dependencies": {
-    "@discordjs/builders": "1.6.3",
-    "@discordjs/rest": "1.7.1",
-    "discord-api-types": "0.37.43",
-    "discord.js": "14.11.0",
-    "pouchdb": "7.3.0",
-    "pouchdb-find": "7.3.0",
-    "pouchdb-upsert": "2.2.0"
-  }
+    "name": "blkgrd-bot",
+    "version": "1.0.0",
+    "description": "The bot for the Blackguard Maplestory Discord server.",
+    "main": "./src/bot.js",
+    "scripts": {
+        "build": "tsc",
+        "start": "node ./dist/bot.js",
+        "deploy": "node ./dist/deployCommands.js",
+        "lint": "dprint fmt"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Mnesma/blkgrd-bot.git"
+    },
+    "keywords": [
+        "discord",
+        "bot"
+    ],
+    "author": "Mnesma",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/Mnesma/blkgrd-bot/issues"
+    },
+    "homepage": "https://github.com/Mnesma/blkgrd-bot#readme",
+    "dependencies": {
+        "discord-api-types": "0.37.43",
+        "discord.js": "14.11.0",
+        "pouchdb": "7.3.0",
+        "pouchdb-find": "7.3.0",
+        "pouchdb-upsert": "2.2.0"
+    },
+    "devDependencies": {
+        "@types/pouchdb": "6.4.2",
+        "@types/pouchdb-upsert": "2.2.9",
+        "dprint": "0.48.0",
+        "typescript": "5.7.3"
+    }
 }
