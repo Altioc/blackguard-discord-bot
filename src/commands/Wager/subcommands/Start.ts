@@ -4,7 +4,7 @@ import {
     SlashCommandSubcommandBuilder
 } from "discord.js";
 import assert from "node:assert";
-import { messages, messageTypeColors, responseCodes } from "../../../constants";
+import { messages, MessageTypeColor, responseCodes } from "../../../constants";
 import { Books } from "../../../controllers/Books";
 import { BotSubcommand } from "../../../types/BotSubcommand";
 
@@ -41,7 +41,7 @@ export const Start: BotSubcommand = {
                         embeds: [
                             new EmbedBuilder()
                                 .setTitle("New Wager")
-                                .setColor(messageTypeColors.success)
+                                .setColor(MessageTypeColor.Success)
                                 .setDescription("A new wager has been created")
                                 .addFields({
                                     name: "Premise:",
@@ -56,7 +56,7 @@ export const Start: BotSubcommand = {
                         embeds: [
                             new EmbedBuilder()
                                 .setTitle("Already Exists")
-                                .setColor(messageTypeColors.failure)
+                                .setColor(MessageTypeColor.Failure)
                                 .setDescription(
                                     "There is already an active wager running. Please end that one before starting a new one."
                                 )

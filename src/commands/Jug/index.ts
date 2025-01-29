@@ -1,6 +1,6 @@
 import { EmbedBuilder, SlashCommandBuilder, time } from "discord.js";
 import assert from "node:assert";
-import { messages, messageTypeColors, responseCodes } from "../../constants";
+import { messages, MessageTypeColor, responseCodes } from "../../constants";
 import { Economy } from "../../controllers/Economy";
 import { Rpg } from "../../controllers/Rpg";
 import { AuthorOf, Or } from "../../models/ExecutePermission";
@@ -73,7 +73,7 @@ const Jug: BotCommandWithoutSubcommands = {
                         embeds: [
                             new EmbedBuilder()
                                 .setTitle("Success")
-                                .setColor(messageTypeColors.success)
+                                .setColor(MessageTypeColor.Success)
                                 .setDescription(
                                     `You ${initialWagerDisplay}have sucessfully jugged ${currencyEmoji} ${responseValue.finalJugAmount} from ${
                                         target?.displayName ?? "monsters"
@@ -99,7 +99,7 @@ const Jug: BotCommandWithoutSubcommands = {
                         embeds: [
                             new EmbedBuilder()
                                 .setTitle("Invalid Jug Value")
-                                .setColor(messageTypeColors.failure)
+                                .setColor(MessageTypeColor.Failure)
                                 .setDescription(
                                     `The provided jug value: ${value} is not a postive integer or the word "all".`
                                 )
@@ -113,7 +113,7 @@ const Jug: BotCommandWithoutSubcommands = {
                         embeds: [
                             new EmbedBuilder()
                                 .setTitle("Counter")
-                                .setColor(messageTypeColors.success)
+                                .setColor(MessageTypeColor.Success)
                                 .setDescription(
                                     `You ${initialWagerDisplay}tried to jug ${target.displayName} but instead you got jugged for ${currencyEmoji} ${responseValue.finalJugAmount}.`
                                 )
@@ -137,7 +137,7 @@ const Jug: BotCommandWithoutSubcommands = {
                         embeds: [
                             new EmbedBuilder()
                                 .setTitle("Failure")
-                                .setColor(messageTypeColors.success)
+                                .setColor(MessageTypeColor.Success)
                                 .setDescription(
                                     `You ${initialWagerDisplay}failed to jug ${
                                         target?.displayName ?? "monsters"

@@ -4,7 +4,7 @@ import {
     SlashCommandSubcommandBuilder
 } from "discord.js";
 import assert from "node:assert";
-import { messages, messageTypeColors } from "../../../constants";
+import { messages, MessageTypeColor } from "../../../constants";
 import { Books } from "../../../controllers/Books";
 import { Economy } from "../../../controllers/Economy";
 import { BotSubcommand } from "../../../types/BotSubcommand";
@@ -38,7 +38,7 @@ export const Read: BotSubcommand = {
 
             const message = new EmbedBuilder()
                 .setTitle("Current Wager")
-                .setColor(messageTypeColors.success)
+                .setColor(MessageTypeColor.Success)
                 .setDescription(
                     `The active wager is: "${Books.latestWager.premise}"`
                 )

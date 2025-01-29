@@ -4,7 +4,7 @@ import {
     SlashCommandSubcommandBuilder,
     time
 } from "discord.js";
-import { messages, messageTypeColors, responseCodes } from "../../../constants";
+import { messages, MessageTypeColor, responseCodes } from "../../../constants";
 import { Economy } from "../../../controllers/Economy";
 import { BotSubcommand } from "../../../types/BotSubcommand";
 
@@ -42,7 +42,7 @@ export const Withdrawal: BotSubcommand = {
                         embeds: [
                             new EmbedBuilder()
                                 .setTitle("Bilaim Withdrawal")
-                                .setColor(messageTypeColors.success)
+                                .setColor(MessageTypeColor.Success)
                                 .setDescription(
                                     `You have initiated a withdrawal for ${currencyEmoji} ${amount}.`
                                 )
@@ -65,7 +65,7 @@ export const Withdrawal: BotSubcommand = {
                         embeds: [
                             new EmbedBuilder()
                                 .setTitle("Existing Bilaim Withdrawal")
-                                .setColor(messageTypeColors.success)
+                                .setColor(MessageTypeColor.Success)
                                 .setDescription(
                                     `You have an active withdrawal for ${currencyEmoji} ${amount}.`
                                 )
@@ -87,7 +87,7 @@ export const Withdrawal: BotSubcommand = {
                         embeds: [
                             new EmbedBuilder()
                                 .setTitle("Invalid Amount")
-                                .setColor(messageTypeColors.failure)
+                                .setColor(MessageTypeColor.Failure)
                                 .setDescription(
                                     "You can only withdrawal Bilaim in amounts greater than 0."
                                 )
@@ -108,7 +108,7 @@ export const Withdrawal: BotSubcommand = {
                         embeds: [
                             new EmbedBuilder()
                                 .setTitle("Bilaim Withdrawal Updated")
-                                .setColor(messageTypeColors.success)
+                                .setColor(MessageTypeColor.Success)
                                 .setDescription(
                                     `You have updated your withdrawal from ${currencyEmoji} ${responseValue} to ${currencyEmoji} ${amount}.`
                                 )
@@ -121,7 +121,7 @@ export const Withdrawal: BotSubcommand = {
                         embeds: [
                             new EmbedBuilder()
                                 .setTitle("No Active Withdrawal")
-                                .setColor(messageTypeColors.failure)
+                                .setColor(MessageTypeColor.Failure)
                                 .setDescription(
                                     "You do not have an active withdrawal."
                                 )

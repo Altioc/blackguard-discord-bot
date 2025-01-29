@@ -81,7 +81,7 @@ const Copypasta: BotCommand = {
             await subcommand?.execute(interaction);
         } catch (error) {
             console.log(error);
-            await interaction.editReply(messages.unknownError());
+            await interaction.reply(messages.unknownError());
         }
     }
 };

@@ -3,7 +3,7 @@ import assert from "node:assert";
 import {
     BlackguardDbDocName,
     messages,
-    messageTypeColors,
+    MessageTypeColor,
     responseCodes
 } from "../../../constants";
 import { Docs } from "../../../controllers/Docs";
@@ -23,9 +23,9 @@ export const Set: BotSubcommand = {
                     .setName("name")
                     .setDescription("The name of the doc to save to.")
                     .addChoices(
-                        ...Object.entries(BlackguardDbDocName)
-                            .map(([key, value]) => ({
-                                name: value,
+                        ...Object.keys(BlackguardDbDocName)
+                            .map((key) => ({
+                                name: key,
                                 value: key
                             }))
                     )
@@ -62,7 +62,7 @@ export const Set: BotSubcommand = {
                 embeds: [
                     new EmbedBuilder()
                         .setTitle("Invalid JSON")
-                        .setColor(messageTypeColors.success)
+                        .setColor(MessageTypeColor.Success)
                         .setDescription(
                             "You must provide a valid JSON when using the set command."
                         )
@@ -87,7 +87,7 @@ export const Set: BotSubcommand = {
                         embeds: [
                             new EmbedBuilder()
                                 .setTitle("Doc Updated")
-                                .setColor(messageTypeColors.success)
+                                .setColor(MessageTypeColor.Success)
                         ]
                     });
                     break;

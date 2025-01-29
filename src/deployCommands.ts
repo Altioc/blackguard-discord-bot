@@ -14,8 +14,9 @@ commandDirectories.forEach((file) => {
         const commandFiles = fs.readdirSync(`${__dirname}/commands/${file}`);
 
         if (commandFiles?.includes("index.js")) {
-            const command = require(`${__dirname}/commands/${file}/index.js`);
-            commands.push(command.data.toJSON());
+            const command =
+                require(`${__dirname}/commands/${file}/index.js`).default;
+            commands.push(command.serialize().toJSON());
         }
     }
 });

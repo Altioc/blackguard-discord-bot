@@ -2,7 +2,7 @@ import { bold, codeBlock, EmbedBuilder, PermissionFlagsBits } from "discord.js";
 import assert from "node:assert";
 import {
     messages,
-    messageTypeColors,
+    MessageTypeColor,
     responseCodes,
     WagerEndOptions
 } from "../../../constants";
@@ -27,9 +27,9 @@ export const End: BotSubcommand = {
                     .setDescription("The outcome of the wager.")
                     .setRequired(true)
                     .addChoices(
-                        ...Object.entries(WagerEndOptions)
-                            .map(([key, value]) => ({
-                                name: value,
+                        ...Object.keys(WagerEndOptions)
+                            .map((key) => ({
+                                name: key,
                                 value: key
                             }))
                     )
@@ -68,7 +68,7 @@ export const End: BotSubcommand = {
                         outcome === WagerEndOptions.Neither;
                     const message = new EmbedBuilder()
                         .setTitle("End Wager")
-                        .setColor(messageTypeColors.success)
+                        .setColor(MessageTypeColor.Success)
                         .setDescription(`The ${premise} wager has ended.`)
                         .addFields({ name: "outcome:", value: `"${outcome}"` });
 

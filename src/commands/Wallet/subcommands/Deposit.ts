@@ -1,6 +1,6 @@
 import { EmbedBuilder } from "discord.js";
 import assert from "node:assert";
-import { messages, messageTypeColors, responseCodes } from "../../../constants";
+import { messages, MessageTypeColor, responseCodes } from "../../../constants";
 import { Economy } from "../../../controllers/Economy";
 import { BotSubcommand } from "../../../types/BotSubcommand";
 
@@ -42,7 +42,7 @@ export const Deposit: BotSubcommand = {
                         embeds: [
                             new EmbedBuilder()
                                 .setTitle("Bilaim Deposit")
-                                .setColor(messageTypeColors.success)
+                                .setColor(MessageTypeColor.Success)
                                 .setDescription(
                                     `You have deposited ${currencyEmoji} ${responseValue}.`
                                 )
@@ -55,7 +55,7 @@ export const Deposit: BotSubcommand = {
                         embeds: [
                             new EmbedBuilder()
                                 .setTitle("Invalid Deposit Amount")
-                                .setColor(messageTypeColors.failure)
+                                .setColor(MessageTypeColor.Failure)
                                 .setDescription(
                                     `The provided deposit amount: ${responseValue} is not a postive integer or the word "max".`
                                 )
@@ -68,7 +68,7 @@ export const Deposit: BotSubcommand = {
                         embeds: [
                             new EmbedBuilder()
                                 .setTitle("Invalid Amount")
-                                .setColor(messageTypeColors.failure)
+                                .setColor(MessageTypeColor.Failure)
                                 .setDescription(
                                     "You can only deposit Bilaim in amounts greater than 0."
                                 )
@@ -89,7 +89,7 @@ export const Deposit: BotSubcommand = {
                         embeds: [
                             new EmbedBuilder()
                                 .setTitle("Deposit Amount Too High")
-                                .setColor(messageTypeColors.failure)
+                                .setColor(MessageTypeColor.Failure)
                                 .setDescription(
                                     `You cannot deposit more than ${currencyEmoji} ${responseValue}. The current bank deposit ratio is: ${storableValueRatio}`
                                 )

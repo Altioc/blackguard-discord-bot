@@ -6,7 +6,9 @@ export const Disgusting: BotSubcommand = {
     serialize: (subcommand) => {
         return subcommand
             .setName(Disgusting.name)
-            .setDescription("BA should be done on high defense dummy...");
+            .setDescription(
+                "It's fucking disgusting. It's so disgusting I can't hold myself anymore..."
+            );
     },
 
     execute: async (interaction) => {

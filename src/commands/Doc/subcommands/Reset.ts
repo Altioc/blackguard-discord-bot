@@ -3,7 +3,7 @@ import assert from "node:assert";
 import {
     BlackguardDbDocName,
     messages,
-    messageTypeColors,
+    MessageTypeColor,
     responseCodes
 } from "../../../constants";
 import { Docs } from "../../../controllers/Docs";
@@ -21,10 +21,10 @@ export const Reset: BotSubcommand = {
                     .setName("name")
                     .setDescription("The name of the doc to reset.")
                     .addChoices(
-                        ...Object.values(BlackguardDbDocName)
-                            .map((value) => ({
-                                name: value,
-                                value: value
+                        ...Object.keys(BlackguardDbDocName)
+                            .map((key) => ({
+                                name: key,
+                                value: key
                             }))
                     )
                     .setRequired(true)
@@ -49,7 +49,7 @@ export const Reset: BotSubcommand = {
                         embeds: [
                             new EmbedBuilder()
                                 .setTitle("Doc Reset")
-                                .setColor(messageTypeColors.success)
+                                .setColor(MessageTypeColor.Success)
                         ]
                     });
                     break;

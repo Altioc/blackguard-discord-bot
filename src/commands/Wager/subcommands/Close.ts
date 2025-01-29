@@ -1,5 +1,5 @@
 import { EmbedBuilder, PermissionFlagsBits } from "discord.js";
-import { messages, messageTypeColors, responseCodes } from "../../../constants";
+import { messages, MessageTypeColor, responseCodes } from "../../../constants";
 import { Books } from "../../../controllers/Books";
 import { AuthorOf, Or } from "../../../models/ExecutePermission";
 import { BotSubcommand } from "../../../types/BotSubcommand";
@@ -39,7 +39,7 @@ export const Close: BotSubcommand = {
                         embeds: [
                             new EmbedBuilder()
                                 .setTitle("Closed Wager")
-                                .setColor(messageTypeColors.success)
+                                .setColor(MessageTypeColor.Success)
                                 .setDescription(
                                     "This wager can no longer accept bets."
                                 )

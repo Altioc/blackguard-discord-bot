@@ -15,7 +15,7 @@ import assert from "node:assert";
 import {
     EquipmentType,
     messages,
-    messageTypeColors,
+    MessageTypeColor,
     responseCodes
 } from "../../constants";
 import { Economy } from "../../controllers/Economy";
@@ -401,7 +401,7 @@ const enhanceButtonInteractionHandler =
                         embeds: [
                             new EmbedBuilder()
                                 .setTitle("Failure")
-                                .setColor(messageTypeColors.success)
+                                .setColor(MessageTypeColor.Success)
                                 .setDescription(`The enhancement failed.`)
                         ],
                         ephemeral: true

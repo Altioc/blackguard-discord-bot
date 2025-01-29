@@ -1,6 +1,6 @@
 import { EmbedBuilder } from "discord.js";
 import assert from "node:assert";
-import { messages, messageTypeColors, responseCodes } from "../../../constants";
+import { messages, MessageTypeColor, responseCodes } from "../../../constants";
 import { Economy } from "../../../controllers/Economy";
 import { BotSubcommand } from "../../../types/BotSubcommand";
 
@@ -56,7 +56,7 @@ export const Send: BotSubcommand = {
                         embeds: [
                             new EmbedBuilder()
                                 .setTitle("Bilaim Transfer")
-                                .setColor(messageTypeColors.success)
+                                .setColor(MessageTypeColor.Success)
                                 .setDescription(
                                     `You have transfered ${Economy.currencyEmoji} ${value}.`
                                 )
@@ -73,7 +73,7 @@ export const Send: BotSubcommand = {
                         embeds: [
                             new EmbedBuilder()
                                 .setTitle("Invalid Value")
-                                .setColor(messageTypeColors.failure)
+                                .setColor(MessageTypeColor.Failure)
                                 .setDescription(
                                     "You can only send Bilaim in values greater than 0."
                                 )

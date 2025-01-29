@@ -1,5 +1,5 @@
 import { EmbedBuilder } from "discord.js";
-import { messages, messageTypeColors, responseCodes } from "../../../constants";
+import { messages, MessageTypeColor, responseCodes } from "../../../constants";
 import { Economy } from "../../../controllers/Economy";
 import { BotSubcommand } from "../../../types/BotSubcommand";
 
@@ -37,7 +37,7 @@ export const Read: BotSubcommand = {
                         embeds: [
                             new EmbedBuilder()
                                 .setTitle("Wallet")
-                                .setColor(messageTypeColors.success)
+                                .setColor(MessageTypeColor.Success)
                                 .setFields([
                                     {
                                         name: "Wallet",
@@ -72,7 +72,7 @@ export const Read: BotSubcommand = {
                         embeds: [
                             new EmbedBuilder()
                                 .setTitle("Doesn't Exist")
-                                .setColor(messageTypeColors.failure)
+                                .setColor(MessageTypeColor.Failure)
                                 .setDescription(
                                     `${pronoun} do not have a Bilaim wallet.`
                                 )

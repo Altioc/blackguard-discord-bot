@@ -54,6 +54,8 @@ const Wallet: BotCommand = {
     },
 
     execute: async (interaction) => {
+        await interaction.deferReply();
+
         const subcommandName = interaction.options.getSubcommand();
 
         const subcommand = Wallet.subcommands.get(subcommandName);

@@ -26,7 +26,7 @@ const loadHandlers = (
 
             if (files?.includes("index.js")) {
                 const handler = require(`${path}/index.js`).default;
-                collection.set(handler.data.name, handler);
+                collection.set(handler.name, handler);
             }
         }
     });

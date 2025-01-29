@@ -3,7 +3,7 @@ import assert from "node:assert";
 import {
     CurrencyLocation,
     messages,
-    messageTypeColors,
+    MessageTypeColor,
     responseCodes
 } from "../../../constants";
 import { Economy } from "../../../controllers/Economy";
@@ -71,7 +71,7 @@ export const Deduct: BotSubcommand = {
                     embeds: [
                         new EmbedBuilder()
                             .setTitle("Invalid Value")
-                            .setColor(messageTypeColors.failure)
+                            .setColor(MessageTypeColor.Failure)
                             .setDescription(
                                 "You can only deduct Bilaim in values greater than 0."
                             )
@@ -89,7 +89,7 @@ export const Deduct: BotSubcommand = {
                         embeds: [
                             new EmbedBuilder()
                                 .setTitle("Bilaim Deducted")
-                                .setColor(messageTypeColors.success)
+                                .setColor(MessageTypeColor.Success)
                                 .setDescription(
                                     `${Economy.currencyEmoji} ${value} has been deducted.`
                                 )

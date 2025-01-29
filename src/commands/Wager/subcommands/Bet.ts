@@ -3,7 +3,7 @@ import assert from "node:assert";
 import {
     BetOption,
     messages,
-    messageTypeColors,
+    MessageTypeColor,
     responseCodes
 } from "../../../constants";
 import { Books } from "../../../controllers/Books";
@@ -30,9 +30,9 @@ export const Bet: BotSubcommand = {
                     .setName("option")
                     .setDescription("What outcome to place your bet on.")
                     .addChoices(
-                        ...Object.entries(BetOption)
-                            .map(([key, value]) => ({
-                                name: value,
+                        ...Object.keys(BetOption)
+                            .map((key) => ({
+                                name: key,
                                 value: key
                             }))
                     )
@@ -61,7 +61,7 @@ export const Bet: BotSubcommand = {
                         embeds: [
                             new EmbedBuilder()
                                 .setTitle("New Bet")
-                                .setColor(messageTypeColors.success)
+                                .setColor(MessageTypeColor.Success)
                                 .setDescription("You have placed a bet")
                                 .addFields(
                                     {
@@ -88,7 +88,7 @@ export const Bet: BotSubcommand = {
                         embeds: [
                             new EmbedBuilder()
                                 .setTitle("Existing Bet")
-                                .setColor(messageTypeColors.failure)
+                                .setColor(MessageTypeColor.Failure)
                                 .setDescription(
                                     "You have already placed a bet on this wager and you cannot modify it."
                                 )
@@ -101,7 +101,7 @@ export const Bet: BotSubcommand = {
                         embeds: [
                             new EmbedBuilder()
                                 .setTitle("Invalid Bet")
-                                .setColor(messageTypeColors.failure)
+                                .setColor(MessageTypeColor.Failure)
                                 .setDescription(
                                     "You may not bet on your own wager."
                                 )

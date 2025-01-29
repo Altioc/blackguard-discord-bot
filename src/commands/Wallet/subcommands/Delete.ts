@@ -1,5 +1,5 @@
 import { EmbedBuilder, PermissionFlagsBits } from "discord.js";
-import { messages, messageTypeColors, responseCodes } from "../../../constants";
+import { messages, MessageTypeColor, responseCodes } from "../../../constants";
 import { Economy } from "../../../controllers/Economy";
 import { AuthorOf } from "../../../models/ExecutePermission";
 import { BotSubcommand } from "../../../types/BotSubcommand";
@@ -40,7 +40,7 @@ export const Delete: BotSubcommand = {
                         embeds: [
                             new EmbedBuilder()
                                 .setTitle("Delete Wallet")
-                                .setColor(messageTypeColors.success)
+                                .setColor(MessageTypeColor.Success)
                                 .setDescription(
                                     `${possessivePronoun} Bilaim wallet has been deleted.`
                                 )
@@ -53,7 +53,7 @@ export const Delete: BotSubcommand = {
                         embeds: [
                             new EmbedBuilder()
                                 .setTitle("Doesn't Exist")
-                                .setColor(messageTypeColors.failure)
+                                .setColor(MessageTypeColor.Failure)
                                 .setDescription(
                                     `${pronoun} don't have a Bilaim wallet.`
                                 )
