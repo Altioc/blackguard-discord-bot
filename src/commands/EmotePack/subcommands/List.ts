@@ -18,7 +18,20 @@ export const List: BotSubcommand = {
 
         const packNames = await fs.readdir(emotePackPath);
 
-        interaction.reply({
+        if (packNames.length === 0) {
+            await interaction.reply({
+                embeds: [
+                    new EmbedBuilder()
+                        .setTitle("Emote Packs")
+                        .setColor(MessageTypeColor.Success)
+                        .setDescription("No emote packs have been created yet.")
+                ],
+                ephemeral: true
+            });
+            return;
+        }
+
+        await interaction.reply({
             embeds: [
                 new EmbedBuilder()
                     .setTitle("Emote Packs")
