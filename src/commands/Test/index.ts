@@ -31,7 +31,12 @@ const Test: BotCommand = {
         // const subcommand = Test.subcommands.get(subcommandName);
 
         interaction.reply({
-            content: `${interaction.guild?.bannerURL()}`,
+            content: `${
+                interaction.guild?.bannerURL({
+                    forceStatic: true,
+                    size: 1024
+                })
+            }`,
             ephemeral: true
         });
 
