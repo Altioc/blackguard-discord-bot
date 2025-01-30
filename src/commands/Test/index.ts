@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from "discord.js";
-import { messages } from "../../constants";
+// import { messages } from "../../constants";
 import { superUsers } from "../../ids.json";
 import { AuthorOf } from "../../models/ExecutePermission";
 import { BotCommand } from "../../types/BotCommand";
@@ -26,7 +26,7 @@ const Test: BotCommand = {
     },
 
     execute: async (interaction) => {
-        const subcommandName = interaction.options.getSubcommand();
+        // const subcommandName = interaction.options.getSubcommand();
 
         // const subcommand = Test.subcommands.get(subcommandName);
 
