@@ -28,19 +28,19 @@ const Test: BotCommand = {
     execute: async (interaction) => {
         const subcommandName = interaction.options.getSubcommand();
 
-        const subcommand = Test.subcommands.get(subcommandName);
+        // const subcommand = Test.subcommands.get(subcommandName);
 
         interaction.reply({
             content: `${interaction.guild?.banner}`,
             ephemeral: true
         });
 
-        try {
-            await subcommand?.execute(interaction);
-        } catch (error) {
-            console.log(error);
-            await interaction.reply(messages.unknownError());
-        }
+        // try {
+        //     await subcommand?.execute(interaction);
+        // } catch (error) {
+        //     console.log(error);
+        //     await interaction.reply(messages.unknownError());
+        // }
     }
 };
 
