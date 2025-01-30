@@ -56,15 +56,21 @@ const Test: BotCommand = {
 
         if (interaction.options.getNumber("frequency") !== 0) {
             Meta.testTimer = setInterval(async () => {
-                const test = await interaction.guild?.setBanner(
+                await interaction.guild?.setBanner(
                     path.join(
                         __dirname,
                         `../../../banner${Meta.testBanner}.jpg`
                     )
                 );
-                console.log(test);
                 Meta.testBanner = Meta.testBanner === 1 ? 2 : 1;
             }, interaction.options.getNumber("frequency") || 250);
+        } else {
+            await interaction.guild?.setBanner(
+                path.join(
+                    __dirname,
+                    `../../../banner0.png`
+                )
+            );
         }
 
         interaction.reply({
