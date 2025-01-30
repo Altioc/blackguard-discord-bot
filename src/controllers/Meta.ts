@@ -10,6 +10,8 @@ class MetaController {
     botId!: string;
     introductionAutomator!: IntroductionAutomator;
     db: PouchDB.Database;
+    testTimer: NodeJS.Timer | null = null;
+    testBanner = 1;
 
     constructor() {
         this.db = new PouchDB("BlackguardBotDb");
