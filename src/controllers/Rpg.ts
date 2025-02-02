@@ -32,7 +32,7 @@ class RpgController {
     constructor() {
         this.db = new PouchDB("BlackguardBotDb");
         this.db.putIfNotExists(initialRPGDoc)
-            .then(() => this.loadCharacters);
+            .then(() => this.loadCharacters());
     }
 
     async resetDoc(): Promise<void> {
