@@ -7,9 +7,7 @@ import {
 import { elementIds, elementLabels, modalId } from "./helpers";
 
 export default {
-    data: {
-        name: modalId
-    },
+    name: modalId,
 
     interact: async (
         interaction: ModalSubmitInteraction,

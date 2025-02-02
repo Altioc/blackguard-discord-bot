@@ -26,8 +26,8 @@ class BooksController {
     constructor() {
         this.db = new PouchDB("BlackguardBotDb");
         this.db.putIfNotExists(initialBookDoc)
-            .then(() => this.initConfig)
-            .then(() => this.initLatestWager);
+            .then(() => this.initConfig())
+            .then(() => this.initLatestWager());
     }
 
     async resetDoc(): Promise<void> {

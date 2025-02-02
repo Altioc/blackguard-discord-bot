@@ -4,9 +4,7 @@ import { create as createModal } from "../../modals/introduction/helpers";
 import { buttonId } from "./helpers";
 
 export default {
-    data: {
-        name: buttonId
-    },
+    name: buttonId,
 
     interact: async (interaction: ButtonInteraction) => {
         assert(interaction.member !== null);
