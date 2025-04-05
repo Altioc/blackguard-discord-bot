@@ -19,7 +19,7 @@ export const Delete: BotSubcommand = {
             interaction.guild
         );
 
-        await Meta.introductionAutomator.setChannelId(null);
+        await Meta.introductionAutomator.setPublicChannelId(null);
 
         if (buttonWasDeleted) {
             interaction.editReply(`Introduction automator removed`);

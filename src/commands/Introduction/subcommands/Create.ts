@@ -37,7 +37,7 @@ export const Create: BotSubcommand = {
 
         await createIntroductionAutomatorButton(channel);
 
-        await Meta.introductionAutomator.setChannelId(channel.id);
+        await Meta.introductionAutomator.setPublicChannelId(channel.id);
 
         interaction.editReply(`Introduction automator added to ${channel}`);
     }

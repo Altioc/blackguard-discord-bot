@@ -44,8 +44,10 @@ export enum LeaderboardType {
 export const initialMetaDoc: MetaDocument = {
     _id: BlackguardDbDocName.Meta,
     introductionAutomator: {
-        channelId: null,
-        messageId: null
+        introductionChannelId: null,
+        introductionMessageId: null,
+        screeningChannelId: null,
+        screeningMessageId: null
     },
     config: {}
 };

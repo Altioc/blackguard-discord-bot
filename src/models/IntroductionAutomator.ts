@@ -3,37 +3,58 @@ import { MetaDocument } from "../types/MetaDocument";
 import { MetaIntroductionAutomator } from "../types/MetaIntroductionAutomator";
 
 export class IntroductionAutomator {
-    channelId: string | null = null;
-    messageId: string | null = null;
+    introductionChannelId: string | null = null;
+    introductionMessageId: string | null = null;
+    screeningChannelId: string | null = null;
+    screeningMessageId: string | null = null;
     db: PouchDB.Database;
 
     constructor(
         db: PouchDB.Database,
-        { channelId, messageId }: MetaIntroductionAutomator
+        {
+            introductionChannelId,
+            introductionMessageId,
+            screeningChannelId: approvalChannelId,
+            screeningMessageId: approvalMessageId
+        }: MetaIntroductionAutomator
     ) {
-        this.channelId = channelId ?? null;
-        this.messageId = messageId ?? null;
+        this.introductionChannelId = introductionChannelId ?? null;
+        this.introductionMessageId = introductionMessageId ?? null;
+        this.screeningChannelId = approvalChannelId ?? null;
+        this.screeningMessageId = approvalMessageId ?? null;
         this.db = db;
     }
 
-    async setChannelId(newChannleId: string | null): Promise<void> {
-        this.channelId = newChannleId;
+    async setIntroductionChannelId(newChannleId: string | null): Promise<void> {
+        this.introductionChannelId = newChannleId;
         await this.updateDoc({
-            channelId: this.channelId,
-            messageId: this.messageId
+            introductionChannelId: this.introductionChannelId
         });
     }
 
-    async setMessageId(newMessageId: string | null): Promise<void> {
-        this.messageId = newMessageId;
+    async setIntroductionMessageId(newMessageId: string | null): Promise<void> {
+        this.introductionMessageId = newMessageId;
         await this.updateDoc({
-            channelId: this.channelId,
-            messageId: this.messageId
+            introductionMessageId: this.introductionMessageId
+        });
+    }
+
+    async setScreeningChannelId(newChannleId: string | null): Promise<void> {
+        this.screeningChannelId = newChannleId;
+        await this.updateDoc({
+            screeningChannelId: this.screeningChannelId
+        });
+    }
+
+    async setScreeningMessageId(newMessageId: string | null): Promise<void> {
+        this.screeningMessageId = newMessageId;
+        await this.updateDoc({
+            screeningMessageId: this.screeningMessageId
         });
     }
 
     private async updateDoc(
-        update: MetaIntroductionAutomator
+        update: Partial<MetaIntroductionAutomator>
     ): Promise<void> {
         await this.db.upsert<Partial<MetaDocument>>(
             BlackguardDbDocName.Meta,
@@ -41,6 +62,10 @@ export class IntroductionAutomator {
                 return {
                     ...doc,
                     introductionAutomator: {
+                        introductionChannelId: null,
+                        introductionMessageId: null,
+                        screeningChannelId: null,
+                        screeningMessageId: null,
                         ...doc.introductionAutomator,
                         ...update
                     }

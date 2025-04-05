@@ -1,4 +1,6 @@
 export type MetaIntroductionAutomator = {
-    channelId: string | null;
-    messageId: string | null;
+    introductionChannelId: string | null;
+    introductionMessageId: string | null;
+    screeningChannelId: string | null;
+    screeningMessageId: string | null;
 };

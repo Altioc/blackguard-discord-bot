@@ -17,7 +17,7 @@ export const createIntroductionAutomatorButton = async (
     const newMessage = await channel.send({
         components: [row]
     });
-    await Meta.introductionAutomator.setMessageId(newMessage.id);
+    await Meta.introductionAutomator.setPublicMessageId(newMessage.id);
 };
 
 export const deleteIntroductionAutomatorButton = async (guild: Guild) => {
@@ -26,7 +26,7 @@ export const deleteIntroductionAutomatorButton = async (guild: Guild) => {
         messageId: oldMessageId
     } = Meta.introductionAutomator;
 
-    await Meta.introductionAutomator.setMessageId(null);
+    await Meta.introductionAutomator.setPublicMessageId(null);
 
     try {
         assert(oldChannelId !== null);
