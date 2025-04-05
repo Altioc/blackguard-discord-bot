@@ -9,6 +9,7 @@ import {
     initialRPGDoc,
     responseCodes
 } from "../constants";
+import { Economy } from "../controllers/Economy";
 import { Character } from "../models/Character";
 import { Response } from "../types/Response";
 import { RpgDocument } from "../types/RpgDocument";
@@ -16,7 +17,6 @@ import { RpgJuggingConfig } from "../types/RpgJuggingConfig";
 import { RpgPlayerCooldown } from "../types/RpgPlayerCooldown";
 import { random } from "../utils/random";
 import { response } from "../utils/response";
-import { Economy } from "./Economy";
 
 class RpgController {
     jugging: RpgJuggingConfig & {

@@ -1,10 +1,6 @@
-import {
-    ChatInputCommandInteraction,
-    EmbedBuilder,
-    SlashCommandSubcommandBuilder
-} from "discord.js";
+import { EmbedBuilder } from "discord.js";
 import assert from "node:assert";
-import { messages, MessageTypeColor } from "../../../constants";
+import { messages, messageTypeColors } from "../../../constants";
 import { Books } from "../../../controllers/Books";
 import { Economy } from "../../../controllers/Economy";
 import { BotSubcommand } from "../../../types/BotSubcommand";
@@ -38,7 +34,7 @@ export const Read: BotSubcommand = {
 
             const message = new EmbedBuilder()
                 .setTitle("Current Wager")
-                .setColor(MessageTypeColor.Success)
+                .setColor(messageTypeColors.Success)
                 .setDescription(
                     `The active wager is: "${Books.latestWager.premise}"`
                 )

@@ -1,6 +1,6 @@
 import { EmbedBuilder } from "discord.js";
 import fs from "node:fs/promises";
-import { MessageTypeColor } from "../../../constants";
+import { messageTypeColors } from "../../../constants";
 import { BotSubcommand } from "../../../types/BotSubcommand";
 import { emotePackPath } from "..";
 
@@ -23,7 +23,7 @@ export const List: BotSubcommand = {
                 embeds: [
                     new EmbedBuilder()
                         .setTitle("Emote Packs")
-                        .setColor(MessageTypeColor.Success)
+                        .setColor(messageTypeColors.Success)
                         .setDescription("No emote packs have been created yet.")
                 ],
                 ephemeral: true
@@ -35,7 +35,7 @@ export const List: BotSubcommand = {
             embeds: [
                 new EmbedBuilder()
                     .setTitle("Emote Packs")
-                    .setColor(MessageTypeColor.Success)
+                    .setColor(messageTypeColors.Success)
                     .setDescription(
                         packNames.map((packName) => (
                             `1. ${packName}`

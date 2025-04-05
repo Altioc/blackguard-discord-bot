@@ -1,6 +1,6 @@
 import { EmbedBuilder } from "discord.js";
 import assert from "node:assert";
-import { messages, MessageTypeColor, responseCodes } from "../../../constants";
+import { messages, messageTypeColors, responseCodes } from "../../../constants";
 import { Rpg } from "../../../controllers/Rpg";
 import { BotSubcommand } from "../../../types/BotSubcommand";
 
@@ -49,7 +49,7 @@ export const ClearJugCooldown: BotSubcommand = {
                                     .setTitle(
                                         `${target.displayName}'s jug cooldown has been cleared.`
                                     )
-                                    .setColor(MessageTypeColor.Success)
+                                    .setColor(messageTypeColors.Success)
                             ]
                         });
                     } else {
@@ -59,7 +59,7 @@ export const ClearJugCooldown: BotSubcommand = {
                                     .setTitle(
                                         "All jug cooldowns have been cleared."
                                     )
-                                    .setColor(MessageTypeColor.Success)
+                                    .setColor(messageTypeColors.Success)
                             ]
                         });
                     }

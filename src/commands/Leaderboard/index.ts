@@ -8,7 +8,7 @@ import assert from "node:assert";
 import {
     LeaderboardType,
     messages,
-    MessageTypeColor,
+    messageTypeColors,
     responseCodes
 } from "../../constants";
 import { Economy } from "../../controllers/Economy";
@@ -124,7 +124,7 @@ export const Leaderboard: BotCommandWithoutSubcommands = {
                                 .setTitle(
                                     `${capitalize(type)} Bilaim Leaderboard`
                                 )
-                                .setColor(MessageTypeColor.Success)
+                                .setColor(messageTypeColors.Success)
                                 .setDescription(
                                     codeBlock(leaderboard)
                                 )

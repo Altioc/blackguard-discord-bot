@@ -3,7 +3,7 @@ import assert from "node:assert";
 import {
     BetOption,
     messages,
-    MessageTypeColor,
+    messageTypeColors,
     responseCodes
 } from "../../../constants";
 import { Books } from "../../../controllers/Books";
@@ -61,7 +61,7 @@ export const Bet: BotSubcommand = {
                         embeds: [
                             new EmbedBuilder()
                                 .setTitle("New Bet")
-                                .setColor(MessageTypeColor.Success)
+                                .setColor(messageTypeColors.Success)
                                 .setDescription("You have placed a bet")
                                 .addFields(
                                     {
@@ -88,7 +88,7 @@ export const Bet: BotSubcommand = {
                         embeds: [
                             new EmbedBuilder()
                                 .setTitle("Existing Bet")
-                                .setColor(MessageTypeColor.Failure)
+                                .setColor(messageTypeColors.Failure)
                                 .setDescription(
                                     "You have already placed a bet on this wager and you cannot modify it."
                                 )
@@ -101,7 +101,7 @@ export const Bet: BotSubcommand = {
                         embeds: [
                             new EmbedBuilder()
                                 .setTitle("Invalid Bet")
-                                .setColor(MessageTypeColor.Failure)
+                                .setColor(messageTypeColors.Failure)
                                 .setDescription(
                                     "You may not bet on your own wager."
                                 )

@@ -19,13 +19,14 @@ export const Delete: BotSubcommand = {
             interaction.guild
         );
 
-        await Meta.introductionAutomator.setChannelId(null);
+        await Meta.introductionAutomator.setIntroductionButtonChannelId(null);
+        await Meta.introductionAutomator.setScreeningChannelId(null);
 
         if (buttonWasDeleted) {
-            interaction.editReply(`Introduction automator removed`);
+            interaction.editReply(`Introduction button removed`);
         } else {
             interaction.editReply(
-                `Could not find existing introduction automator`
+                `Could not find existing introduction button`
             );
         }
     }

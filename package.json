@@ -4,6 +4,7 @@
     "description": "The bot for the Blackguard Maplestory Discord server.",
     "main": "./src/bot.js",
     "scripts": {
+        "prebuild": "rimraf ./dist",
         "build": "tsc",
         "start": "node ./dist/bot.js",
         "deploy": "node ./dist/deployCommands.js",
@@ -28,12 +29,14 @@
         "discord.js": "14.11.0",
         "pouchdb": "7.3.0",
         "pouchdb-find": "7.3.0",
-        "pouchdb-upsert": "2.2.0"
+        "pouchdb-upsert": "2.2.0",
+        "uuid": "^11.1.0"
     },
     "devDependencies": {
         "@types/pouchdb": "6.4.2",
         "@types/pouchdb-upsert": "2.2.9",
         "dprint": "0.48.0",
+        "rimraf": "^6.0.1",
         "typescript": "5.7.3"
     }
 }

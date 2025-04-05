@@ -1,10 +1,5 @@
-import {
-    ChatInputCommandInteraction,
-    EmbedBuilder,
-    PermissionFlagsBits,
-    SlashCommandSubcommandBuilder
-} from "discord.js";
-import { messages, MessageTypeColor } from "../../../constants";
+import { EmbedBuilder, PermissionFlagsBits } from "discord.js";
+import { messageTypeColors } from "../../../constants";
 import { Books } from "../../../controllers/Books";
 import { AuthorOf } from "../../../models/ExecutePermission";
 import { BotSubcommand } from "../../../types/BotSubcommand";
@@ -29,7 +24,7 @@ export const Reactivate: BotSubcommand = {
                 embeds: [
                     new EmbedBuilder()
                         .setTitle("Reactivate Wager")
-                        .setColor(MessageTypeColor.Success)
+                        .setColor(messageTypeColors.Success)
                         .setDescription("The latest wager was reactivated.")
                 ]
             });
@@ -38,7 +33,7 @@ export const Reactivate: BotSubcommand = {
                 embeds: [
                     new EmbedBuilder()
                         .setTitle("No Inactive Wager")
-                        .setColor(MessageTypeColor.Failure)
+                        .setColor(messageTypeColors.Failure)
                         .setDescription(
                             "There is no inactive wager to reactivate."
                         )

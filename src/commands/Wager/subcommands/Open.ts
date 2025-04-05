@@ -1,5 +1,5 @@
 import { EmbedBuilder, PermissionFlagsBits } from "discord.js";
-import { messages, MessageTypeColor, responseCodes } from "../../../constants";
+import { messages, messageTypeColors, responseCodes } from "../../../constants";
 import { Books } from "../../../controllers/Books";
 import { AuthorOf, Or } from "../../../models/ExecutePermission";
 import { BotSubcommand } from "../../../types/BotSubcommand";
@@ -39,7 +39,7 @@ export const Open: BotSubcommand = {
                         embeds: [
                             new EmbedBuilder()
                                 .setTitle("Opened Wager")
-                                .setColor(MessageTypeColor.Success)
+                                .setColor(messageTypeColors.Success)
                                 .setDescription(
                                     "This wager can now accept new bets."
                                 )
@@ -52,7 +52,7 @@ export const Open: BotSubcommand = {
                         embeds: [
                             new EmbedBuilder()
                                 .setTitle("Already Open")
-                                .setColor(MessageTypeColor.Failure)
+                                .setColor(messageTypeColors.Failure)
                                 .setDescription("This wager is already open.")
                         ]
                     });

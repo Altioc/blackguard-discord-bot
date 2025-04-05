@@ -9,13 +9,13 @@ import {
     initialBookDoc,
     responseCodes
 } from "../constants";
+import { Economy } from "../controllers/Economy";
 import { Bet } from "../models/Bet";
 import { Wager } from "../models/Wager";
 import { BookDocument } from "../types/BookDocument";
 import { Response } from "../types/Response";
 import { WagerResult } from "../types/WagerResult";
 import { response } from "../utils/response";
-import { Economy } from "./Economy";
 
 class BooksController {
     latestWager: Wager | null = null;

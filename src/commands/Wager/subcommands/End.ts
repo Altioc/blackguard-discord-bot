@@ -2,7 +2,7 @@ import { bold, codeBlock, EmbedBuilder, PermissionFlagsBits } from "discord.js";
 import assert from "node:assert";
 import {
     messages,
-    MessageTypeColor,
+    messageTypeColors,
     responseCodes,
     WagerEndOptions
 } from "../../../constants";
@@ -68,7 +68,7 @@ export const End: BotSubcommand = {
                         outcome === WagerEndOptions.Neither;
                     const message = new EmbedBuilder()
                         .setTitle("End Wager")
-                        .setColor(MessageTypeColor.Success)
+                        .setColor(messageTypeColors.Success)
                         .setDescription(`The ${premise} wager has ended.`)
                         .addFields({ name: "outcome:", value: `"${outcome}"` });
 

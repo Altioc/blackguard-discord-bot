@@ -3,7 +3,7 @@ import assert from "node:assert";
 import {
     BlackguardDbDocName,
     messages,
-    MessageTypeColor,
+    messageTypeColors,
     responseCodes
 } from "../../../constants";
 import { Docs } from "../../../controllers/Docs";
@@ -49,7 +49,7 @@ export const Reset: BotSubcommand = {
                         embeds: [
                             new EmbedBuilder()
                                 .setTitle("Doc Reset")
-                                .setColor(MessageTypeColor.Success)
+                                .setColor(messageTypeColors.Success)
                         ]
                     });
                     break;

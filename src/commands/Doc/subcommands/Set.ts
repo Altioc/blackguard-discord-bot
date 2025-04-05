@@ -3,7 +3,7 @@ import assert from "node:assert";
 import {
     BlackguardDbDocName,
     messages,
-    MessageTypeColor,
+    messageTypeColors,
     responseCodes
 } from "../../../constants";
 import { Docs } from "../../../controllers/Docs";
@@ -62,7 +62,7 @@ export const Set: BotSubcommand = {
                 embeds: [
                     new EmbedBuilder()
                         .setTitle("Invalid JSON")
-                        .setColor(MessageTypeColor.Success)
+                        .setColor(messageTypeColors.Success)
                         .setDescription(
                             "You must provide a valid JSON when using the set command."
                         )
@@ -87,7 +87,7 @@ export const Set: BotSubcommand = {
                         embeds: [
                             new EmbedBuilder()
                                 .setTitle("Doc Updated")
-                                .setColor(MessageTypeColor.Success)
+                                .setColor(messageTypeColors.Success)
                         ]
                     });
                     break;

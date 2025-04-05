@@ -6,27 +6,29 @@ import {
     TextChannel
 } from "discord.js";
 import assert from "node:assert";
-import { create as createButton } from "../../buttons/introductionCreate/helpers";
+import { introductionCreateButton } from "../../buttons/introductionCreateButton";
 import { Meta } from "../../controllers/Meta";
 
 export const createIntroductionAutomatorButton = async (
     channel: TextBasedChannel
 ) => {
-    const newButton = createButton();
+    const newButton = introductionCreateButton.create();
     const row = new ActionRowBuilder<ButtonBuilder>().addComponents(newButton);
     const newMessage = await channel.send({
         components: [row]
     });
-    await Meta.introductionAutomator.setMessageId(newMessage.id);
+    await Meta.introductionAutomator.setIntroductionButtonMessageId(
+        newMessage.id
+    );
 };
 
 export const deleteIntroductionAutomatorButton = async (guild: Guild) => {
     const {
-        channelId: oldChannelId,
-        messageId: oldMessageId
+        introductionButtonChannelId: oldChannelId,
+        introductionButtonMessageId: oldMessageId
     } = Meta.introductionAutomator;
 
-    await Meta.introductionAutomator.setMessageId(null);
+    await Meta.introductionAutomator.setIntroductionButtonMessageId(null);
 
     try {
         assert(oldChannelId !== null);

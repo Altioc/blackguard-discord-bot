@@ -12,12 +12,12 @@ export const fullDay = hour * 24;
 
 export const baseCommandCooldown = second;
 
-export enum MessageTypeColor {
-    Success = 0x279C54,
-    Warning = 0xFFE030,
-    Failure = 0xCC2f4E,
-    Unknown = 0xFF00D9
-}
+export const messageTypeColors = {
+    Success: 0x279C54,
+    Warning: 0xFFE030,
+    Failure: 0xCC2f4E,
+    Unknown: 0xFF00D9
+};
 
 export enum BlackguardDbDocName {
     Economy = "economy",
@@ -41,12 +41,28 @@ export enum LeaderboardType {
     Wealth = "wealth"
 }
 
+export enum IntroductionScreeningStatus {
+    Pending = "pending",
+    Accepted = "accepted",
+    Rejected = "rejected"
+}
+
+export const IntroductionScreeningStatusColors = {
+    [IntroductionScreeningStatus.Pending]: 0x8a969f,
+    [IntroductionScreeningStatus.Accepted]: 0x0095ff,
+    [IntroductionScreeningStatus.Rejected]: 0xffd500
+};
+
 export const initialMetaDoc: MetaDocument = {
     _id: BlackguardDbDocName.Meta,
     introductionAutomator: {
-        channelId: null,
-        messageId: null
+        introductionButtonChannelId: null,
+        introductionButtonMessageId: null,
+        screeningChannelId: null,
+        introductions: []
     },
+    memberRoles: [],
+    rejectedRole: null,
     config: {}
 };
 
@@ -378,7 +394,7 @@ export const messages = {
         embeds: [
             new EmbedBuilder()
                 .setTitle("No Wallet")
-                .setColor(MessageTypeColor.Failure)
+                .setColor(messageTypeColors.Failure)
                 .setDescription("You do not have a Bilaim wallet.")
         ],
         ephemeral: true
@@ -387,7 +403,7 @@ export const messages = {
         embeds: [
             new EmbedBuilder()
                 .setTitle("No Wallet")
-                .setColor(MessageTypeColor.Failure)
+                .setColor(messageTypeColors.Failure)
                 .setDescription(
                     `${targetDisplayName} does not have a Bilaim wallet.`
                 )
@@ -398,7 +414,7 @@ export const messages = {
         embeds: [
             new EmbedBuilder()
                 .setTitle("Invalid Target")
-                .setColor(MessageTypeColor.Failure)
+                .setColor(messageTypeColors.Failure)
                 .setDescription(description)
         ],
         ephemeral: true
@@ -407,7 +423,7 @@ export const messages = {
         embeds: [
             new EmbedBuilder()
                 .setTitle("Insufficient Funds")
-                .setColor(MessageTypeColor.Failure)
+                .setColor(messageTypeColors.Failure)
                 .setDescription(
                     "You do not have enough Bilaims to make this transaction."
                 )
@@ -418,7 +434,7 @@ export const messages = {
         embeds: [
             new EmbedBuilder()
                 .setTitle("No Active Wager")
-                .setColor(MessageTypeColor.Failure)
+                .setColor(messageTypeColors.Failure)
                 .setDescription("There are no active wagers.")
         ],
         ephemeral: true
@@ -427,7 +443,7 @@ export const messages = {
         embeds: [
             new EmbedBuilder()
                 .setTitle("Wager is Closed")
-                .setColor(MessageTypeColor.Failure)
+                .setColor(messageTypeColors.Failure)
                 .setDescription(description)
         ],
         ephemeral: true
@@ -436,7 +452,7 @@ export const messages = {
         embeds: [
             new EmbedBuilder()
                 .setTitle("Wager Results")
-                .setColor(MessageTypeColor.Success)
+                .setColor(messageTypeColors.Success)
                 .setDescription(description)
         ]
     }),
@@ -444,7 +460,7 @@ export const messages = {
         embeds: [
             new EmbedBuilder()
                 .setTitle("Incorrect Permissions")
-                .setColor(MessageTypeColor.Failure)
+                .setColor(messageTypeColors.Failure)
                 .setDescription(
                     "You do not have permission to run this command."
                 )
@@ -455,7 +471,7 @@ export const messages = {
         embeds: [
             new EmbedBuilder()
                 .setTitle("On Cooldown")
-                .setColor(MessageTypeColor.Failure)
+                .setColor(messageTypeColors.Failure)
                 .setDescription(`You will be off cooldown ${timeStamp}.`)
         ],
         ephemeral: true
