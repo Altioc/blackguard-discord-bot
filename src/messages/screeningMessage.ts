@@ -45,6 +45,7 @@ export const screeningMessage = {
                 break;
             }
             case IntroductionScreeningStatus.Accepted: {
+                screeningEmbed.setTitle("Accepted");
                 screeningEmbed.setColor(
                     IntroductionScreeningStatusColors[
                         IntroductionScreeningStatus.Accepted
@@ -53,6 +54,7 @@ export const screeningMessage = {
                 break;
             }
             case IntroductionScreeningStatus.Rejected: {
+                screeningEmbed.setTitle("Rejected");
                 screeningEmbed.setColor(
                     IntroductionScreeningStatusColors[
                         IntroductionScreeningStatus.Rejected
