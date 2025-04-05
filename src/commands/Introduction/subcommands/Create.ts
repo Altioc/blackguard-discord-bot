@@ -17,8 +17,21 @@ export const Create: BotSubcommand = {
             .addChannelOption(option =>
                 (
                     option
-                        .setName("channel")
-                        .setDescription("The channel to put the button in.")
+                        .setName("introduction-channel")
+                        .setDescription(
+                            "The channel to put the introduction button in."
+                        )
+                        .addChannelTypes(ChannelType.GuildText)
+                )
+                    .setRequired(true)
+            )
+            .addChannelOption(option =>
+                (
+                    option
+                        .setName("screening-channel")
+                        .setDescription(
+                            "The channel to put the screening buttons in."
+                        )
                         .addChannelTypes(ChannelType.GuildText)
                 )
                     .setRequired(true)
@@ -27,18 +40,27 @@ export const Create: BotSubcommand = {
 
     execute: async (interaction) => {
         const { options } = interaction;
-        const channel = options.getChannel("channel");
+        const introductionChannel = options.getChannel("introduction-channel");
+        const screeningChannel = options.getChannel("screening-channel");
 
         assert(interaction.guild !== null);
 
         await deleteIntroductionAutomatorButton(interaction.guild);
 
-        assert(channel instanceof TextChannel);
+        assert(introductionChannel instanceof TextChannel);
+        assert(screeningChannel instanceof TextChannel);
 
-        await createIntroductionAutomatorButton(channel);
+        await createIntroductionAutomatorButton(introductionChannel);
 
-        await Meta.introductionAutomator.setPublicChannelId(channel.id);
+        await Meta.introductionAutomator.setIntroductionButtonChannelId(
+            introductionChannel.id
+        );
+        await Meta.introductionAutomator.setScreeningChannelId(
+            screeningChannel.id
+        );
 
-        interaction.editReply(`Introduction automator added to ${channel}`);
+        interaction.editReply(
+            `Introduction button added to ${introductionChannel}`
+        );
     }
 };

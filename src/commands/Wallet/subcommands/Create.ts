@@ -1,5 +1,5 @@
 import { EmbedBuilder, PermissionFlagsBits } from "discord.js";
-import { messages, MessageTypeColor, responseCodes } from "../../../constants";
+import { messages, messageTypeColors, responseCodes } from "../../../constants";
 import { Economy } from "../../../controllers/Economy";
 import { And, AuthorOf, Or } from "../../../models/ExecutePermission";
 import { BotSubcommand } from "../../../types/BotSubcommand";
@@ -51,7 +51,7 @@ export const Create: BotSubcommand = {
                         embeds: [
                             new EmbedBuilder()
                                 .setTitle("Create Wallet")
-                                .setColor(MessageTypeColor.Success)
+                                .setColor(messageTypeColors.Success)
                                 .setDescription(
                                     `${possessivePronoun} Bilaim wallet has been created.`
                                 )
@@ -64,7 +64,7 @@ export const Create: BotSubcommand = {
                         embeds: [
                             new EmbedBuilder()
                                 .setTitle("Already Exists")
-                                .setColor(MessageTypeColor.Failure)
+                                .setColor(messageTypeColors.Failure)
                                 .setDescription(
                                     `${pronoun} already have a Bilaim wallet.`
                                 )

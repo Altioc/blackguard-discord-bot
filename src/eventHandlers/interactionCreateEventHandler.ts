@@ -6,12 +6,12 @@ import {
     ModalSubmitInteraction
 } from "discord.js";
 import { InteractionType } from "../constants";
-import { buttonInteraction } from "../interactions/button";
-import { commandInteraction } from "../interactions/command";
-import { modalInteraction } from "../interactions/modal";
+import { buttonInteraction } from "../interactions/buttonInteraction";
+import { commandInteraction } from "../interactions/commandInteraction";
+import { modalInteraction } from "../interactions/modalInteraction";
 import { getInteractionType } from "../utils/getInteractionType";
 
-export default {
+export const interactionCreEventHandler = {
     name: Events.InteractionCreate,
     async execute(interaction: BaseInteraction) {
         if (interaction.guild === null) {
@@ -42,3 +42,5 @@ export default {
         }
     }
 };
+
+export default interactionCreEventHandler;

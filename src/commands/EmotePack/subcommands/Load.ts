@@ -2,7 +2,7 @@ import { EmbedBuilder } from "discord.js";
 import assert from "node:assert";
 import fs from "node:fs/promises";
 import path from "node:path";
-import { MessageTypeColor } from "../../../constants";
+import { messageTypeColors } from "../../../constants";
 import { BotSubcommand } from "../../../types/BotSubcommand";
 import { EmotePackData } from "../../../types/EmotePackData";
 import { emotePackPath } from "..";
@@ -60,7 +60,7 @@ export const Load: BotSubcommand = {
             embeds: [
                 new EmbedBuilder()
                     .setTitle("Emote Pack Loaded")
-                    .setColor(MessageTypeColor.Success)
+                    .setColor(messageTypeColors.Success)
                     .setDescription(`Successfully loaded pack: ${packName}`)
             ]
         });

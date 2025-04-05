@@ -3,12 +3,13 @@ import PouchDBUpsert from "pouchdb-upsert";
 PouchDB.plugin(PouchDBUpsert);
 
 import { BlackguardDbDocName, responseCodes } from "../constants";
+import { Books } from "../controllers/Books";
+import { Economy } from "../controllers/Economy";
+import { Meta } from "../controllers/Meta";
+import { Rpg } from "../controllers/Rpg";
 import { MinimumDocument } from "../types/MinimumDocument";
 import { Response } from "../types/Response";
 import { response } from "../utils/response";
-import { Books } from "./Books";
-import { Economy } from "./Economy";
-import { Rpg } from "./Rpg";
 
 class DocsController {
     db: PouchDB.Database;
@@ -80,6 +81,9 @@ class DocsController {
             case BlackguardDbDocName.Rpg:
                 Rpg.loadCharacters();
                 break;
+            case BlackguardDbDocName.Meta:
+                Meta.loadGuildDoc();
+                break;
         }
 
         return response(responseCodes.success);
@@ -102,6 +106,11 @@ class DocsController {
             case BlackguardDbDocName.Rpg: {
                 await Rpg.resetDoc();
                 await Rpg.loadCharacters();
+                return response(responseCodes.success);
+            }
+            case BlackguardDbDocName.Meta: {
+                await Meta.resetDoc();
+                await Meta.loadGuildDoc();
                 return response(responseCodes.success);
             }
         }

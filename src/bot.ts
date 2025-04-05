@@ -28,6 +28,13 @@ const loadHandlers = (
                 const handler = require(`${path}/index.js`).default;
                 collection.set(handler.name, handler);
             }
+        } else {
+            if (!path.endsWith("js")) {
+                return;
+            }
+
+            const handler = require(path).default;
+            collection.set(handler.name, handler);
         }
     });
 };
@@ -36,12 +43,14 @@ loadHandlers(`${__dirname}/commands`, commands);
 loadHandlers(`${__dirname}/buttons`, buttons);
 loadHandlers(`${__dirname}/modals`, modals);
 
-const eventsPath = `${__dirname}/events`;
+const eventHandlersPath = `${__dirname}/eventHandlers`;
 const javascriptFilesOnly = (file: string) => file.endsWith(".js");
-const eventFiles = fs.readdirSync(eventsPath).filter(javascriptFilesOnly);
+const eventFiles = fs.readdirSync(eventHandlersPath).filter(
+    javascriptFilesOnly
+);
 
 eventFiles.forEach((file) => {
-    const filePath = `${eventsPath}/${file}`;
+    const filePath = `${eventHandlersPath}/${file}`;
     const eventHandler = require(filePath).default;
 
     if (eventHandler.once) {

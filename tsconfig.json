@@ -10,7 +10,15 @@
         "lib": [
             "esnext"
         ],
-        "outDir": "dist"
+        "outDir": "dist",
+        "paths": {
+            "@controllers/*": ["./src/controllers/*"],
+            "@models/*": ["./src/models/*"],
+            "@constants": ["./src/constants"],
+            "@constants/*": ["./src/constants/*"],
+            "@utils/*": ["./src/utils/*"],
+            "@package/*": ["./src/*"]
+        }
     },
     "include": [
         "src/**/*"

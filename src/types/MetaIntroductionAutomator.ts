@@ -1,6 +1,8 @@
+import { Introduction } from "../models/Introduction";
+
 export type MetaIntroductionAutomator = {
-    introductionChannelId: string | null;
-    introductionMessageId: string | null;
+    introductionButtonChannelId: string | null;
+    introductionButtonMessageId: string | null;
     screeningChannelId: string | null;
-    screeningMessageId: string | null;
+    introductions: Introduction[];
 };

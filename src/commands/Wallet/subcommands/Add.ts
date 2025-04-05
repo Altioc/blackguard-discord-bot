@@ -3,7 +3,7 @@ import assert from "node:assert";
 import {
     CurrencyLocation,
     messages,
-    MessageTypeColor,
+    messageTypeColors,
     responseCodes
 } from "../../../constants";
 import { Economy } from "../../../controllers/Economy";
@@ -69,7 +69,7 @@ export const Add: BotSubcommand = {
                     embeds: [
                         new EmbedBuilder()
                             .setTitle("Invalid Value")
-                            .setColor(MessageTypeColor.Failure)
+                            .setColor(messageTypeColors.Failure)
                             .setDescription(
                                 "You can only add Bilaim in values greater than 0."
                             )
@@ -87,7 +87,7 @@ export const Add: BotSubcommand = {
                         embeds: [
                             new EmbedBuilder()
                                 .setTitle("Bilaim Added")
-                                .setColor(MessageTypeColor.Success)
+                                .setColor(messageTypeColors.Success)
                                 .setDescription(
                                     `${Economy.currencyEmoji} ${value} has been added.`
                                 )
