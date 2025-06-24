@@ -53,6 +53,13 @@ export const IntroductionScreeningStatusColors = {
     [IntroductionScreeningStatus.Rejected]: 0xffd500
 };
 
+export enum LogLevel {
+    Debug,
+    Info,
+    Error,
+    Off
+}
+
 export const initialMetaDoc: MetaDocument = {
     _id: BlackguardDbDocName.Meta,
     introductionAutomator: {
@@ -61,6 +68,8 @@ export const initialMetaDoc: MetaDocument = {
         screeningChannelId: null,
         introductions: []
     },
+    logLevel: LogLevel.Off,
+    loggingChannelId: null,
     memberRoles: [],
     rejectedRole: null,
     config: {}

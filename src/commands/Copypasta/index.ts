@@ -1,5 +1,6 @@
 import { SlashCommandBuilder } from "discord.js";
 import { messages } from "../../constants";
+import { Meta } from "../../controllers/Meta";
 import { AuthorOf, Or } from "../../models/ExecutePermission";
 import { BotCommand } from "../../types/BotCommand";
 import { Adele56k } from "./subcommands/Adele56k.js";
@@ -66,10 +67,14 @@ const Copypasta: BotCommand = {
     },
 
     canExecute: async (interaction) => {
-        return Or(
+        const canExecute = Or(
             AuthorOf(interaction).has("blackguard"),
             AuthorOf(interaction).has("guest")
         );
+
+        await Meta.logDebug(interaction, `canExecute`, canExecute.toString());
+
+        return canExecute;
     },
 
     execute: async (interaction) => {
@@ -77,10 +82,12 @@ const Copypasta: BotCommand = {
 
         const subcommand = Copypasta.subcommands.get(subcommandName);
 
+        await Meta.logDebug(interaction, `copypasta`, subcommandName);
+
         try {
             await subcommand?.execute(interaction);
         } catch (error) {
-            console.log(error);
+            await Meta.logError(interaction, `copypasta`, error!?.toString());
             await interaction.reply(messages.unknownError());
         }
     }

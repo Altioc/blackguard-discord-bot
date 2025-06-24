@@ -7,6 +7,7 @@ import {
     TextInputStyle
 } from "discord.js";
 import assert from "node:assert";
+import { randomUUID } from "node:crypto";
 import {
     createIntroductionAutomatorButton,
     deleteIntroductionAutomatorButton
@@ -103,6 +104,16 @@ export const introductionModal = {
     ) => {
         assert(interaction.guild !== null);
 
+        const id = randomUUID();
+
+        await Meta.logDebug(
+            interaction,
+            "introductionModal",
+            "interact",
+            id,
+            userId
+        );
+
         await deleteIntroductionAutomatorButton(interaction.guild);
 
         const { fields } = interaction;
@@ -166,6 +177,13 @@ export const introductionModal = {
 
         const message = await interaction.channel.send(messageContent);
 
+        await Meta.logDebug(
+            id,
+            "introductionModal",
+            "interact",
+            "sent introduction"
+        );
+
         introduction.messageId = message.id;
 
         await Meta.introductionAutomator.addIntroduction(introduction);
@@ -184,6 +202,13 @@ export const introductionModal = {
         const screening = await screeningMessage.create(introduction);
 
         await screeningChannel.send(screening);
+
+        await Meta.logDebug(
+            id,
+            "introductionModal",
+            "interact",
+            "sent screening"
+        );
 
         await createIntroductionAutomatorButton(interaction.channel);
         await interaction.reply({

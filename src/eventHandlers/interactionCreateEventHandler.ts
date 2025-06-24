@@ -5,7 +5,9 @@ import {
     Events,
     ModalSubmitInteraction
 } from "discord.js";
+import { randomUUID } from "node:crypto";
 import { InteractionType } from "../constants";
+import { Meta } from "../controllers/Meta";
 import { buttonInteraction } from "../interactions/buttonInteraction";
 import { commandInteraction } from "../interactions/commandInteraction";
 import { modalInteraction } from "../interactions/modalInteraction";
@@ -19,6 +21,10 @@ export const interactionCreEventHandler = {
         }
 
         await interaction.guild.fetch();
+
+        const id = randomUUID();
+
+        await Meta.logDebug(id, "interaction", `${interaction.type}`);
 
         switch (getInteractionType(interaction)) {
             case InteractionType.Command: {

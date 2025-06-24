@@ -1,5 +1,6 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder } from "discord.js";
 import assert from "node:assert";
+import { randomUUID } from "node:crypto";
 import { setIntroductionRoleButton } from "../buttons/setIntroductionRoleButton";
 import {
     IntroductionScreeningStatus,
@@ -16,6 +17,17 @@ export const screeningMessage = {
         { screenerId, resolved }: ScreeningMessageOptions = { resolved: false }
     ) => {
         assert(Meta.rejectedRole !== null);
+
+        const id = randomUUID();
+
+        Meta.logDebug(
+            id,
+            "screeningMessage",
+            "create",
+            JSON.stringify(introduction),
+            screenerId || "",
+            resolved.toString()
+        );
 
         const screeningMessage = await introductionMessage.create(
             introduction

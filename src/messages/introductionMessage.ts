@@ -1,23 +1,29 @@
 import { EmbedBuilder } from "discord.js";
+import { randomUUID } from "node:crypto";
 import { introductionModalElements } from "../constants/introductionModalElements";
 import { Meta } from "../controllers/Meta";
 import { Introduction } from "../models/Introduction";
 
 export const introductionMessage = {
-    create: async ({
-        guildId,
-        userId,
-        pronouns,
-        ign,
-        preferedName,
-        referral,
-        joinReason
-    }: Introduction) => {
+    create: async (introduction: Introduction) => {
+        const {
+            guildId,
+            userId,
+            pronouns,
+            ign,
+            preferedName,
+            referral,
+            joinReason
+        } = introduction;
         const guild = await Meta.client.guilds.fetch(guildId);
 
         const user = await guild.members.fetch(userId);
 
         const optionalFields = [];
+
+        const id = randomUUID();
+
+        Meta.logDebug(id, "introductionMessage", "create");
 
         if (pronouns) {
             optionalFields.push({
@@ -35,7 +41,7 @@ export const introductionMessage = {
             });
         }
 
-        const introduction = new EmbedBuilder()
+        const introductionEmbed = new EmbedBuilder()
             .setDescription(`${user}`)
             .addFields(
                 {
@@ -57,7 +63,7 @@ export const introductionMessage = {
             .setTimestamp();
 
         return {
-            embeds: [introduction]
+            embeds: [introductionEmbed]
         };
     }
 };

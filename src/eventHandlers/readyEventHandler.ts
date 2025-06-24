@@ -8,7 +8,8 @@ export const readyEventHandler = {
     async execute(client: Client) {
         assert(client.user !== null);
 
-        Meta.setClient(client);
+        await Meta.setClient(client);
+
         console.log(`Ready! Logged in as ${client.user.tag}`);
     }
 };

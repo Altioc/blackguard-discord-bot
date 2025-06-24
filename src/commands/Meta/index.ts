@@ -3,9 +3,12 @@ import { messages } from "../../constants";
 import { superUsers } from "../../ids.json";
 import { AuthorOf, Or } from "../../models/ExecutePermission";
 import { BotCommand } from "../../types/BotCommand";
-import { AddMemberRole } from "./subcommands/AddMemberRole.js";
-import { RemoveMemberRole } from "./subcommands/RemoveMemberRole.js";
-import { SetRejectedRole } from "./subcommands/SetRejectedRole.js";
+import { AddMemberRole } from "./subcommands/AddMemberRole";
+import { RemoveLoggingChannel } from "./subcommands/RemoveLoggingChannel";
+import { RemoveMemberRole } from "./subcommands/RemoveMemberRole";
+import { SetLoggingChannel } from "./subcommands/SetLoggingChannel";
+import { SetLogLevel } from "./subcommands/SetLogLevel";
+import { SetRejectedRole } from "./subcommands/SetRejectedRole";
 
 const Meta: BotCommand = {
     name: "meta",
@@ -13,7 +16,10 @@ const Meta: BotCommand = {
     subcommands: new Map([
         [AddMemberRole.name, AddMemberRole],
         [RemoveMemberRole.name, RemoveMemberRole],
-        [SetRejectedRole.name, SetRejectedRole]
+        [SetRejectedRole.name, SetRejectedRole],
+        [SetLoggingChannel.name, SetLoggingChannel],
+        [RemoveLoggingChannel.name, RemoveLoggingChannel],
+        [SetLogLevel.name, SetLogLevel]
     ]),
 
     serialize: () => {
