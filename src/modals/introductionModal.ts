@@ -104,6 +104,31 @@ export const introductionModal = {
     ) => {
         assert(interaction.guild !== null);
 
+        const existingIntroduction = Meta.introductionAutomator.getIntroduction(
+            { userId }
+        );
+
+        const alreadyIntroduced = existingIntroduction !== null;
+
+        if (alreadyIntroduced) {
+            await Meta.logDebug(
+                interaction,
+                userId,
+                "introductionModal",
+                "interact",
+                "already introduced"
+            );
+            return;
+        } else {
+            await Meta.logDebug(
+                interaction,
+                userId,
+                "introductionModal",
+                "interact",
+                "not introduced"
+            );
+        }
+
         const id = randomUUID();
 
         await Meta.logDebug(
