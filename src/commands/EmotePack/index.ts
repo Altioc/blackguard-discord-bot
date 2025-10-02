@@ -5,7 +5,7 @@ import { AuthorOf } from "../../models/ExecutePermission";
 import { BotCommand } from "../../types/BotCommand";
 import { List } from "./subcommands/List";
 import { Load } from "./subcommands/Load";
-console.log(__dirname);
+
 export const emotePackPath = path.join(
     __dirname,
     "../../../../../nico/emotePacks"
