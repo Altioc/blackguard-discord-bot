@@ -8,7 +8,7 @@ import { Load } from "./subcommands/Load";
 console.log(__dirname);
 export const emotePackPath = path.join(
     __dirname,
-    "../../../../nico/emotePacks"
+    "../../../../../nico/emotePacks"
 );
 
 const EmotePack: BotCommand = {
