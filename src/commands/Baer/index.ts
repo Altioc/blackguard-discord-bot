@@ -10,6 +10,11 @@ export const baerImagesPath = path.join(
     "../../../../../blkgrdbot-assets/baer"
 );
 
+export const rareBaerImagesPath = path.join(
+    __dirname,
+    "../../../../../blkgrdbot-assets/rarebaer"
+);
+
 export const Baer: BotCommandWithoutSubcommands = {
     name: "baer",
 
@@ -33,8 +38,13 @@ export const Baer: BotCommandWithoutSubcommands = {
 
         try {
             await fs.access(baerImagesPath, fs.constants.R_OK);
+            await fs.access(rareBaerImagesPath, fs.constants.R_OK);
 
-            const allImages = await fs.readdir(baerImagesPath);
+            const isRare = Math.random() <= 0.05;
+
+            const imagesPath = isRare ? rareBaerImagesPath : baerImagesPath;
+
+            const allImages = await fs.readdir(imagesPath);
 
             const randomImageIndex = Math.floor(
                 Math.random() * allImages.length
@@ -44,7 +54,7 @@ export const Baer: BotCommandWithoutSubcommands = {
 
             interaction.editReply({
                 files: [{
-                    attachment: path.join(baerImagesPath, imageName),
+                    attachment: path.join(imagesPath, imageName),
                     name: imageName
                 }]
             });
