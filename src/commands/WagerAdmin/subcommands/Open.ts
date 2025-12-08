@@ -1,24 +1,16 @@
-import { EmbedBuilder } from "discord.js";
+import { EmbedBuilder, PermissionFlagsBits } from "discord.js";
 import { messages, messageTypeColors, responseCodes } from "../../../constants";
 import { Books } from "../../../controllers/Books";
 import { AuthorOf, Or } from "../../../models/ExecutePermission";
 import { BotSubcommand } from "../../../types/BotSubcommand";
 
-export const Close: BotSubcommand = {
-    name: "close",
+export const Open: BotSubcommand = {
+    name: "open",
 
     serialize: (subcommand) => {
         return subcommand
-            .setName(Close.name)
-            .setDescription("Closes an active wager to new bets.");
-    },
-
-    canExecute: async (interaction) => {
-        if (Books.latestWager === null) {
-            return true;
-        }
-
-        return AuthorOf(interaction).is(Books.latestWager.ownerId);
+            .setName(Open.name)
+            .setDescription("Opens a closed active wager to new bets.");
     },
 
     execute: async (interaction) => {
@@ -28,26 +20,31 @@ export const Close: BotSubcommand = {
         }
 
         try {
-            const { responseCode } = await Books.setWagerOpenState(false);
+            const { responseCode } = await Books.setWagerOpenState(true);
 
             switch (responseCode) {
                 case responseCodes.success: {
                     await interaction.editReply({
                         embeds: [
                             new EmbedBuilder()
-                                .setTitle("Closed Wager")
+                                .setTitle("Opened Wager")
                                 .setColor(messageTypeColors.Success)
                                 .setDescription(
-                                    "This wager can no longer accept bets."
+                                    "This wager can now accept new bets."
                                 )
                         ]
                     });
                     break;
                 }
                 case responseCodes.book.setWagerOpenState.wrongState: {
-                    await interaction.editReply(
-                        messages.wagerClosed("This wager is already closed.")
-                    );
+                    await interaction.editReply({
+                        embeds: [
+                            new EmbedBuilder()
+                                .setTitle("Already Open")
+                                .setColor(messageTypeColors.Failure)
+                                .setDescription("This wager is already open.")
+                        ]
+                    });
                     break;
                 }
                 case responseCodes.book.noActiveWager: {
@@ -61,7 +58,7 @@ export const Close: BotSubcommand = {
         } catch (error) {
             console.log(
                 error,
-                "Wager -> Close.execute() -> Books.setWagerOpenState()"
+                "Wager -> Open.execute() -> Books.setWagerOpenState()"
             );
             interaction.editReply(messages.unknownError());
         }

@@ -1,48 +1,57 @@
-import { EmbedBuilder } from "discord.js";
+import { EmbedBuilder, PermissionFlagsBits } from "discord.js";
 import { messages, messageTypeColors, responseCodes } from "../../../constants";
 import { Economy } from "../../../controllers/Economy";
+import { AuthorOf } from "../../../models/ExecutePermission";
 import { BotSubcommand } from "../../../types/BotSubcommand";
 
-export const Create: BotSubcommand = {
-    name: "create",
+export const Delete: BotSubcommand = {
+    name: "delete",
 
     serialize: (subcommand) => {
         return subcommand
-            .setName(Create.name)
-            .setDescription(
-                "Creates a new wallet for yourself."
-            );
+            .setName(Delete.name)
+            .setDescription("Deletes the target user's wallet.")
+            .addUserOption(option => (
+                option
+                    .setName("target")
+                    .setDescription("The user whose wallet to delete.")
+                    .setRequired(true)
+            ));
     },
 
     execute: async (interaction) => {
         await interaction.deferReply();
-        const { user } = interaction;
+        const { user, options } = interaction;
+        const target = options.getUser("target") || user;
 
         try {
-            const { responseCode } = await Economy.createWallet(user.id);
+            const { responseCode } = await Economy.deleteWallet(target.id);
+            const walletOwnedByAuthor = target.id === user.id;
+            const pronoun = walletOwnedByAuthor ? "You" : "They";
+            const possessivePronoun = walletOwnedByAuthor ? "Your" : "Their";
 
             switch (responseCode) {
                 case responseCodes.success: {
                     await interaction.editReply({
                         embeds: [
                             new EmbedBuilder()
-                                .setTitle("Create Wallet")
+                                .setTitle("Delete Wallet")
                                 .setColor(messageTypeColors.Success)
                                 .setDescription(
-                                    "Your Bilaim wallet has been created."
+                                    `${possessivePronoun} Bilaim wallet has been deleted.`
                                 )
                         ]
                     });
                     break;
                 }
-                case responseCodes.alreadyExists: {
+                case responseCodes.doesntExist: {
                     await interaction.editReply({
                         embeds: [
                             new EmbedBuilder()
-                                .setTitle("Already Exists")
+                                .setTitle("Doesn't Exist")
                                 .setColor(messageTypeColors.Failure)
                                 .setDescription(
-                                    "You already have a Bilaim wallet."
+                                    `${pronoun} don't have a Bilaim wallet.`
                                 )
                         ]
                     });
@@ -55,7 +64,7 @@ export const Create: BotSubcommand = {
         } catch (error) {
             console.log(
                 error,
-                "Wallet -> Create.execute() -> Economy.createWallet()"
+                "Wallet -> Delete.execute() -> Economy.deleteWallet()"
             );
             interaction.editReply(messages.unknownError());
         }

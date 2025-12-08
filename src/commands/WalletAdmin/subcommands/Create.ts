@@ -1,62 +1,60 @@
 import { EmbedBuilder } from "discord.js";
+import assert from "node:assert";
 import { messages, messageTypeColors, responseCodes } from "../../../constants";
-import { Books } from "../../../controllers/Books";
-import { AuthorOf } from "../../../models/ExecutePermission";
+import { Economy } from "../../../controllers/Economy";
 import { BotSubcommand } from "../../../types/BotSubcommand";
 
-export const Open: BotSubcommand = {
-    name: "open",
+export const Create: BotSubcommand = {
+    name: "create",
 
     serialize: (subcommand) => {
         return subcommand
-            .setName(Open.name)
-            .setDescription("Opens a closed active wager to new bets.");
-    },
-
-    canExecute: async (interaction) => {
-        if (Books.latestWager === null) {
-            return true;
-        }
-
-        return AuthorOf(interaction).is(Books.latestWager.ownerId);
+            .setName(Create.name)
+            .setDescription(
+                "Creates a new wallet for the target user."
+            )
+            .addUserOption(option => (
+                option
+                    .setName("target")
+                    .setDescription("The user to create a wallet for")
+                    .setRequired(true)
+            ));
     },
 
     execute: async (interaction) => {
-        if (Books.latestWager === null) {
-            await interaction.editReply(messages.noActiveWager());
-            return;
-        }
+        await interaction.deferReply();
+        const { options } = interaction;
+        const target = options.getUser("target");
 
         try {
-            const { responseCode } = await Books.setWagerOpenState(true);
+            assert(target);
+            const { responseCode } = await Economy.createWallet(target.id);
 
             switch (responseCode) {
                 case responseCodes.success: {
                     await interaction.editReply({
                         embeds: [
                             new EmbedBuilder()
-                                .setTitle("Opened Wager")
+                                .setTitle("Create Wallet")
                                 .setColor(messageTypeColors.Success)
                                 .setDescription(
-                                    "This wager can now accept new bets."
+                                    "Their Bilaim wallet has been created."
                                 )
                         ]
                     });
                     break;
                 }
-                case responseCodes.book.setWagerOpenState.wrongState: {
+                case responseCodes.alreadyExists: {
                     await interaction.editReply({
                         embeds: [
                             new EmbedBuilder()
-                                .setTitle("Already Open")
+                                .setTitle("Already Exists")
                                 .setColor(messageTypeColors.Failure)
-                                .setDescription("This wager is already open.")
+                                .setDescription(
+                                    "They already have a Bilaim wallet."
+                                )
                         ]
                     });
-                    break;
-                }
-                case responseCodes.book.noActiveWager: {
-                    await interaction.editReply(messages.noActiveWager());
                     break;
                 }
                 default: {
@@ -66,7 +64,7 @@ export const Open: BotSubcommand = {
         } catch (error) {
             console.log(
                 error,
-                "Wager -> Open.execute() -> Books.setWagerOpenState()"
+                "Wallet -> Create.execute() -> Economy.createWallet()"
             );
             interaction.editReply(messages.unknownError());
         }

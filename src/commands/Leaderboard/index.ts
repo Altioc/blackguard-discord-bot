@@ -2,6 +2,7 @@ import {
     codeBlock,
     EmbedBuilder,
     GuildMember,
+    InteractionContextType,
     SlashCommandBuilder
 } from "discord.js";
 import assert from "node:assert";
@@ -14,7 +15,6 @@ import {
 import { Economy } from "../../controllers/Economy";
 import { Rpg } from "../../controllers/Rpg";
 import { Character } from "../../models/Character";
-import { AuthorOf, Or } from "../../models/ExecutePermission";
 import { Wallet } from "../../models/Wallet";
 import { LeaderboardExtreme } from "../../types/LeaderboardExtreme";
 import { BotCommandWithoutSubcommands } from "../../types/WithoutSubcommands";
@@ -29,26 +29,22 @@ export const Leaderboard: BotCommandWithoutSubcommands = {
         const serialization = new SlashCommandBuilder()
             .setName(Leaderboard.name)
             .setDescription("Prints the current Bilaim wallet leaderboard.")
-            .addStringOption((option) => (
-                option
-                    .setName("type")
-                    .setDescription(
-                        "What leaderboard type to show. Defaults to wealth"
-                    )
-                    .addChoices(
-                        { name: "Power", value: LeaderboardType.Power },
-                        { name: "Wealth", value: LeaderboardType.Wealth }
-                    )
-            ));
+            .setDefaultMemberPermissions(0)
+            .setContexts(InteractionContextType.Guild);
+
+        serialization.addStringOption((option) => (
+            option
+                .setName("type")
+                .setDescription(
+                    "What leaderboard type to show. Defaults to wealth"
+                )
+                .addChoices(
+                    { name: "Power", value: LeaderboardType.Power },
+                    { name: "Wealth", value: LeaderboardType.Wealth }
+                )
+        ));
 
         return serialization;
-    },
-
-    canExecute: async (interaction) => {
-        return Or(
-            AuthorOf(interaction).has("blackguard"),
-            AuthorOf(interaction).has("guest")
-        );
     },
 
     execute: async (interaction) => {

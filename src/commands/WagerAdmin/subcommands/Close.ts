@@ -1,4 +1,4 @@
-import { EmbedBuilder } from "discord.js";
+import { EmbedBuilder, PermissionFlagsBits } from "discord.js";
 import { messages, messageTypeColors, responseCodes } from "../../../constants";
 import { Books } from "../../../controllers/Books";
 import { AuthorOf, Or } from "../../../models/ExecutePermission";
@@ -18,7 +18,10 @@ export const Close: BotSubcommand = {
             return true;
         }
 
-        return AuthorOf(interaction).is(Books.latestWager.ownerId);
+        return Or(
+            AuthorOf(interaction).has(PermissionFlagsBits.Administrator),
+            AuthorOf(interaction).is(Books.latestWager.ownerId)
+        );
     },
 
     execute: async (interaction) => {

@@ -21,7 +21,7 @@ class EconomyController {
     };
     currencyEmoji!: string;
     walletInitialCurrencyAmount!: number;
-    bankInterestInterval?: NodeJS.Timer;
+    bankInterestInterval?: NodeJS.Timeout;
     db: PouchDB.Database;
 
     constructor() {

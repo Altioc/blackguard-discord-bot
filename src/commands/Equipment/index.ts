@@ -8,6 +8,7 @@ import {
     ButtonStyle,
     ComponentType,
     EmbedBuilder,
+    InteractionContextType,
     SlashCommandBuilder,
     User
 } from "discord.js";
@@ -21,7 +22,6 @@ import {
 import { Economy } from "../../controllers/Economy";
 import { Rpg } from "../../controllers/Rpg";
 import { Character } from "../../models/Character";
-import { AuthorOf, Or } from "../../models/ExecutePermission";
 import { BotCommandWithoutSubcommands } from "../../types/WithoutSubcommands";
 
 const Equipment: BotCommandWithoutSubcommands = {
@@ -33,22 +33,18 @@ const Equipment: BotCommandWithoutSubcommands = {
             .setDescription(
                 "Shows your equipment data or the equipment data of another person."
             )
-            .addUserOption(option => (
-                option
-                    .setName("target")
-                    .setDescription(
-                        "The user whose equipment will be shown. Defaults to your equipment."
-                    )
-            ));
+            .setDefaultMemberPermissions(0)
+            .setContexts(InteractionContextType.Guild);
+
+        serialization.addUserOption(option => (
+            option
+                .setName("target")
+                .setDescription(
+                    "The user whose equipment will be shown. Defaults to your equipment."
+                )
+        ));
 
         return serialization;
-    },
-
-    canExecute: async (interaction) => {
-        return Or(
-            AuthorOf(interaction).has("blackguard"),
-            AuthorOf(interaction).has("guest")
-        );
     },
 
     execute: async (interaction) => {

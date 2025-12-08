@@ -1,4 +1,4 @@
-import { bold, codeBlock, EmbedBuilder } from "discord.js";
+import { bold, codeBlock, EmbedBuilder, PermissionFlagsBits } from "discord.js";
 import assert from "node:assert";
 import {
     messages,
@@ -7,7 +7,7 @@ import {
     WagerEndOptions
 } from "../../../constants";
 import { Books } from "../../../controllers/Books";
-import { AuthorOf } from "../../../models/ExecutePermission";
+import { AuthorOf, Or } from "../../../models/ExecutePermission";
 import { BotSubcommand } from "../../../types/BotSubcommand";
 import { Response } from "../../../types/Response";
 import { WagerResult } from "../../../types/WagerResult";
@@ -34,14 +34,6 @@ export const End: BotSubcommand = {
                             }))
                     )
             ));
-    },
-
-    canExecute: async (interaction) => {
-        if (Books.latestWager === null) {
-            return true;
-        }
-
-        return AuthorOf(interaction).is(Books.latestWager.ownerId);
     },
 
     execute: async (interaction) => {

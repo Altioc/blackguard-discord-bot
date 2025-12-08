@@ -1,4 +1,8 @@
-import { SlashCommandBuilder } from "discord.js";
+import {
+    InteractionContextType,
+    PermissionFlagsBits,
+    SlashCommandBuilder
+} from "discord.js";
 import { messages } from "../../constants";
 import { superUsers } from "../../ids.json";
 import { AuthorOf } from "../../models/ExecutePermission";
@@ -19,17 +23,15 @@ const Doc: BotCommand = {
     serialize: () => {
         const serialization = new SlashCommandBuilder()
             .setName(Doc.name)
-            .setDescription("The base command for all things involving docs.");
+            .setDescription("The base command for all things involving docs.")
+            .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
+            .setContexts(InteractionContextType.Guild);
 
         Doc.subcommands.forEach((subcommand) => {
             serialization.addSubcommand(subcommand.serialize);
         });
 
         return serialization;
-    },
-
-    canExecute: async (interaction) => {
-        return AuthorOf(interaction).is(superUsers);
     },
 
     async execute(interaction) {

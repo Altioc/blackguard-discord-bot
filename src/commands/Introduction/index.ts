@@ -1,6 +1,9 @@
-import { PermissionFlagsBits, SlashCommandBuilder } from "discord.js";
+import {
+    InteractionContextType,
+    PermissionFlagsBits,
+    SlashCommandBuilder
+} from "discord.js";
 import { messages } from "../../constants";
-import { AuthorOf } from "../../models/ExecutePermission";
 import { BotCommand } from "../../types/BotCommand";
 import { Create } from "./subcommands/Create";
 import { Delete } from "./subcommands/Delete";
@@ -16,17 +19,15 @@ const Introduce: BotCommand = {
     serialize: () => {
         const serialization = new SlashCommandBuilder()
             .setName(Introduce.name)
-            .setDescription("Create/Delete the introduction automator");
+            .setDescription("Create/Delete the introduction automator")
+            .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
+            .setContexts(InteractionContextType.Guild);
 
         Introduce.subcommands.forEach((subcommand) => {
             serialization.addSubcommand(subcommand.serialize);
         });
 
         return serialization;
-    },
-
-    canExecute: async (interaction) => {
-        return AuthorOf(interaction).has(PermissionFlagsBits.Administrator);
     },
 
     execute: async (interaction) => {

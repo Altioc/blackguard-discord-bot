@@ -1,9 +1,13 @@
-import { EmbedBuilder, SlashCommandBuilder, time } from "discord.js";
+import {
+    EmbedBuilder,
+    InteractionContextType,
+    SlashCommandBuilder,
+    time
+} from "discord.js";
 import assert from "node:assert";
 import { messages, messageTypeColors, responseCodes } from "../../constants";
 import { Economy } from "../../controllers/Economy";
 import { Rpg } from "../../controllers/Rpg";
-import { AuthorOf, Or } from "../../models/ExecutePermission";
 import { BotCommandWithoutSubcommands } from "../../types/WithoutSubcommands";
 
 const Jug: BotCommandWithoutSubcommands = {
@@ -15,11 +19,14 @@ const Jug: BotCommandWithoutSubcommands = {
             .setDescription(
                 "Attempts to jug someone elses bilaims with a small chance for a counter jug on failure."
             )
-            .addUserOption(option => (
-                option
-                    .setName("target")
-                    .setDescription("The user to attempt to jug.")
-            ))
+            .setDefaultMemberPermissions(0)
+            .setContexts(InteractionContextType.Guild);
+
+        serialization.addUserOption(option => (
+            option
+                .setName("target")
+                .setDescription("The user to attempt to jug.")
+        ))
             .addStringOption(option => (
                 option
                     .setName("value")
@@ -29,13 +36,6 @@ const Jug: BotCommandWithoutSubcommands = {
             ));
 
         return serialization;
-    },
-
-    canExecute: async (interaction) => {
-        return Or(
-            AuthorOf(interaction).has("blackguard"),
-            AuthorOf(interaction).has("guest")
-        );
     },
 
     execute: async (interaction) => {

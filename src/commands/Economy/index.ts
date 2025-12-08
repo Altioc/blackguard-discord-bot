@@ -1,7 +1,9 @@
-import { SlashCommandBuilder } from "discord.js";
+import {
+    InteractionContextType,
+    PermissionFlagsBits,
+    SlashCommandBuilder
+} from "discord.js";
 import { messages } from "../../constants";
-import { superUsers } from "../../ids.json";
-import { AuthorOf } from "../../models/ExecutePermission";
 import { BotCommand } from "../../types/BotCommand";
 import { ClearJugCooldown } from "./subcommands/ClearJugCooldown";
 
@@ -17,17 +19,15 @@ const Economy: BotCommand = {
             .setName(Economy.name)
             .setDescription(
                 "Attempts to jug someone elses bilaims with a small chance for a counter jug on failure."
-            );
+            )
+            .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
+            .setContexts(InteractionContextType.Guild);
 
         Economy.subcommands.forEach((subcommand) => {
             serialization.addSubcommand(subcommand.serialize);
         });
 
         return serialization;
-    },
-
-    canExecute: async (interaction) => {
-        return AuthorOf(interaction).is(superUsers);
     },
 
     execute: async (interaction) => {

@@ -1,8 +1,7 @@
-import { SlashCommandBuilder } from "discord.js";
+import { InteractionContextType, SlashCommandBuilder } from "discord.js";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { messages } from "../../constants";
-import { AuthorOf, Or } from "../../models/ExecutePermission";
 import { BotCommandWithoutSubcommands } from "../../types/WithoutSubcommands";
 
 export const baerImagesPath = path.join(
@@ -21,16 +20,11 @@ export const Baer: BotCommandWithoutSubcommands = {
     serialize: () => {
         const serialization = new SlashCommandBuilder()
             .setName(Baer.name)
-            .setDescription("Send a random image of the Baer SCP");
+            .setDescription("Send a random image of the Baer SCP")
+            .setDefaultMemberPermissions(0)
+            .setContexts(InteractionContextType.Guild);
 
         return serialization;
-    },
-
-    canExecute: async (interaction) => {
-        return Or(
-            AuthorOf(interaction).has("blackguard"),
-            AuthorOf(interaction).has("guest")
-        );
     },
 
     execute: async (interaction) => {

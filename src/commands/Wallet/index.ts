@@ -1,12 +1,6 @@
-import { SlashCommandBuilder } from "discord.js";
+import { InteractionContextType, SlashCommandBuilder } from "discord.js";
 import { messages } from "../../constants";
-import { And, AuthorOf, Or } from "../../models/ExecutePermission";
 import { BotCommand } from "../../types/BotCommand";
-import { canExecuteSubcommand } from "../../utils/canExecuteSubcommand";
-import { Add } from "./subcommands/Add";
-import { Create } from "./subcommands/Create";
-import { Deduct } from "./subcommands/Deduct";
-import { Delete } from "./subcommands/Delete";
 import { Deposit } from "./subcommands/Deposit";
 import { Read } from "./subcommands/Read";
 import { Send } from "./subcommands/Send";
@@ -16,10 +10,6 @@ const Wallet: BotCommand = {
     name: "wallet",
 
     subcommands: new Map([
-        [Add.name, Add],
-        [Create.name, Create],
-        [Deduct.name, Deduct],
-        [Delete.name, Delete],
         [Deposit.name, Deposit],
         [Read.name, Read],
         [Send.name, Send],
@@ -31,26 +21,15 @@ const Wallet: BotCommand = {
             .setName(Wallet.name)
             .setDescription(
                 "The base command for all things involving wallets."
-            );
+            )
+            .setDefaultMemberPermissions(0)
+            .setContexts(InteractionContextType.Guild);
 
         Wallet.subcommands.forEach((subcommand) => {
             serialization.addSubcommand(subcommand.serialize);
         });
 
         return serialization;
-    },
-
-    canExecute: async (interaction) => {
-        return And(
-            Or(
-                AuthorOf(interaction).has("blackguard"),
-                AuthorOf(interaction).has("guest")
-            ),
-            canExecuteSubcommand(
-                interaction,
-                Wallet.subcommands
-            )
-        );
     },
 
     execute: async (interaction) => {

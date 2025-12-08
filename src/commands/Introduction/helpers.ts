@@ -14,6 +14,7 @@ export const createIntroductionAutomatorButton = async (
 ) => {
     const newButton = introductionCreateButton.create();
     const row = new ActionRowBuilder<ButtonBuilder>().addComponents(newButton);
+    assert(channel.isSendable());
     const newMessage = await channel.send({
         components: [row]
     });

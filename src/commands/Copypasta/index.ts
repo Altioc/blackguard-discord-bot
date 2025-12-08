@@ -1,7 +1,6 @@
-import { SlashCommandBuilder } from "discord.js";
+import { InteractionContextType, SlashCommandBuilder } from "discord.js";
 import { messages } from "../../constants";
 import { Meta } from "../../controllers/Meta";
-import { AuthorOf, Or } from "../../models/ExecutePermission";
 import { BotCommand } from "../../types/BotCommand";
 import { Adele56k } from "./subcommands/Adele56k.js";
 import { BlessYourHeart } from "./subcommands/BlessYourHeart";
@@ -57,24 +56,15 @@ const Copypasta: BotCommand = {
     serialize: () => {
         const serialization = new SlashCommandBuilder()
             .setName(Copypasta.name)
-            .setDescription("Easy access to intellectual messages.");
+            .setDescription("Easy access to intellectual messages.")
+            .setDefaultMemberPermissions(0)
+            .setContexts(InteractionContextType.Guild);
 
         Copypasta.subcommands.forEach((subcommand) => {
             serialization.addSubcommand(subcommand.serialize);
         });
 
         return serialization;
-    },
-
-    canExecute: async (interaction) => {
-        const canExecute = Or(
-            AuthorOf(interaction).has("blackguard"),
-            AuthorOf(interaction).has("guest")
-        );
-
-        await Meta.logDebug(interaction, `canExecute`, canExecute.toString());
-
-        return canExecute;
     },
 
     execute: async (interaction) => {

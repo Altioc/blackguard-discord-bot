@@ -200,7 +200,11 @@ export const introductionModal = {
 
         const messageContent = await introductionMessage.create(introduction);
 
-        const message = await interaction.channel.send(messageContent);
+        const channel = interaction.channel;
+
+        assert(channel.isSendable());
+
+        const message = await channel.send(messageContent);
 
         await Meta.logDebug(
             id,

@@ -3,33 +3,33 @@ import {
     PermissionFlagsBits,
     SlashCommandBuilder
 } from "discord.js";
-import path from "node:path";
 import { messages } from "../../constants";
 import { BotCommand } from "../../types/BotCommand";
-import { List } from "./subcommands/List";
-import { Load } from "./subcommands/Load";
+import { Close } from "./subcommands/Close";
+import { End } from "./subcommands/End";
+import { Open } from "./subcommands/Open";
+import { Reactivate } from "./subcommands/Reactivate";
 
-export const emotePackPath = path.join(
-    __dirname,
-    "../../../../../nico/emotePacks"
-);
-
-const EmotePack: BotCommand = {
-    name: "emotepack",
+const WagerAdmin: BotCommand = {
+    name: "wager-admin",
 
     subcommands: new Map([
-        [List.name, List],
-        [Load.name, Load]
+        [Close.name, Close],
+        [End.name, End],
+        [Open.name, Open],
+        [Reactivate.name, Reactivate]
     ]),
 
     serialize: () => {
         const serialization = new SlashCommandBuilder()
-            .setName(EmotePack.name)
-            .setDescription("Easily swap between sets of emotes.")
+            .setName(WagerAdmin.name)
+            .setDescription(
+                "The base command for all things involving wagers."
+            )
             .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
             .setContexts(InteractionContextType.Guild);
 
-        EmotePack.subcommands.forEach((subcommand) => {
+        WagerAdmin.subcommands.forEach((subcommand) => {
             serialization.addSubcommand(subcommand.serialize);
         });
 
@@ -37,17 +37,19 @@ const EmotePack: BotCommand = {
     },
 
     execute: async (interaction) => {
+        await interaction.deferReply();
+
         const subcommandName = interaction.options.getSubcommand();
 
-        const subcommand = EmotePack.subcommands.get(subcommandName);
+        const subcommand = WagerAdmin.subcommands.get(subcommandName);
 
         try {
             await subcommand?.execute(interaction);
         } catch (error) {
             console.log(error);
-            await interaction.reply(messages.unknownError());
+            await interaction.editReply(messages.unknownError());
         }
     }
 };
 
-export default EmotePack;
+export default WagerAdmin;

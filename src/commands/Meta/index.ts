@@ -1,7 +1,9 @@
-import { PermissionFlagsBits, SlashCommandBuilder } from "discord.js";
+import {
+    InteractionContextType,
+    PermissionFlagsBits,
+    SlashCommandBuilder
+} from "discord.js";
 import { messages } from "../../constants";
-import { superUsers } from "../../ids.json";
-import { AuthorOf, Or } from "../../models/ExecutePermission";
 import { BotCommand } from "../../types/BotCommand";
 import { AddMemberRole } from "./subcommands/AddMemberRole";
 import { RemoveLoggingChannel } from "./subcommands/RemoveLoggingChannel";
@@ -25,20 +27,15 @@ const Meta: BotCommand = {
     serialize: () => {
         const serialization = new SlashCommandBuilder()
             .setName(Meta.name)
-            .setDescription("Commands to modify values specific to this guild");
+            .setDescription("Commands to modify values specific to this guild")
+            .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
+            .setContexts(InteractionContextType.Guild);
 
         Meta.subcommands.forEach((subcommand) => {
             serialization.addSubcommand(subcommand.serialize);
         });
 
         return serialization;
-    },
-
-    canExecute: async (interaction) => {
-        return Or(
-            AuthorOf(interaction).is(superUsers),
-            AuthorOf(interaction).has(PermissionFlagsBits.Administrator)
-        );
     },
 
     execute: async (interaction) => {

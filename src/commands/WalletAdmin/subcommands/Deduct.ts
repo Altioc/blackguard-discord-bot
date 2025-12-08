@@ -1,4 +1,4 @@
-import { EmbedBuilder, PermissionFlagsBits } from "discord.js";
+import { EmbedBuilder } from "discord.js";
 import assert from "node:assert";
 import {
     CurrencyLocation,
@@ -7,7 +7,6 @@ import {
     responseCodes
 } from "../../../constants";
 import { Economy } from "../../../controllers/Economy";
-import { AuthorOf } from "../../../models/ExecutePermission";
 import { BotSubcommand } from "../../../types/BotSubcommand";
 
 export const Deduct: BotSubcommand = {
@@ -40,10 +39,6 @@ export const Deduct: BotSubcommand = {
                         "Whether or not to add money to the users bank instead of their wallet. Defaults to false."
                     )
             ));
-    },
-
-    canExecute: async (interaction) => {
-        return AuthorOf(interaction).has(PermissionFlagsBits.Administrator);
     },
 
     execute: async (interaction) => {
