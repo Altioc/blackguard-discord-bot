@@ -83,14 +83,12 @@ const replaceEmote = async (
             await guild.emojis.delete(emoteAlreadyExists);
         }
 
-        Meta.logInfo(`Adding new ${emoteName}`);
         const result = await guild.emojis.create({
             name: emoteName,
             attachment: path.join(packPath, emoteFileName)
         });
-        Meta.logDebug(result.id);
         Meta.logInfo(`Successfully added ${emoteName}`);
-        await sleep(1000);
+        await sleep(10000);
     } catch (error) {
         Meta.logDebug(`${error}`);
     }
