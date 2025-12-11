@@ -48,6 +48,7 @@ export const Load: BotSubcommand = {
             ]
         });
 
+        Meta.logInfo(`Loading emote files: ${emoteFileNames.join(", ")}`);
         for (const emoteFileName of emoteFileNames) {
             await replaceEmote(packPath, emoteFileName, guild, existingEmotes);
         }
