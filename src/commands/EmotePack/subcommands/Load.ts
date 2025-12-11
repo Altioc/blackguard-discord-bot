@@ -71,15 +71,18 @@ const replaceEmote = async (
 ): Promise<void> => {
     try {
         const emoteName = emoteFileName.split(".")[0];
+        Meta.logInfo(`Loading emote: ${emoteName} at "${emoteFileName}"`);
 
         const emoteAlreadyExists = existingEmotes.find((emote) => (
             emote.name === emoteName
         ));
 
         if (emoteAlreadyExists !== undefined) {
+            Meta.logInfo(`Removing old ${emoteName}`);
             await guild.emojis.delete(emoteAlreadyExists);
         }
 
+        Meta.logInfo(`Adding new ${emoteName}`);
         await guild.emojis.create({
             name: emoteName,
             attachment: path.join(packPath, emoteFileName)
