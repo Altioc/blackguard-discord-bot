@@ -90,9 +90,17 @@ const replaceEmote = async (
         });
         Meta.logDebug(result.id);
         Meta.logInfo(`Successfully added ${emoteName}`);
+        await sleep(100);
     } catch (error) {
         Meta.logDebug(`${error}`);
     }
+};
+
+/** Discord.js cannot be trusted to handle rate limiting I guess */
+const sleep = async (time: number): Promise<void> => {
+    return new Promise((resolve) => {
+        setTimeout(resolve, time);
+    });
 };
 
 const getEmotePackData = async (
