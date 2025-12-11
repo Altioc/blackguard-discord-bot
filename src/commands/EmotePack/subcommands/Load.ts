@@ -1,8 +1,9 @@
-import { EmbedBuilder } from "discord.js";
+import { Collection, EmbedBuilder, Guild, GuildEmoji } from "discord.js";
 import assert from "node:assert";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { messageTypeColors } from "../../../constants";
+import { Meta } from "../../../controllers/Meta";
 import { BotSubcommand } from "../../../types/BotSubcommand";
 import { EmotePackData } from "../../../types/EmotePackData";
 import { emotePackPath } from "..";
@@ -39,31 +40,52 @@ export const Load: BotSubcommand = {
 
         const existingEmotes = await guild.emojis.fetch();
 
-        emoteFileNames.forEach(async (emoteFileName) => {
-            const emoteName = emoteFileName.split(".")[0];
-
-            const emoteAlreadyExists = existingEmotes.find((emote) => (
-                emote.name === emoteName
-            ));
-
-            if (emoteAlreadyExists !== undefined) {
-                await guild.emojis.delete(emoteAlreadyExists);
-            }
-
-            await guild.emojis.create({
-                name: emoteName,
-                attachment: path.join(packPath, emoteFileName)
-            });
-        });
-
         await interaction.reply({
             embeds: [
                 new EmbedBuilder()
-                    .setTitle("Emote Pack Loaded")
-                    .setColor(messageTypeColors.Success)
-                    .setDescription(`Successfully loaded pack: ${packName}`)
+                    .setTitle("Emote Pack Loading Started")
+                    .setDescription(`Pack: ${packName}`)
             ]
         });
+
+        for (const emoteFileName of emoteFileNames) {
+            await replaceEmote(packPath, emoteFileName, guild, existingEmotes);
+        }
+
+        await interaction.followUp({
+            embeds: [
+                new EmbedBuilder()
+                    .setTitle("Emote Pack Loading Finished")
+                    .setColor(messageTypeColors.Success)
+                    .setDescription(`Pack: ${packName}`)
+            ]
+        });
+    }
+};
+
+const replaceEmote = async (
+    packPath: string,
+    emoteFileName: string,
+    guild: Guild,
+    existingEmotes: Collection<string, GuildEmoji>
+): Promise<void> => {
+    try {
+        const emoteName = emoteFileName.split(".")[0];
+
+        const emoteAlreadyExists = existingEmotes.find((emote) => (
+            emote.name === emoteName
+        ));
+
+        if (emoteAlreadyExists !== undefined) {
+            await guild.emojis.delete(emoteAlreadyExists);
+        }
+
+        await guild.emojis.create({
+            name: emoteName,
+            attachment: path.join(packPath, emoteFileName)
+        });
+    } catch (error) {
+        Meta.logDebug(`${error}`);
     }
 };
 
