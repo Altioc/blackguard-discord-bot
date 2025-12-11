@@ -90,7 +90,7 @@ const replaceEmote = async (
         });
         Meta.logDebug(result.id);
         Meta.logInfo(`Successfully added ${emoteName}`);
-        await sleep(100);
+        await sleep(1000);
     } catch (error) {
         Meta.logDebug(`${error}`);
     }
