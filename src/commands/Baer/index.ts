@@ -80,13 +80,13 @@ export const Baer: BotCommandWithoutSubcommands = {
                     embeds: [
                         new EmbedBuilder()
                             .setTitle(
-                                `${sirenEmoji} RAERBAER ${sirenEmoji}`
+                                "<a:siren:1453516501423493261> RAERBAER <a:siren:1453516501423493261>"
                             )
-                            .setDescription(`${sirenEmoji}`)
+                            .setDescription("<a:siren:1453516501423493261>")
                             .addFields(
                                 {
-                                    name: `${sirenEmoji}`,
-                                    value: `${sirenEmoji}`,
+                                    name: "<a:siren:1453516501423493261>",
+                                    value: "<a:siren:1453516501423493261>",
                                     inline: false
                                 }
                             )
