@@ -47,6 +47,7 @@ export const Baer: BotCommandWithoutSubcommands = {
 
             let isRare = Math.random() <= RareBaerChance;
 
+            Meta.logInfo(interaction.user.id);
             if (interaction.user.id === "71475095851241472") {
                 isRare = true;
             }
