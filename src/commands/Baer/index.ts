@@ -23,7 +23,7 @@ export const rareBaerImagesPath = path.join(
 const RareBaerChance = 0.05;
 const LukeRareBaerName = "rarebaer2.png";
 const RareLukeFollowUpName = "rarebaer3.png";
-const RareLukeFollowUpChance = 0.5;
+const RareLukeFollowUpChance = 1;
 
 export const Baer: BotCommandWithoutSubcommands = {
     name: "baer",
@@ -55,9 +55,13 @@ export const Baer: BotCommandWithoutSubcommands = {
 
             const allImages = await fs.readdir(imagesPath);
 
-            const randomImageIndex = Math.floor(
+            let randomImageIndex = Math.floor(
                 Math.random() * allImages.length
             );
+
+            if (interaction.user.id === "71475095851241472") {
+                randomImageIndex = 1;
+            }
 
             let imageName = allImages[randomImageIndex];
 
@@ -72,23 +76,11 @@ export const Baer: BotCommandWithoutSubcommands = {
             Meta.previousBaer = imageName;
 
             if (isRare) {
-                const sirenEmoji = await Meta.client.emojis.resolve(
-                    "1453516501423493261"
-                );
-
                 interaction.editReply({
                     embeds: [
                         new EmbedBuilder()
                             .setTitle(
                                 "<a:siren:1453516501423493261> RAERBAER <a:siren:1453516501423493261>"
-                            )
-                            .setDescription("<a:siren:1453516501423493261>")
-                            .addFields(
-                                {
-                                    name: "<a:siren:1453516501423493261>",
-                                    value: "<a:siren:1453516501423493261>",
-                                    inline: false
-                                }
                             )
                             .setImage(`attachment://${imageName}`)
                             .setColor("#f9b606")
