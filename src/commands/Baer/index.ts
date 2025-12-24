@@ -72,7 +72,7 @@ export const Baer: BotCommandWithoutSubcommands = {
             Meta.previousBaer = imageName;
 
             if (isRare) {
-                const sirenEmoji = await Meta.client.emojis.cache.get(
+                const sirenEmoji = await Meta.client.emojis.resolve(
                     "1453516501423493261"
                 );
 
