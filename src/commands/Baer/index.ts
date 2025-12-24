@@ -82,6 +82,14 @@ export const Baer: BotCommandWithoutSubcommands = {
                             .setTitle(
                                 `${sirenEmoji} RAERBAER ${sirenEmoji}`
                             )
+                            .setDescription(`${sirenEmoji}`)
+                            .addFields(
+                                {
+                                    name: `${sirenEmoji}`,
+                                    value: `${sirenEmoji}`,
+                                    inline: false
+                                }
+                            )
                             .setImage(`attachment://${imageName}`)
                             .setColor("#f9b606")
                     ],
