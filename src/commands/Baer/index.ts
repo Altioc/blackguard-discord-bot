@@ -47,7 +47,6 @@ export const Baer: BotCommandWithoutSubcommands = {
 
             let isRare = Math.random() <= RareBaerChance;
 
-            Meta.logInfo(interaction.user.id);
             if (interaction.user.id === "71475095851241472") {
                 isRare = true;
             }
@@ -73,11 +72,15 @@ export const Baer: BotCommandWithoutSubcommands = {
             Meta.previousBaer = imageName;
 
             if (isRare) {
+                const sirenEmoji = await Meta.client.emojis.cache.get(
+                    "1453516501423493261"
+                );
+
                 interaction.editReply({
                     embeds: [
                         new EmbedBuilder()
                             .setTitle(
-                                "<:siren:1441101338745503797> RAERBAER <:siren:1441101338745503797>"
+                                `${sirenEmoji} RAERBAER ${sirenEmoji}`
                             )
                             .setImage(`attachment://${imageName}`)
                             .setColor("#f9b606")
