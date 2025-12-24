@@ -23,7 +23,7 @@ export const rareBaerImagesPath = path.join(
 const RareBaerChance = 0.05;
 const LukeRareBaerName = "rarebaer2.png";
 const RareLukeFollowUpName = "rarebaer3.png";
-const RareLukeFollowUpChance = 1;
+const RareLukeFollowUpChance = 0.5;
 
 export const Baer: BotCommandWithoutSubcommands = {
     name: "baer",
@@ -47,10 +47,6 @@ export const Baer: BotCommandWithoutSubcommands = {
 
             let isRare = Math.random() <= RareBaerChance;
 
-            if (interaction.user.id === "71475095851241472") {
-                isRare = true;
-            }
-
             const imagesPath = isRare ? rareBaerImagesPath : baerImagesPath;
 
             const allImages = await fs.readdir(imagesPath);
@@ -58,10 +54,6 @@ export const Baer: BotCommandWithoutSubcommands = {
             let randomImageIndex = Math.floor(
                 Math.random() * allImages.length
             );
-
-            if (interaction.user.id === "71475095851241472") {
-                randomImageIndex = 1;
-            }
 
             let imageName = allImages[randomImageIndex];
 
