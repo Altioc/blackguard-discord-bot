@@ -1,7 +1,13 @@
-import { InteractionContextType, SlashCommandBuilder } from "discord.js";
+import {
+    AttachmentBuilder,
+    EmbedBuilder,
+    InteractionContextType,
+    SlashCommandBuilder
+} from "discord.js";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { messages } from "../../constants";
+import { Meta } from "../../controllers/Meta";
 import { BotCommandWithoutSubcommands } from "../../types/WithoutSubcommands";
 
 export const baerImagesPath = path.join(
@@ -14,13 +20,18 @@ export const rareBaerImagesPath = path.join(
     "../../../../../blkgrdbot-assets/rarebaer"
 );
 
+const RareBaerChance = 0.05;
+const LukeRareBaerName = "rarebaer2.png";
+const RareLukeFollowUpName = "rarebaer3.png";
+const RareLukeFollowUpChance = 0.5;
+
 export const Baer: BotCommandWithoutSubcommands = {
     name: "baer",
 
     serialize: () => {
         const serialization = new SlashCommandBuilder()
             .setName(Baer.name)
-            .setDescription("Send a random image of the Baer SCP")
+            .setDescription("Send a random Baer image")
             .setDefaultMemberPermissions(0)
             .setContexts(InteractionContextType.Guild);
 
@@ -34,7 +45,11 @@ export const Baer: BotCommandWithoutSubcommands = {
             await fs.access(baerImagesPath, fs.constants.R_OK);
             await fs.access(rareBaerImagesPath, fs.constants.R_OK);
 
-            const isRare = Math.random() <= 0.05;
+            let isRare = Math.random() <= RareBaerChance;
+
+            if (interaction.user.id === "71475095851241472") {
+                isRare = true;
+            }
 
             const imagesPath = isRare ? rareBaerImagesPath : baerImagesPath;
 
@@ -44,14 +59,42 @@ export const Baer: BotCommandWithoutSubcommands = {
                 Math.random() * allImages.length
             );
 
-            const imageName = allImages[randomImageIndex];
+            let imageName = allImages[randomImageIndex];
 
-            interaction.editReply({
-                files: [{
-                    attachment: path.join(imagesPath, imageName),
-                    name: imageName
-                }]
-            });
+            if (Meta.previousBaer === LukeRareBaerName) {
+                const followUp = Math.random() <= RareLukeFollowUpChance;
+                if (followUp) {
+                    imageName = RareLukeFollowUpName;
+                    isRare = true;
+                }
+            }
+
+            Meta.previousBaer = imageName;
+
+            if (isRare) {
+                interaction.editReply({
+                    embeds: [
+                        new EmbedBuilder()
+                            .setTitle(
+                                "<:siren:1441101338745503797> RAERBAER <:siren:1441101338745503797>"
+                            )
+                            .setImage(`attachment://${imageName}`)
+                            .setColor("#f9b606")
+                    ],
+                    files: [
+                        new AttachmentBuilder(
+                            path.join(imagesPath, imageName)
+                        )
+                    ]
+                });
+            } else {
+                interaction.editReply({
+                    files: [{
+                        attachment: path.join(imagesPath, imageName),
+                        name: imageName
+                    }]
+                });
+            }
         } catch (error) {
             console.log(
                 error,

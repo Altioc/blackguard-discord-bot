@@ -25,6 +25,7 @@ class MetaController {
     loggingChannelId: string | null = null;
     loggingChannel: TextChannel | null = null;
     db: PouchDB.Database;
+    previousBaer?: string;
 
     constructor() {
         this.db = new PouchDB("BlackguardBotDb");
