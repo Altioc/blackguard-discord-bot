@@ -20,10 +20,21 @@ export const rareBaerImagesPath = path.join(
     "../../../../../blkgrdbot-assets/rarebaer"
 );
 
+export const specialBaerImagesPath = path.join(
+    __dirname,
+    "../../../../../blkgrdbot-assets/specialbaer"
+);
+
 const RareBaerChance = 0.05;
-const LukeRareBaerName = "rarebaer2.png";
-const RareLukeFollowUpName = "rarebaer3.png";
-const RareLukeFollowUpChance = 0.5;
+
+const specialBaers = [
+    {
+        condition: "rarebaer2.png",
+        chance: 0.75,
+        followUp: "lukeInMe.png",
+        isRare: false
+    }
+];
 
 export const Baer: BotCommandWithoutSubcommands = {
     name: "baer",
@@ -44,6 +55,7 @@ export const Baer: BotCommandWithoutSubcommands = {
         try {
             await fs.access(baerImagesPath, fs.constants.R_OK);
             await fs.access(rareBaerImagesPath, fs.constants.R_OK);
+            await fs.access(specialBaerImagesPath, fs.constants.R_OK);
 
             let isRare = Math.random() <= RareBaerChance;
 
@@ -57,12 +69,20 @@ export const Baer: BotCommandWithoutSubcommands = {
 
             let imageName = allImages[randomImageIndex];
 
-            if (Meta.previousBaer === LukeRareBaerName) {
-                const followUp = Math.random() <= RareLukeFollowUpChance;
-                if (followUp) {
-                    imageName = RareLukeFollowUpName;
-                    isRare = true;
-                }
+            let imagePath = path.join(imagesPath, imageName);
+
+            const specialBaer = specialBaers.find((special) => {
+                const conditionMet = special.condition === Meta.previousBaer;
+                const chanceMet = Math.random() <= special.chance;
+                return conditionMet && chanceMet;
+            });
+
+            if (specialBaer) {
+                imagePath = path.join(
+                    specialBaerImagesPath,
+                    specialBaer.followUp
+                );
+                isRare = specialBaer.isRare;
             }
 
             Meta.previousBaer = imageName;
@@ -78,15 +98,13 @@ export const Baer: BotCommandWithoutSubcommands = {
                             .setColor("#f9b606")
                     ],
                     files: [
-                        new AttachmentBuilder(
-                            path.join(imagesPath, imageName)
-                        )
+                        new AttachmentBuilder(imagePath)
                     ]
                 });
             } else {
                 interaction.editReply({
                     files: [{
-                        attachment: path.join(imagesPath, imageName),
+                        attachment: imagePath,
                         name: imageName
                     }]
                 });
