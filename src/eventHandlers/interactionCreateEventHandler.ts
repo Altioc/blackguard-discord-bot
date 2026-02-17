@@ -13,7 +13,7 @@ import { commandInteraction } from "../interactions/commandInteraction";
 import { modalInteraction } from "../interactions/modalInteraction";
 import { getInteractionType } from "../utils/getInteractionType";
 
-export const interactionCreEventHandler = {
+export const interactionCreateEventHandler = {
     name: Events.InteractionCreate,
     async execute(interaction: BaseInteraction) {
         if (interaction.guild === null) {
@@ -49,4 +49,4 @@ export const interactionCreEventHandler = {
     }
 };
 
-export default interactionCreEventHandler;
+export default interactionCreateEventHandler;
