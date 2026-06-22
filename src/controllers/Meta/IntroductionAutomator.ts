@@ -81,6 +81,12 @@ export class IntroductionAutomator {
         });
     }
 
+    async resetIntroductions(): Promise<void> {
+        await this.updateDoc({
+            introductions: []
+        });
+    }
+
     async removeIntroduction(introductionId: string): Promise<void> {
         this.introductions = this.introductions.filter((introduction) => {
             return introduction.id !== introductionId;
