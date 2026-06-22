@@ -8,6 +8,7 @@ import { BotCommand } from "../../types/BotCommand";
 import { AddMemberRole } from "./subcommands/AddMemberRole";
 import { RemoveLoggingChannel } from "./subcommands/RemoveLoggingChannel";
 import { RemoveMemberRole } from "./subcommands/RemoveMemberRole";
+import { ResetIntroductions } from "./subcommands/ResetIntroductions";
 import { SetLoggingChannel } from "./subcommands/SetLoggingChannel";
 import { SetLogLevel } from "./subcommands/SetLogLevel";
 import { SetRejectedRole } from "./subcommands/SetRejectedRole";
@@ -21,7 +22,8 @@ const Meta: BotCommand = {
         [SetRejectedRole.name, SetRejectedRole],
         [SetLoggingChannel.name, SetLoggingChannel],
         [RemoveLoggingChannel.name, RemoveLoggingChannel],
-        [SetLogLevel.name, SetLogLevel]
+        [SetLogLevel.name, SetLogLevel],
+        [ResetIntroductions.name, ResetIntroductions]
     ]),
 
     serialize: () => {
